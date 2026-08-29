@@ -39,3 +39,34 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local workspace tooling (AGENTS.md is the deliberate exception)
+/.agents/
+/.claude/
+/.codex/
+/skills-lock.json
+/CLAUDE.md
+
+# local Python environments and caches
+/.venv/
+/.python-version.local
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# investigation inputs and heavyweight local intermediates
+/Fires/data/raw/
+/Fires/satellite/*.npy
+/Fires/satellite/S2_pre_*_truecolor.png
+/Fires/satellite/S2_pre_*_swir_falsecolor.png
+/Fires/satellite/S2_post_*_truecolor.png
+/Fires/satellite/S2_post_*_swir_falsecolor.png
+/Fires/report/*.html
+/Fires/report/report_ar.pdf
+
+# generated website artifacts
+/public/generated/
+/public/maplibre/
+/test-results/
+/playwright-report/
+/tmp/
