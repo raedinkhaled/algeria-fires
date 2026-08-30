@@ -28,9 +28,7 @@
       "independent_origin_candidates_total": 12,
       "inside_jijel": 6
     },
-    "revision": 4,
-    "revision_note": "المراجعة الثالثة — التدقيق الوطني وحساب القوة. أُضيف national_scale_audit. وقد رُفع الاحتمال اللاحق لفرضية العملية المنسّقة من 1.2٪ إلى 11.1٪ (α=1.0) و25.5٪ (α=0.5) بعد أن تبيّن أن اختبار التزامن بلا قوة وأن التزامن غير قابل للقياس أصلاً من الأقمار القطبية.",
-    "scope_exclusion": "استُبعدت فرضية العطل الكهربائي/المرفقي بتوجيه من طالب التحقيق. لا يتضمّن هذا التقرير أي اتهام لأي مؤسسة عمومية. إسقاط فرضية متنافسة يرفع آلياً الوزن النسبي لما تبقّى."
+    "scope": "لا تتناول هذه المراجعة فرضية العطل الكهربائي/المرفقي بوصفها سبباً للاشتعال (الفصل 4.4)، ولا يتضمّن التقرير أي اتهام أو تلميح إلى تقصير من أي مؤسسة عمومية. ملاحظة تحليلية لازمة: إسقاط فرضية متنافسة يرفع آلياً الوزن النسبي للفرضيات الباقية — ومنها فرضية الفعل المتعمّد — فالترجيحات تصف مفاضلة بين ما تبقّى لا تقييماً لكل الأسباب؛ وتبقى الأسباب العرضية غير الكهربائية قائمة بكامل وزنها."
   },
   "clusters": [
     {
@@ -73,7 +71,7 @@
       },
       "independent_ignition_probability": "متوسطة",
       "notes": "أقدم بؤرتين ليليتين في مجموعة البيانات (ولاية سطيف)؛ لا يوجد رصد سابق يمكن الاستناد إليه، فلا يمكن اختبار الاستقلالية إحصائياً.",
-      "forensic_audit": {
+      "forensic_analysis": {
         "detection_blind_window_h": 24.58,
         "blind_window_note": "الاشتعال وقع في مكان ما داخل هذه النافذة؛ توقيت الرصد ليس توقيت الاشتعال",
         "tactical_placement": {
@@ -156,7 +154,7 @@
       },
       "independent_ignition_probability": "متوسطة",
       "notes": "بؤرة ليلية في ولاية بجاية، على بعد ~10 كم من البؤرة السابقة وفي التمريرة نفسها.",
-      "forensic_audit": {
+      "forensic_analysis": {
         "detection_blind_window_h": 24.58,
         "blind_window_note": "الاشتعال وقع في مكان ما داخل هذه النافذة؛ توقيت الرصد ليس توقيت الاشتعال",
         "tactical_placement": {
@@ -239,7 +237,7 @@
       },
       "independent_ignition_probability": "مرتفعة",
       "notes": "بؤرة معزولة في ولاية سكيكدة على بعد 96 كم من أقرب حريق سابق وبفجوة مسار 92 كم؛ لم تتطور.",
-      "forensic_audit": {
+      "forensic_analysis": {
         "detection_blind_window_h": 60.48,
         "blind_window_note": "الاشتعال وقع في مكان ما داخل هذه النافذة؛ توقيت الرصد ليس توقيت الاشتعال",
         "tactical_placement": {
@@ -322,7 +320,7 @@
       },
       "independent_ignition_probability": "مرتفعة",
       "notes": "أقدم بؤرة داخل ولاية جيجل. تبعد 29.7 كم عن أقرب حريق سابق وفجوة المسار 60.7 كم؛ يستحيل بلوغها بانتشار سطحي. تقع داخل ندبة الحريق B00 التي شهدت لاحقاً الكارثة البشرية.",
-      "forensic_audit": {
+      "forensic_analysis": {
         "detection_blind_window_h": 61.88,
         "blind_window_note": "الاشتعال وقع في مكان ما داخل هذه النافذة؛ توقيت الرصد ليس توقيت الاشتعال",
         "tactical_placement": {
@@ -405,7 +403,7 @@
       },
       "independent_ignition_probability": "مرتفعة",
       "notes": "بؤرة ليلية مستقلة في ولاية ميلة؛ 24 كم عن أقرب حريق سابق وفجوة 71.6 كم.",
-      "forensic_audit": {
+      "forensic_analysis": {
         "detection_blind_window_h": 72.83,
         "blind_window_note": "الاشتعال وقع في مكان ما داخل هذه النافذة؛ توقيت الرصد ليس توقيت الاشتعال",
         "tactical_placement": {
@@ -488,7 +486,7 @@
       },
       "independent_ignition_probability": "مرتفعة",
       "notes": "بؤرة الشقفة — نواة المجمّع الرئيسي (B00، 400 كم²). تبعد 14.3 كم عن أقرب رصد سابق (بؤرة الجمعة بني حبيبي) التي كانت قد خمدت عن الرصد منذ ~22 ساعة، وفجوة المسار 9.7 كم.",
-      "forensic_audit": {
+      "forensic_analysis": {
         "detection_blind_window_h": 9.67,
         "blind_window_note": "الاشتعال وقع في مكان ما داخل هذه النافذة؛ توقيت الرصد ليس توقيت الاشتعال",
         "tactical_placement": {
@@ -571,7 +569,7 @@
       },
       "independent_ignition_probability": "متوسطة-مرتفعة",
       "notes": "أولاد يحيى خدروش. 10.4 كم عن أقرب رصد سابق وفجوة 7.7 كم؛ لكن التمريرات الليلية السابقة كانت محدودة التغطية، فلا يُستبعد أنها اشتعلت قبل ذلك دون رصد.",
-      "forensic_audit": {
+      "forensic_analysis": {
         "detection_blind_window_h": 11.03,
         "blind_window_note": "الاشتعال وقع في مكان ما داخل هذه النافذة؛ توقيت الرصد ليس توقيت الاشتعال",
         "tactical_placement": {
@@ -654,7 +652,7 @@
       },
       "independent_ignition_probability": "متوسطة-مرتفعة",
       "notes": "بؤرة في ولاية ميلة، 15.7 كم عن أقرب حريق سابق وفجوة 20.1 كم.",
-      "forensic_audit": {
+      "forensic_analysis": {
         "detection_blind_window_h": 3.17,
         "blind_window_note": "الاشتعال وقع في مكان ما داخل هذه النافذة؛ توقيت الرصد ليس توقيت الاشتعال",
         "tactical_placement": {
@@ -737,7 +735,7 @@
       },
       "independent_ignition_probability": "مرتفعة",
       "notes": "تاكسنة — جبهة بطول ~7 كم ظهرت دفعة واحدة على بعد 19.6 كم عن أقرب حريق سابق وبفجوة 22.8 كم، وفي اتجاه معاكس للرياح. تشكّل ندبة حريق منفصلة تماماً (B01، 122 كم²) عن المجمّع الرئيسي B00. أقوى مرشّح لاشتعال مستقل داخل الولاية بعد الشقفة.",
-      "forensic_audit": {
+      "forensic_analysis": {
         "detection_blind_window_h": 9.67,
         "blind_window_note": "الاشتعال وقع في مكان ما داخل هذه النافذة؛ توقيت الرصد ليس توقيت الاشتعال",
         "tactical_placement": {
@@ -820,7 +818,7 @@
       },
       "independent_ignition_probability": "متوسطة",
       "notes": "إيراقن سويسي؛ 12.3 كم عن أقرب حريق سابق وفجوة 13.2 كم، لكن ضمن نطاق نشاط حريق بجاية الكبير.",
-      "forensic_audit": {
+      "forensic_analysis": {
         "detection_blind_window_h": 0.6,
         "blind_window_note": "الاشتعال وقع في مكان ما داخل هذه النافذة؛ توقيت الرصد ليس توقيت الاشتعال",
         "tactical_placement": {
@@ -903,7 +901,7 @@
       },
       "independent_ignition_probability": "متوسطة",
       "notes": "بودريعة بن ياجيس؛ فجوة مسار 26.4 كم لكن المسافة عن أقرب حريق سابق 5.6 كم فقط، ما يجعل الانتشار أو التطاير احتمالاً قائماً.",
-      "forensic_audit": {
+      "forensic_analysis": {
         "detection_blind_window_h": 5.3,
         "blind_window_note": "الاشتعال وقع في مكان ما داخل هذه النافذة؛ توقيت الرصد ليس توقيت الاشتعال",
         "tactical_placement": {
@@ -986,7 +984,7 @@
       },
       "independent_ignition_probability": "متوسطة-مرتفعة",
       "notes": "ولاية سكيكدة (أم الطوب)؛ خارج نافذة تحليل Sentinel-2، والتغطية الحرارية للمنطقة كانت متقطعة.",
-      "forensic_audit": {
+      "forensic_analysis": {
         "detection_blind_window_h": 68.88,
         "blind_window_note": "الاشتعال وقع في مكان ما داخل هذه النافذة؛ توقيت الرصد ليس توقيت الاشتعال",
         "tactical_placement": {
@@ -1030,550 +1028,6 @@
       }
     }
   ],
-  "forensic_audit_summary": {
-    "single_actor_transit": {
-      "origins_in_order": [
-        "O03",
-        "O05",
-        "O06",
-        "O08",
-        "O09",
-        "O10"
-      ],
-      "localities": [
-        "دائرة العنصر",
-        "الشقفة",
-        "دائرة الميلية",
-        "تاكسنة",
-        "إيراقن سويسي",
-        "دائرة جيملة"
-      ],
-      "legs": [
-        {
-          "leg": "O03>O05",
-          "from": "دائرة العنصر",
-          "to": "الشقفة",
-          "transit_h": 0.53,
-          "elapsed_h": 21.97,
-          "slack_h": 21.44
-        },
-        {
-          "leg": "O05>O06",
-          "from": "الشقفة",
-          "to": "دائرة الميلية",
-          "transit_h": 1.16,
-          "elapsed_h": 12.7,
-          "slack_h": 11.54
-        },
-        {
-          "leg": "O06>O08",
-          "from": "دائرة الميلية",
-          "to": "تاكسنة",
-          "transit_h": 1.34,
-          "elapsed_h": 11.3,
-          "slack_h": 9.96
-        },
-        {
-          "leg": "O08>O09",
-          "from": "تاكسنة",
-          "to": "إيراقن سويسي",
-          "transit_h": 0.97,
-          "elapsed_h": 1.38,
-          "slack_h": 0.41
-        },
-        {
-          "leg": "O09>O10",
-          "from": "إيراقن سويسي",
-          "to": "دائرة جيملة",
-          "transit_h": 0.73,
-          "elapsed_h": 20.13,
-          "slack_h": 19.4
-        }
-      ],
-      "total_drive_h": 4.73,
-      "total_elapsed_h": 67.48,
-      "duty_cycle_pct": 7.0,
-      "min_actors_required_by_transit": 1
-    },
-    "transit_pairs": {
-      "graph": {
-        "nodes": 504477,
-        "edges": 513102,
-        "speed_model_kmh": {
-          "motorway": 100,
-          "trunk": 85,
-          "primary": 70,
-          "secondary": 60,
-          "tertiary": 50,
-          "unclassified": 40,
-          "residential": 30,
-          "service": 25,
-          "track": 18
-        },
-        "walk_kmh": 4.5,
-        "bias_note": "shortest-time routing at free-flow speed, no traffic, no stop penalty, no darkness penalty - biased in favour of the single-actor hypothesis"
-      },
-      "n_pairs": 66,
-      "feasible_nominal": 63,
-      "infeasible_nominal": 0,
-      "non_causal_nominal": 3,
-      "no_route": 0,
-      "feasible_worstcase": 44,
-      "infeasible_worstcase": 2,
-      "non_causal_worstcase": 20
-    },
-    "tactical_uniformity_tests": [
-      {
-        "metric": "chimney_score",
-        "n": 12,
-        "mean_rank": 0.506,
-        "z_vs_uniform": 0.07,
-        "p_two_sided": 0.9438,
-        "n_above_p90": 0,
-        "direction": "above-random"
-      },
-      {
-        "metric": "dw_settlements",
-        "n": 12,
-        "mean_rank": 0.379,
-        "z_vs_uniform": -1.46,
-        "p_two_sided": 0.1451,
-        "n_above_p90": 1,
-        "direction": "below-random"
-      },
-      {
-        "metric": "dw_population",
-        "n": 12,
-        "mean_rank": 0.407,
-        "z_vs_uniform": -1.12,
-        "p_two_sided": 0.2629,
-        "n_above_p90": 0,
-        "direction": "below-random"
-      },
-      {
-        "metric": "tpi500",
-        "n": 12,
-        "mean_rank": 0.517,
-        "z_vs_uniform": 0.2,
-        "p_two_sided": 0.8382,
-        "n_above_p90": 1,
-        "direction": "above-random"
-      },
-      {
-        "metric": "confinement",
-        "n": 12,
-        "mean_rank": 0.466,
-        "z_vs_uniform": -0.4,
-        "p_two_sided": 0.6862,
-        "n_above_p90": 0,
-        "direction": "below-random"
-      }
-    ],
-    "access_null_model": {
-      "p_lowvis_nearest_null": 0.891,
-      "k_lowvis_observed": 10,
-      "n_origins": 12,
-      "binomial_p_ge_observed": 0.8642,
-      "deadends600": {
-        "null_median": 2.0,
-        "null_mean": 5.1,
-        "null_p90": 15.0,
-        "obs_median": 5.5,
-        "obs_mean": 5.83,
-        "pct_rank_of_obs_mean": 0.707
-      },
-      "hivis_m": {
-        "null_median": 1834.6,
-        "obs_median": 1603.8
-      },
-      "lovis_m": {
-        "null_median": 220.1,
-        "obs_median": 177.7
-      }
-    },
-    "serial_line_test": {
-      "texenna_burst_2026-08-26_11:51Z": {
-        "n_cells": 45,
-        "elongation_ratio": 1.91,
-        "major_axis_extent_km": 5.72,
-        "median_dist_to_any_road_m": 188.3,
-        "frac_within_100m_of_road": 0.378,
-        "frac_within_250m_of_road": 0.578
-      },
-      "ouled_yahia_burst_2026-08-26_00:33Z": {
-        "n_cells": 16,
-        "elongation_ratio": 1.76,
-        "major_axis_extent_km": 2.66,
-        "median_dist_to_any_road_m": 290.8,
-        "frac_within_100m_of_road": 0.188,
-        "frac_within_250m_of_road": 0.438
-      },
-      "djemaa_beni_habibi_first_2026-08-24_13:53Z": {
-        "n_cells": 4,
-        "elongation_ratio": 1.67,
-        "major_axis_extent_km": 1.84,
-        "median_dist_to_any_road_m": 43.1,
-        "frac_within_100m_of_road": 0.75,
-        "frac_within_250m_of_road": 0.75
-      },
-      "null_random_clumps": {
-        "n": 150,
-        "median_elongation": 1.46,
-        "p90_elongation": 1.83,
-        "median_frac_within_250m_of_road": 0.556
-      },
-      "interpretation_note": "A chain of roadside set-points should show HIGH elongation AND a high fraction of cells within ~100-250 m of one road. An areal wind-driven front shows moderate elongation with cells distributed independently of the road network."
-    },
-    "ach_posteriors": {
-      "level1_event_structure": {
-        "S1_single_fire": 0.0005,
-        "S2_multiple_mixed": 0.9873,
-        "S3_coordinated_campaign": 0.0122
-      },
-      "level2_single_ignition_cause": {
-        "H1_natural": 0.0353,
-        "H2_infrastructure": 0.5651,
-        "H3_isolated_arson": 0.1998,
-        "H5_agricultural": 0.1998
-      },
-      "origin_specific": {
-        "O08_Texenna": {
-          "H1_natural": 0.0131,
-          "H2_infrastructure": 0.8386,
-          "H3_isolated_arson": 0.0741,
-          "H5_agricultural": 0.0741
-        },
-        "O03_Djemaa_Beni_Habibi": {
-          "H1_natural": 0.018,
-          "H2_infrastructure": 0.5753,
-          "H3_isolated_arson": 0.2034,
-          "H5_agricultural": 0.2034
-        }
-      }
-    },
-    "coordinated_arson_signature": {
-      "indicators_tested": 10,
-      "indicators_met": 0,
-      "verdict": "لم يتحقّق أيّ من المؤشرات العشرة المتوقّعة من عملية إجرامية منسّقة متعدّدة الخلايا. وضعف الاحتمال ليس تبرئة: الأدلة الحاسمة خارج هذه المجموعة بكاملها."
-    },
-    "osint_scope_isolation": {
-      "scope_rule": "Only items whose publication date is verifiably inside or immediately after 24-29 Aug 2026 AND whose subject matter is the Jijel/east-Algeria fires of that window are admitted. Every other item is quarantined.",
-      "verified_in_scope": [
-        {
-          "ref": "OF-01",
-          "body": "Ministry of Interior, Local Government and Transport (Said Sayoud)",
-          "date": "2026-08-27",
-          "claim": "Opened in-depth investigations into the causes of the 'simultaneous outbreak' of fires in several parts of the country",
-          "status": "procedural announcement, not a finding",
-          "verified": "yes - multiply reported"
-        },
-        {
-          "ref": "OF-02",
-          "body": "Ministry of Interior",
-          "date": "2026-08-27",
-          "claim": "193 fires in 13 wilayas in 24 h (147 extinguished, 46 active); widening in Jijel and Bejaia attributed to 'difficult climatic conditions', wind strength and high temperature",
-          "status": "official attribution to weather",
-          "verified": "yes"
-        },
-        {
-          "ref": "OF-03",
-          "body": "Directorate General of Civil Protection (DGPC)",
-          "date": "2026-08-26/27",
-          "claim": "Fires at Ouled Yahia Khedrouche, Texenna (2), Ziama Mansouriah (2), Sidi Maarouf, Chekfa; Mi-26, AT-802 and BE-200 aerial assets committed",
-          "status": "field report",
-          "verified": "yes"
-        },
-        {
-          "ref": "OF-06",
-          "body": "Directorate General of Civil Protection (DGPC)",
-          "date": "2026-08-28T07:00",
-          "claim": "174 fires nationally over 27-28 Aug (110 extinguished, 64 ongoing). By wilaya: Jijel 20, Skikda 14, El Tarf 10, Guelma 6, Annaba 5, Bejaia 4, Boumerdes 2, Tebessa 1, Constantine 1, Mila 1. Within Jijel, 13 fires named by commune: Texenna 2, Ziama Mansouriah 2, El Milia 1, Sidi Maarouf 1, Ouled Yahia Khedrouche 1, Boudria Ben Yadjis 1, Ouled Rabah 1, Selma Ben Ziada 1, Boussif Ouled Askeur 1, Chekfa 2",
-          "status": "NEW - not in baseline report; richest official commune-level list located",
-          "verified": "yes - fetched and date-confirmed",
-          "url": "https://www.aljazairalyoum.dz/أخمدت-110-الحماية-المدنية-تسجل-174-حريقا/"
-        },
-        {
-          "ref": "OF-07",
-          "body": "National Gendarmerie (Direction Generale de la Gendarmerie Nationale)",
-          "date": "2026-08-29",
-          "claim": "Gendarmerie services began in-depth investigations to establish the real causes of the outbreaks and whether they are connected to criminal acts",
-          "status": "NEW - first source tying the GENDARMERIE specifically to this event; procedural, not a finding",
-          "verified": "yes - reported by Al Jazeera 29 Aug 2026",
-          "url": "https://www.aljazeera.net/news/2026/8/29/حرائق-الجزائر-2"
-        },
-        {
-          "ref": "MD-11",
-          "body": "Al Jazeera",
-          "date": "2026-08-29",
-          "claim": "About 80% of Jijel's forest cover damaged; winds reported at 80-100 km/h; severely affected localities named as Tisbilan, Bordj Tahar, Ouled Askeur, Sidi Maarouf; 57 fires across 27 communes in Skikda; >300 ha of fruit trees and beehives lost in Mila",
-          "status": "NEW - media estimate of proportional forest loss, no methodology stated",
-          "verified": "yes - fetched"
-        }
-      ],
-      "quarantined_out_of_scope": [
-        {
-          "ref": "OF-05",
-          "claim": "Pre-trial detention of 7 suspects for arson in Guelma, Constantine, Tipaza, Jijel and Bouira",
-          "actual_date": "2026-07-26",
-          "why_excluded": "Independently re-verified by fetching the source: suspects presented to the prosecutor on 26 July 2026 for fires 'since the end of last week', i.e. late July. Has NO connection to 24-29 August.",
-          "verification_method": "direct fetch of awras.com article, publication date confirmed 26 July 2026"
-        },
-        {
-          "ref": "OF-08",
-          "claim": "Four suspects in pre-trial detention, Constantine",
-          "actual_date": "2026-07-24",
-          "why_excluded": "July fires. Prosecutor's office of Sidi M'Hamed court, Algiers; three separate Constantine incidents (Pine neighbourhood brush, Soummam road vegetation, copper-wire piles on the Constantine-Annaba highway).",
-          "verification_method": "direct fetch of moroccoworldnews.com, publication date 24 July 2026"
-        },
-        {
-          "ref": "OF-09",
-          "claim": "'Dozens detained', 22 suspects arrested including 11 in Tizi Ouzou",
-          "actual_date": "2021-08-16",
-          "why_excluded": "This is the AUGUST 2021 Algerian wildfire episode, a different event five years earlier. It surfaces high in search results for August-2026 queries and is a live contamination risk.",
-          "verification_method": "direct fetch of islam21c.com, publication date confirmed 16 August 2021"
-        },
-        {
-          "ref": "SM-01",
-          "claim": "Video clips 'purportedly showing perpetrators setting the fires'; 'images of burned tyres found inside the forests'; 'a video filmed by an amateur showing a person leaving the vicinity of a forest while flames were burning behind him'",
-          "actual_date": "2026-08-29",
-          "why_excluded": "Appears only in an OPINION column (Asharq Al-Awsat English, Mishary Dhayidi, 29 Aug 2026), which itself frames the material as unverified circulating claims. No official source, no chain of custody, no geolocation, no timestamp verification. Charred tyres are an expected find inside any Mediterranean burn scar because forests are used for informal dumping; their presence is not diagnostic of ignition.",
-          "verification_method": "direct fetch; article confirmed to be Opinion section commentary, not reporting"
-        }
-      ],
-      "negative_findings": [
-        "No forensic origin-and-cause examination result for any 24-29 August ignition has been published by any authority.",
-        "No arrest, detention or judicial referral tied specifically to the 24-29 August Jijel fires appears in open sources as of the reporting date. Every arrest story that could be dated resolves to July 2026 or to August 2021.",
-        "No Sonelgaz statement on grid faults in Jijel during 23-27 August was located. The only located grid item concerns Seraidi (Annaba), where power and gas were cut PRECAUTIONARILY because of fire - an effect, not a cause.",
-        "No Directorate General of Forests (DGF) burned-area figure specific to the August event in Jijel was located; published DGF material relates to the seasonal plan and to national totals up to 20 July 2026."
-      ],
-      "method_note_on_official_social_accounts": "The baseline report excluded social media wholesale. That rule over-reaches in one respect: the DGPC operates verified institutional pages (national and Jijel-level) on which it publishes its own situation reports. Content published by an authority on its own official channel is a Tier-1 primary source, not an unverified third-party claim. Those pages were located but could not be machine-fetched here; they are recorded as an accessible primary source for follow-up rather than used as evidence."
-    }
-  },
-  "national_scale_audit": {
-    "summary": {
-      "domain": {
-        "lat": [
-          34.5,
-          37.6
-        ],
-        "lon": [
-          -2.5,
-          9.0
-        ],
-        "period_utc": [
-          "2026-08-22T00:00:00",
-          "2026-08-30T00:00:00"
-        ]
-      },
-      "detections": 17132,
-      "cells": 8860,
-      "static_source_cells_removed": 29,
-      "classification": {
-        "first_in_archive": 10,
-        "path_broken": 446,
-        "contiguous": 8077,
-        "reachable_by_spread": 327
-      },
-      "n_independent_origins": 199,
-      "criteria": {
-        "flag_distance_km": 5.0,
-        "unburnt_gap_km": 4.0,
-        "coverage_radius_km": 2.5,
-        "link_km": 6.0
-      }
-    },
-    "weather_tracking": {
-      "question": "Do the 199 national ignitions sit at the severe tail of the fire-weather field, or are they placed independently of it?",
-      "null_model": "random points in the same domain, evaluated in the SAME HOUR as each ignition, so diurnal and synoptic cycles are controlled",
-      "n_origins_scored": 199,
-      "n_null_series": 220,
-      "tests": [
-        {
-          "metric": "sev",
-          "n": 199,
-          "mean_rank": 0.683,
-          "median_rank": 0.75,
-          "z_vs_uniform": 8.95,
-          "p_two_sided": 3.51e-19,
-          "frac_above_p75": 0.492,
-          "frac_below_p50": 0.191,
-          "direction": "tracks severe fire weather"
-        },
-        {
-          "metric": "vpd",
-          "n": 199,
-          "mean_rank": 0.705,
-          "median_rank": 0.743,
-          "z_vs_uniform": 10.04,
-          "p_two_sided": 1.02e-23,
-          "frac_above_p75": 0.477,
-          "frac_below_p50": 0.181,
-          "direction": "tracks severe fire weather"
-        },
-        {
-          "metric": "rh",
-          "n": 199,
-          "mean_rank": 0.694,
-          "median_rank": 0.741,
-          "z_vs_uniform": 9.47,
-          "p_two_sided": 2.73e-21,
-          "frac_above_p75": 0.487,
-          "frac_below_p50": 0.166,
-          "direction": "tracks severe fire weather"
-        },
-        {
-          "metric": "gust",
-          "n": 199,
-          "mean_rank": 0.605,
-          "median_rank": 0.659,
-          "z_vs_uniform": 5.15,
-          "p_two_sided": 2.65e-07,
-          "frac_above_p75": 0.382,
-          "frac_below_p50": 0.332,
-          "direction": "tracks severe fire weather"
-        }
-      ],
-      "asymmetry_note": "This test can only produce strong evidence in one direction. A weather-INDIFFERENT result would be strong evidence for a deliberate driver and would contradict the weather-driven finding. A weather-TRACKING result is consistent both with weather-driven accumulation and with an actor who exploits fire weather, so it cannot separate those two."
-    },
-    "campaign_synchrony_weather_null": {
-      "1h": {
-        "observed_cross_region_pairs": 654,
-        "null_mean": 286.8,
-        "null_p95": 341.0,
-        "null_max": 406,
-        "p_value_excess": 0.0002,
-        "verdict": "EXCESS synchrony beyond weather + overpass schedule"
-      },
-      "3h": {
-        "observed_cross_region_pairs": 961,
-        "null_mean": 418.4,
-        "null_p95": 485.0,
-        "null_max": 585,
-        "p_value_excess": 0.0002,
-        "verdict": "EXCESS synchrony beyond weather + overpass schedule"
-      }
-    },
-    "synchrony_robustness": {
-      "observed": {
-        "1h": 654,
-        "3h": 961
-      },
-      "sizes": {
-        "west": 28,
-        "centre": 49,
-        "east": 122
-      },
-      "n_sim": 20000,
-      "nulls": {
-        "B_pooled_empirical_profile": {
-          "1h": {
-            "observed": 654,
-            "null_mean": 768.3,
-            "null_sd": 78.2,
-            "null_p05": 647.0,
-            "null_p95": 904.0,
-            "z": -1.46,
-            "p_excess": 0.9388,
-            "p_deficit": 0.0637,
-            "verdict": "consistent with the null"
-          },
-          "3h": {
-            "observed": 961,
-            "null_mean": 1060.3,
-            "null_sd": 111.8,
-            "null_p05": 891.0,
-            "null_p95": 1256.0,
-            "z": -0.89,
-            "p_excess": 0.8129,
-            "p_deficit": 0.1899,
-            "verdict": "consistent with the null"
-          }
-        },
-        "C_region_label_permutation": {
-          "1h": {
-            "observed": 654,
-            "null_mean": 716.9,
-            "null_sd": 29.0,
-            "null_p05": 666.0,
-            "null_p95": 760.0,
-            "z": -2.17,
-            "p_excess": 0.9772,
-            "p_deficit": 0.0244,
-            "verdict": "DEFICIT of synchrony"
-          },
-          "3h": {
-            "observed": 961,
-            "null_mean": 1009.7,
-            "null_sd": 40.6,
-            "null_p05": 937.0,
-            "null_p95": 1069.0,
-            "z": -1.2,
-            "p_excess": 0.8841,
-            "p_deficit": 0.1207,
-            "verdict": "consistent with the null"
-          }
-        }
-      },
-      "interpretation": "Null C is decisive because it holds every detection time exactly as observed and shuffles only the region labels, so the shared national diurnal and synoptic rhythm is preserved perfectly. Any excess surviving Null C would be genuine region-to-region synchronisation. Any excess that appears only under the weather-driven Null A is an artefact of that null being too flat in time."
-    },
-    "counter_detection_power": {
-      "test": "cross-region synchrony, region-label permutation null, 1 h window",
-      "baseline_p_excess_no_injection": 0.9763,
-      "n_permutations": 800,
-      "n_trials_per_point": 200,
-      "power_curves": {
-        "tight_30min": {
-          "K=3": 0.0,
-          "K=5": 0.0,
-          "K=8": 0.0,
-          "K=12": 0.0,
-          "K=20": 0.0,
-          "K=30": 0.0,
-          "K=45": 0.015,
-          "K_at_80pct_power": null
-        },
-        "dispersed_6h": {
-          "K=3": 0.0,
-          "K=5": 0.0,
-          "K=8": 0.0,
-          "K=12": 0.0,
-          "K=20": 0.0,
-          "K=30": 0.0,
-          "K=45": 0.0,
-          "K_at_80pct_power": null
-        }
-      },
-      "reading": "K is the number of coordinated ignitions injected across at least two regions. Power is the fraction of injections the test would flag at p<0.05. A campaign SMALLER than the 80%-power threshold is invisible to this analysis, so the negative synchrony finding does NOT exclude it.",
-      "honest_limitation": "Every classic arson indicator used in chapters 15-21 - compressed timing, a single ignition axis, roadside set-point chains, tactical topographic placement - describes an UNSOPHISTICATED actor. An operation designed to evade detection would disperse in time, cross administrative boundaries, use single-point ignitions and avoid conspicuous terrain. Absence of the naive signature is therefore weak evidence against a competent operation, and the dispersed-profile power curve quantifies exactly how weak.",
-      "permutation_null_blindness": "The label-permutation null conditions on the observed set of detection times. A campaign igniting simultaneously across regions creates a temporal clump but no region-time association, so permuting labels inside the clump reproduces the same statistic. The null absorbs the very signal it was built to find. The flat zero power curves are the direct consequence.",
-      "observability_limit": {
-        "n_origins_with_prior_coverage": 185,
-        "blind_window_h": {
-          "median": 3.48,
-          "mean": 7.37,
-          "p25": 0.6,
-          "p75": 10.6,
-          "p90": 12.33,
-          "frac_over_1h": 0.605,
-          "frac_over_3h": 0.514,
-          "frac_over_6h": 0.378
-        },
-        "consequence": "Ignition time is knowable only to within the blind window. With a median window of 3.5 h, an operation igniting within 30 minutes and a set of unrelated fires starting over several hours produce IDENTICAL satellite observations. Simultaneity at the resolution a campaign hypothesis needs is therefore not measurable from polar-orbiter data at all - this is an observability limit, not an analytical shortcoming."
-      }
-    },
-    "revised_ach_level1": {
-      "S1_single_fire": 0.001,
-      "S2_multiple_mixed": 0.888,
-      "S3_coordinated_campaign": 0.111
-    },
-    "bottom_line": "تعدّد بؤر الاشتعال هو الخلفية الوطنية الدائمة صيفاً (199 بؤرة مستقلة، 7–58 يومياً) وليس شذوذاً. والاشتعالات تتبّع حقل طقس الحرائق بقوة (p=1e-23). لكن اختبار التزامن — المؤشر المركزي لفرضية التنسيق — قوّته صفر عملياً، ووسيط النافذة العمياء 3.48 ساعة يجعل التزامن غير قابل للقياس أصلاً. فالفرضية لم تُدحض، بل لم تُختبر اختباراً ذا قوة. المدى المعقول لاحتمالها 11٪–26٪.",
-    "revised_ach_level2": {
-      "H1_natural": 0.0353,
-      "H2b_accidental_nonelectrical": 0.5651,
-      "H3_isolated_arson": 0.1998,
-      "H5_agricultural": 0.1998
-    }
-  },
   "preparation_signature_search": {
     "method": "Search the WHOLE 8860-cell population for a cell that re-ignites at a site which had a prior heat source within 3 km that went quiet at least 6 h earlier.",
     "circularity_correction": "Running this over the 199 independent ORIGINS returns exactly 0 by construction, because an origin is DEFINED as being 5 km or more from any prior fire. That zero is an artefact of the definition, not a finding, and reporting it as a result would have been a false negative. The search is run over all cells instead.",
@@ -1941,5 +1395,549 @@
     "physical_argument": "A fire front cannot hold a designed outline. Its shape is set by wind vector, slope, fuel continuity and suppression, all of which vary hour to hour. Producing a recognisable emblem across tens of square kilometres would require controlling the fire perimeter to a precision that is not achievable even by firefighting agencies.",
     "how_such_images_arise": "Pareidolia on a low-resolution or heavily processed image, arbitrary framing and rotation of a crop, colour-stretching that turns a burn scar red and unburnt vegetation green, or an outright fabricated overlay. None of these can be assessed without the original file and its provenance.",
     "status": "UNVERIFIED CLAIM, NOT SUPPORTED BY THE BURN-SCAR DATA. It is not used as evidence anywhere in this report, in either direction."
+  },
+  "national_scale_analysis": {
+    "summary": {
+      "domain": {
+        "lat": [
+          34.5,
+          37.6
+        ],
+        "lon": [
+          -2.5,
+          9.0
+        ],
+        "period_utc": [
+          "2026-08-22T00:00:00",
+          "2026-08-30T00:00:00"
+        ]
+      },
+      "detections": 17132,
+      "cells": 8860,
+      "static_source_cells_removed": 29,
+      "classification": {
+        "first_in_archive": 10,
+        "path_broken": 446,
+        "contiguous": 8077,
+        "reachable_by_spread": 327
+      },
+      "n_independent_origins": 199,
+      "criteria": {
+        "flag_distance_km": 5.0,
+        "unburnt_gap_km": 4.0,
+        "coverage_radius_km": 2.5,
+        "link_km": 6.0
+      }
+    },
+    "weather_tracking": {
+      "question": "Do the 199 national ignitions sit at the severe tail of the fire-weather field, or are they placed independently of it?",
+      "null_model": "random points in the same domain, evaluated in the SAME HOUR as each ignition, so diurnal and synoptic cycles are controlled",
+      "n_origins_scored": 199,
+      "n_null_series": 220,
+      "tests": [
+        {
+          "metric": "sev",
+          "n": 199,
+          "mean_rank": 0.683,
+          "median_rank": 0.75,
+          "z_vs_uniform": 8.95,
+          "p_two_sided": 3.51e-19,
+          "frac_above_p75": 0.492,
+          "frac_below_p50": 0.191,
+          "direction": "tracks severe fire weather"
+        },
+        {
+          "metric": "vpd",
+          "n": 199,
+          "mean_rank": 0.705,
+          "median_rank": 0.743,
+          "z_vs_uniform": 10.04,
+          "p_two_sided": 1.02e-23,
+          "frac_above_p75": 0.477,
+          "frac_below_p50": 0.181,
+          "direction": "tracks severe fire weather"
+        },
+        {
+          "metric": "rh",
+          "n": 199,
+          "mean_rank": 0.694,
+          "median_rank": 0.741,
+          "z_vs_uniform": 9.47,
+          "p_two_sided": 2.73e-21,
+          "frac_above_p75": 0.487,
+          "frac_below_p50": 0.166,
+          "direction": "tracks severe fire weather"
+        },
+        {
+          "metric": "gust",
+          "n": 199,
+          "mean_rank": 0.605,
+          "median_rank": 0.659,
+          "z_vs_uniform": 5.15,
+          "p_two_sided": 2.65e-07,
+          "frac_above_p75": 0.382,
+          "frac_below_p50": 0.332,
+          "direction": "tracks severe fire weather"
+        }
+      ],
+      "asymmetry_note": "This test can only produce strong evidence in one direction. A weather-INDIFFERENT result would be strong evidence for a deliberate driver and would contradict the weather-driven finding. A weather-TRACKING result is consistent both with weather-driven accumulation and with an actor who exploits fire weather, so it cannot separate those two."
+    },
+    "campaign_synchrony_weather_null": {
+      "1h": {
+        "observed_cross_region_pairs": 654,
+        "null_mean": 286.8,
+        "null_p95": 341.0,
+        "null_max": 406,
+        "p_value_excess": 0.0002,
+        "verdict": "EXCESS synchrony beyond weather + overpass schedule"
+      },
+      "3h": {
+        "observed_cross_region_pairs": 961,
+        "null_mean": 418.4,
+        "null_p95": 485.0,
+        "null_max": 585,
+        "p_value_excess": 0.0002,
+        "verdict": "EXCESS synchrony beyond weather + overpass schedule"
+      }
+    },
+    "synchrony_robustness": {
+      "observed": {
+        "1h": 654,
+        "3h": 961
+      },
+      "sizes": {
+        "west": 28,
+        "centre": 49,
+        "east": 122
+      },
+      "n_sim": 20000,
+      "nulls": {
+        "B_pooled_empirical_profile": {
+          "1h": {
+            "observed": 654,
+            "null_mean": 768.3,
+            "null_sd": 78.2,
+            "null_p05": 647.0,
+            "null_p95": 904.0,
+            "z": -1.46,
+            "p_excess": 0.9388,
+            "p_deficit": 0.0637,
+            "verdict": "consistent with the null"
+          },
+          "3h": {
+            "observed": 961,
+            "null_mean": 1060.3,
+            "null_sd": 111.8,
+            "null_p05": 891.0,
+            "null_p95": 1256.0,
+            "z": -0.89,
+            "p_excess": 0.8129,
+            "p_deficit": 0.1899,
+            "verdict": "consistent with the null"
+          }
+        },
+        "C_region_label_permutation": {
+          "1h": {
+            "observed": 654,
+            "null_mean": 716.9,
+            "null_sd": 29.0,
+            "null_p05": 666.0,
+            "null_p95": 760.0,
+            "z": -2.17,
+            "p_excess": 0.9772,
+            "p_deficit": 0.0244,
+            "verdict": "DEFICIT of synchrony"
+          },
+          "3h": {
+            "observed": 961,
+            "null_mean": 1009.7,
+            "null_sd": 40.6,
+            "null_p05": 937.0,
+            "null_p95": 1069.0,
+            "z": -1.2,
+            "p_excess": 0.8841,
+            "p_deficit": 0.1207,
+            "verdict": "consistent with the null"
+          }
+        }
+      },
+      "interpretation": "Null C is decisive because it holds every detection time exactly as observed and shuffles only the region labels, so the shared national diurnal and synoptic rhythm is preserved perfectly. Any excess surviving Null C would be genuine region-to-region synchronisation. Any excess that appears only under the weather-driven Null A is an artefact of that null being too flat in time."
+    },
+    "counter_detection_power": {
+      "test": "cross-region synchrony, region-label permutation null, 1 h window",
+      "baseline_p_excess_no_injection": 0.9763,
+      "n_permutations": 800,
+      "n_trials_per_point": 200,
+      "power_curves": {
+        "tight_30min": {
+          "K=3": 0.0,
+          "K=5": 0.0,
+          "K=8": 0.0,
+          "K=12": 0.0,
+          "K=20": 0.0,
+          "K=30": 0.0,
+          "K=45": 0.015,
+          "K_at_80pct_power": null
+        },
+        "dispersed_6h": {
+          "K=3": 0.0,
+          "K=5": 0.0,
+          "K=8": 0.0,
+          "K=12": 0.0,
+          "K=20": 0.0,
+          "K=30": 0.0,
+          "K=45": 0.0,
+          "K_at_80pct_power": null
+        }
+      },
+      "reading": "K is the number of coordinated ignitions injected across at least two regions. Power is the fraction of injections the test would flag at p<0.05. A campaign SMALLER than the 80%-power threshold is invisible to this analysis, so the negative synchrony finding does NOT exclude it.",
+      "honest_limitation": "Every classic arson indicator used in chapters 15-21 - compressed timing, a single ignition axis, roadside set-point chains, tactical topographic placement - describes an UNSOPHISTICATED actor. An operation designed to evade detection would disperse in time, cross administrative boundaries, use single-point ignitions and avoid conspicuous terrain. Absence of the naive signature is therefore weak evidence against a competent operation, and the dispersed-profile power curve quantifies exactly how weak.",
+      "permutation_null_blindness": "The label-permutation null conditions on the observed set of detection times. A campaign igniting simultaneously across regions creates a temporal clump but no region-time association, so permuting labels inside the clump reproduces the same statistic. The null absorbs the very signal it was built to find. The flat zero power curves are the direct consequence.",
+      "observability_limit": {
+        "n_origins_with_prior_coverage": 185,
+        "blind_window_h": {
+          "median": 3.48,
+          "mean": 7.37,
+          "p25": 0.6,
+          "p75": 10.6,
+          "p90": 12.33,
+          "frac_over_1h": 0.605,
+          "frac_over_3h": 0.514,
+          "frac_over_6h": 0.378
+        },
+        "consequence": "Ignition time is knowable only to within the blind window. With a median window of 3.5 h, an operation igniting within 30 minutes and a set of unrelated fires starting over several hours produce IDENTICAL satellite observations. Simultaneity at the resolution a campaign hypothesis needs is therefore not measurable from polar-orbiter data at all - this is an observability limit, not an analytical shortcoming."
+      }
+    },
+    "revised_ach_level1": {
+      "S1_single_fire": 0.001,
+      "S2_multiple_mixed": 0.888,
+      "S3_coordinated_campaign": 0.111
+    },
+    "bottom_line": "تعدّد بؤر الاشتعال هو الخلفية الوطنية الدائمة صيفاً (199 بؤرة مستقلة، 7–58 يومياً) وليس شذوذاً. والاشتعالات تتبّع حقل طقس الحرائق بقوة (p=1e-23). لكن اختبار التزامن — المؤشر المركزي لفرضية التنسيق — قوّته صفر عملياً، ووسيط النافذة العمياء 3.48 ساعة يجعل التزامن غير قابل للقياس أصلاً. فالفرضية لم تُدحض، بل لم تُختبر اختباراً ذا قوة. المدى المعقول لاحتمالها 11٪–26٪.",
+    "revised_ach_level2": {
+      "H1_natural": 0.0353,
+      "H2b_accidental_nonelectrical": 0.5651,
+      "H3_isolated_arson": 0.1998,
+      "H5_agricultural": 0.1998
+    }
+  },
+  "forensic_analysis_summary": {
+    "single_actor_transit": {
+      "origins_in_order": [
+        "O03",
+        "O05",
+        "O06",
+        "O08",
+        "O09",
+        "O10"
+      ],
+      "localities": [
+        "دائرة العنصر",
+        "الشقفة",
+        "دائرة الميلية",
+        "تاكسنة",
+        "إيراقن سويسي",
+        "دائرة جيملة"
+      ],
+      "legs": [
+        {
+          "leg": "O03>O05",
+          "from": "دائرة العنصر",
+          "to": "الشقفة",
+          "transit_h": 0.53,
+          "elapsed_h": 21.97,
+          "slack_h": 21.44
+        },
+        {
+          "leg": "O05>O06",
+          "from": "الشقفة",
+          "to": "دائرة الميلية",
+          "transit_h": 1.16,
+          "elapsed_h": 12.7,
+          "slack_h": 11.54
+        },
+        {
+          "leg": "O06>O08",
+          "from": "دائرة الميلية",
+          "to": "تاكسنة",
+          "transit_h": 1.34,
+          "elapsed_h": 11.3,
+          "slack_h": 9.96
+        },
+        {
+          "leg": "O08>O09",
+          "from": "تاكسنة",
+          "to": "إيراقن سويسي",
+          "transit_h": 0.97,
+          "elapsed_h": 1.38,
+          "slack_h": 0.41
+        },
+        {
+          "leg": "O09>O10",
+          "from": "إيراقن سويسي",
+          "to": "دائرة جيملة",
+          "transit_h": 0.73,
+          "elapsed_h": 20.13,
+          "slack_h": 19.4
+        }
+      ],
+      "total_drive_h": 4.73,
+      "total_elapsed_h": 67.48,
+      "duty_cycle_pct": 7.0,
+      "min_actors_required_by_transit": 1
+    },
+    "transit_pairs": {
+      "graph": {
+        "nodes": 504477,
+        "edges": 513102,
+        "speed_model_kmh": {
+          "motorway": 100,
+          "trunk": 85,
+          "primary": 70,
+          "secondary": 60,
+          "tertiary": 50,
+          "unclassified": 40,
+          "residential": 30,
+          "service": 25,
+          "track": 18
+        },
+        "walk_kmh": 4.5,
+        "bias_note": "shortest-time routing at free-flow speed, no traffic, no stop penalty, no darkness penalty - biased in favour of the single-actor hypothesis"
+      },
+      "n_pairs": 66,
+      "feasible_nominal": 63,
+      "infeasible_nominal": 0,
+      "non_causal_nominal": 3,
+      "no_route": 0,
+      "feasible_worstcase": 44,
+      "infeasible_worstcase": 2,
+      "non_causal_worstcase": 20
+    },
+    "tactical_uniformity_tests": [
+      {
+        "metric": "chimney_score",
+        "n": 12,
+        "mean_rank": 0.506,
+        "z_vs_uniform": 0.07,
+        "p_two_sided": 0.9438,
+        "n_above_p90": 0,
+        "direction": "above-random"
+      },
+      {
+        "metric": "dw_settlements",
+        "n": 12,
+        "mean_rank": 0.379,
+        "z_vs_uniform": -1.46,
+        "p_two_sided": 0.1451,
+        "n_above_p90": 1,
+        "direction": "below-random"
+      },
+      {
+        "metric": "dw_population",
+        "n": 12,
+        "mean_rank": 0.407,
+        "z_vs_uniform": -1.12,
+        "p_two_sided": 0.2629,
+        "n_above_p90": 0,
+        "direction": "below-random"
+      },
+      {
+        "metric": "tpi500",
+        "n": 12,
+        "mean_rank": 0.517,
+        "z_vs_uniform": 0.2,
+        "p_two_sided": 0.8382,
+        "n_above_p90": 1,
+        "direction": "above-random"
+      },
+      {
+        "metric": "confinement",
+        "n": 12,
+        "mean_rank": 0.466,
+        "z_vs_uniform": -0.4,
+        "p_two_sided": 0.6862,
+        "n_above_p90": 0,
+        "direction": "below-random"
+      }
+    ],
+    "access_null_model": {
+      "p_lowvis_nearest_null": 0.891,
+      "k_lowvis_observed": 10,
+      "n_origins": 12,
+      "binomial_p_ge_observed": 0.8642,
+      "deadends600": {
+        "null_median": 2.0,
+        "null_mean": 5.1,
+        "null_p90": 15.0,
+        "obs_median": 5.5,
+        "obs_mean": 5.83,
+        "pct_rank_of_obs_mean": 0.707
+      },
+      "hivis_m": {
+        "null_median": 1834.6,
+        "obs_median": 1603.8
+      },
+      "lovis_m": {
+        "null_median": 220.1,
+        "obs_median": 177.7
+      }
+    },
+    "serial_line_test": {
+      "texenna_burst_2026-08-26_11:51Z": {
+        "n_cells": 45,
+        "elongation_ratio": 1.91,
+        "major_axis_extent_km": 5.72,
+        "median_dist_to_any_road_m": 188.3,
+        "frac_within_100m_of_road": 0.378,
+        "frac_within_250m_of_road": 0.578
+      },
+      "ouled_yahia_burst_2026-08-26_00:33Z": {
+        "n_cells": 16,
+        "elongation_ratio": 1.76,
+        "major_axis_extent_km": 2.66,
+        "median_dist_to_any_road_m": 290.8,
+        "frac_within_100m_of_road": 0.188,
+        "frac_within_250m_of_road": 0.438
+      },
+      "djemaa_beni_habibi_first_2026-08-24_13:53Z": {
+        "n_cells": 4,
+        "elongation_ratio": 1.67,
+        "major_axis_extent_km": 1.84,
+        "median_dist_to_any_road_m": 43.1,
+        "frac_within_100m_of_road": 0.75,
+        "frac_within_250m_of_road": 0.75
+      },
+      "null_random_clumps": {
+        "n": 150,
+        "median_elongation": 1.46,
+        "p90_elongation": 1.83,
+        "median_frac_within_250m_of_road": 0.556
+      },
+      "interpretation_note": "A chain of roadside set-points should show HIGH elongation AND a high fraction of cells within ~100-250 m of one road. An areal wind-driven front shows moderate elongation with cells distributed independently of the road network."
+    },
+    "ach_posteriors": {
+      "level1_event_structure": {
+        "S1_single_fire": 0.0005,
+        "S2_multiple_mixed": 0.9873,
+        "S3_coordinated_campaign": 0.0122
+      },
+      "level2_single_ignition_cause": {
+        "H1_natural": 0.0353,
+        "H2_infrastructure": 0.5651,
+        "H3_isolated_arson": 0.1998,
+        "H5_agricultural": 0.1998
+      },
+      "origin_specific": {
+        "O08_Texenna": {
+          "H1_natural": 0.0131,
+          "H2_infrastructure": 0.8386,
+          "H3_isolated_arson": 0.0741,
+          "H5_agricultural": 0.0741
+        },
+        "O03_Djemaa_Beni_Habibi": {
+          "H1_natural": 0.018,
+          "H2_infrastructure": 0.5753,
+          "H3_isolated_arson": 0.2034,
+          "H5_agricultural": 0.2034
+        }
+      }
+    },
+    "coordinated_arson_signature": {
+      "indicators_tested": 10,
+      "indicators_met": 0,
+      "verdict": "لم يتحقّق أيّ من المؤشرات العشرة المتوقّعة من عملية إجرامية منسّقة متعدّدة الخلايا. وضعف الاحتمال ليس تبرئة: الأدلة الحاسمة خارج هذه المجموعة بكاملها."
+    },
+    "osint_scope_isolation": {
+      "scope_rule": "Only items whose publication date is verifiably inside or immediately after 24-29 Aug 2026 AND whose subject matter is the Jijel/east-Algeria fires of that window are admitted. Every other item is quarantined.",
+      "verified_in_scope": [
+        {
+          "ref": "OF-01",
+          "body": "Ministry of Interior, Local Government and Transport (Said Sayoud)",
+          "date": "2026-08-27",
+          "claim": "Opened in-depth investigations into the causes of the 'simultaneous outbreak' of fires in several parts of the country",
+          "status": "procedural announcement, not a finding",
+          "verified": "yes - multiply reported"
+        },
+        {
+          "ref": "OF-02",
+          "body": "Ministry of Interior",
+          "date": "2026-08-27",
+          "claim": "193 fires in 13 wilayas in 24 h (147 extinguished, 46 active); widening in Jijel and Bejaia attributed to 'difficult climatic conditions', wind strength and high temperature",
+          "status": "official attribution to weather",
+          "verified": "yes"
+        },
+        {
+          "ref": "OF-03",
+          "body": "Directorate General of Civil Protection (DGPC)",
+          "date": "2026-08-26/27",
+          "claim": "Fires at Ouled Yahia Khedrouche, Texenna (2), Ziama Mansouriah (2), Sidi Maarouf, Chekfa; Mi-26, AT-802 and BE-200 aerial assets committed",
+          "status": "field report",
+          "verified": "yes"
+        },
+        {
+          "ref": "OF-06",
+          "body": "Directorate General of Civil Protection (DGPC)",
+          "date": "2026-08-28T07:00",
+          "claim": "174 fires nationally over 27-28 Aug (110 extinguished, 64 ongoing). By wilaya: Jijel 20, Skikda 14, El Tarf 10, Guelma 6, Annaba 5, Bejaia 4, Boumerdes 2, Tebessa 1, Constantine 1, Mila 1. Within Jijel, 13 fires named by commune: Texenna 2, Ziama Mansouriah 2, El Milia 1, Sidi Maarouf 1, Ouled Yahia Khedrouche 1, Boudria Ben Yadjis 1, Ouled Rabah 1, Selma Ben Ziada 1, Boussif Ouled Askeur 1, Chekfa 2",
+          "status": "NEW - not in baseline report; richest official commune-level list located",
+          "verified": "yes - fetched and date-confirmed",
+          "url": "https://www.aljazairalyoum.dz/أخمدت-110-الحماية-المدنية-تسجل-174-حريقا/"
+        },
+        {
+          "ref": "OF-07",
+          "body": "National Gendarmerie (Direction Generale de la Gendarmerie Nationale)",
+          "date": "2026-08-29",
+          "claim": "Gendarmerie services began in-depth investigations to establish the real causes of the outbreaks and whether they are connected to criminal acts",
+          "status": "NEW - first source tying the GENDARMERIE specifically to this event; procedural, not a finding",
+          "verified": "yes - reported by Al Jazeera 29 Aug 2026",
+          "url": "https://www.aljazeera.net/news/2026/8/29/حرائق-الجزائر-2"
+        },
+        {
+          "ref": "MD-11",
+          "body": "Al Jazeera",
+          "date": "2026-08-29",
+          "claim": "About 80% of Jijel's forest cover damaged; winds reported at 80-100 km/h; severely affected localities named as Tisbilan, Bordj Tahar, Ouled Askeur, Sidi Maarouf; 57 fires across 27 communes in Skikda; >300 ha of fruit trees and beehives lost in Mila",
+          "status": "NEW - media estimate of proportional forest loss, no methodology stated",
+          "verified": "yes - fetched"
+        }
+      ],
+      "quarantined_out_of_scope": [
+        {
+          "ref": "OF-05",
+          "claim": "Pre-trial detention of 7 suspects for arson in Guelma, Constantine, Tipaza, Jijel and Bouira",
+          "actual_date": "2026-07-26",
+          "why_excluded": "Independently re-verified by fetching the source: suspects presented to the prosecutor on 26 July 2026 for fires 'since the end of last week', i.e. late July. Has NO connection to 24-29 August.",
+          "verification_method": "direct fetch of awras.com article, publication date confirmed 26 July 2026"
+        },
+        {
+          "ref": "OF-08",
+          "claim": "Four suspects in pre-trial detention, Constantine",
+          "actual_date": "2026-07-24",
+          "why_excluded": "July fires. Prosecutor's office of Sidi M'Hamed court, Algiers; three separate Constantine incidents (Pine neighbourhood brush, Soummam road vegetation, copper-wire piles on the Constantine-Annaba highway).",
+          "verification_method": "direct fetch of moroccoworldnews.com, publication date 24 July 2026"
+        },
+        {
+          "ref": "OF-09",
+          "claim": "'Dozens detained', 22 suspects arrested including 11 in Tizi Ouzou",
+          "actual_date": "2021-08-16",
+          "why_excluded": "This is the AUGUST 2021 Algerian wildfire episode, a different event five years earlier. It surfaces high in search results for August-2026 queries and is a live contamination risk.",
+          "verification_method": "direct fetch of islam21c.com, publication date confirmed 16 August 2021"
+        },
+        {
+          "ref": "SM-01",
+          "claim": "Video clips 'purportedly showing perpetrators setting the fires'; 'images of burned tyres found inside the forests'; 'a video filmed by an amateur showing a person leaving the vicinity of a forest while flames were burning behind him'",
+          "actual_date": "2026-08-29",
+          "why_excluded": "Appears only in an OPINION column (Asharq Al-Awsat English, Mishary Dhayidi, 29 Aug 2026), which itself frames the material as unverified circulating claims. No official source, no chain of custody, no geolocation, no timestamp verification. Charred tyres are an expected find inside any Mediterranean burn scar because forests are used for informal dumping; their presence is not diagnostic of ignition.",
+          "verification_method": "direct fetch; article confirmed to be Opinion section commentary, not reporting"
+        }
+      ],
+      "negative_findings": [
+        "No forensic origin-and-cause examination result for any 24-29 August ignition has been published by any authority.",
+        "No arrest, detention or judicial referral tied specifically to the 24-29 August Jijel fires appears in open sources as of the reporting date. Every arrest story that could be dated resolves to July 2026 or to August 2021.",
+        "No power-utility statement on grid faults in Jijel during 23-27 August was located. The only located grid item concerns Seraidi (Annaba), where power and gas were cut PRECAUTIONARILY because of fire - an effect, not a cause.",
+        "No Directorate General of Forests (DGF) burned-area figure specific to the August event in Jijel was located; published DGF material relates to the seasonal plan and to national totals up to 20 July 2026."
+      ],
+      "method_note_on_official_social_accounts": "The baseline report excluded social media wholesale. That rule over-reaches in one respect: the DGPC operates verified institutional pages (national and Jijel-level) on which it publishes its own situation reports. Content published by an authority on its own official channel is a Tier-1 primary source, not an unverified third-party claim. Those pages were located but could not be machine-fetched here; they are recorded as an accessible primary source for follow-up rather than used as evidence."
+    }
   }
 }
