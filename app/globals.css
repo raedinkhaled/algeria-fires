@@ -193,6 +193,20 @@
     unicode-bidi: isolate;
   }
 
+  /* هذه اللبنات تحمل تسلسلاً LTR داخل النص، لكن حين تكون هي نفسها خلية أو
+     سطراً مستقلاً في تخطيط RTL يجب أن يلتصق صندوقها بحافة البدء (اليمين)،
+     لا اليسار الذي يفرضه `direction: ltr`. لا أثر لها على الاستخدام السطري،
+     والقاعدة الثانية تُعيد الضبط داخل جزر LTR كأسطح الرسوم. */
+  [dir="rtl"] .numeric,
+  [dir="rtl"] .ltr-embed {
+    text-align: right;
+  }
+
+  [dir="ltr"] .numeric,
+  [dir="ltr"] .ltr-embed {
+    text-align: left;
+  }
+
   /* شريط تمرير رفيع يناسب الكثافة التحريرية */
   * {
     scrollbar-width: thin;

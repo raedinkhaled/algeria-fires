@@ -64,7 +64,7 @@ const fileMeta = [
   { term: "الفترة", value: "23-29.08.2026", mono: true },
   { term: "الرصدات", value: "9,100", mono: true },
   { term: "الخلايا", value: "4,451", mono: true },
-  { term: "المنشأ", value: "12 مرشحاً", mono: true },
+  { term: "المنشأ", value: "12 مرشحاً" },
   { term: "التنسيقات", value: "CSV · JSON · ZIP", mono: true },
 ];
 

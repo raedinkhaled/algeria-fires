@@ -106,13 +106,19 @@ function OriginTooltip({
           {point.night ? " · ليلاً" : ""}
         </dd>
         <dt>قوة الإشعاع</dt>
-        <dd className="numeric text-end text-foreground">{point.frp} MW</dd>
+        <dd className="text-end text-foreground">
+          <span className="numeric">{point.frp} MW</span>
+        </dd>
         <dt>ارتفاع الموقع</dt>
-        <dd className="numeric text-end text-foreground">{point.elevation} m</dd>
+        <dd className="text-end text-foreground">
+          <span className="numeric">{point.elevation} m</span>
+        </dd>
         {point.gap ? (
           <>
             <dt>فجوة المسار</dt>
-            <dd className="numeric text-end text-foreground">{point.gap} km</dd>
+            <dd className="text-end text-foreground">
+              <span className="numeric">{point.gap} km</span>
+            </dd>
           </>
         ) : null}
       </dl>
@@ -254,11 +260,17 @@ function PatchTooltip({
       </p>
       <dl className="mt-1.5 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-muted-foreground">
         <dt>المساحة</dt>
-        <dd className="numeric text-end text-foreground">{patch.area.toFixed(2)} km²</dd>
+        <dd className="text-end text-foreground">
+          <span className="numeric">{patch.area.toFixed(2)} km²</span>
+        </dd>
         <dt>الامتداد الأقصى</dt>
-        <dd className="numeric text-end text-foreground">{patch.extent} km</dd>
+        <dd className="text-end text-foreground">
+          <span className="numeric">{patch.extent} km</span>
+        </dd>
         <dt>dNBR المتوسط</dt>
-        <dd className="numeric text-end text-foreground">{patch.dnbr}</dd>
+        <dd className="text-end text-foreground">
+          <span className="numeric">{patch.dnbr}</span>
+        </dd>
       </dl>
     </div>
   );
