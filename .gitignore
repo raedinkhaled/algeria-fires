@@ -40,12 +40,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# local workspace tooling (AGENTS.md is the deliberate exception)
-/.agents/
-/.claude/
+# local workspace tooling — AI context files (AGENTS.md, CLAUDE.md, skills) are
+# deliberately versioned so the repo carries everything an agent needs.
 /.codex/
-/skills-lock.json
-/CLAUDE.md
+.claude/settings.local.json
 
 # local Python environments and caches
 /.venv/
@@ -54,15 +52,9 @@ next-env.d.ts
 *.py[cod]
 .pytest_cache/
 
-# investigation inputs and heavyweight local intermediates
-/Fires/data/raw/
-/Fires/satellite/*.npy
-/Fires/satellite/S2_pre_*_truecolor.png
-/Fires/satellite/S2_pre_*_swir_falsecolor.png
-/Fires/satellite/S2_post_*_truecolor.png
-/Fires/satellite/S2_post_*_swir_falsecolor.png
-/Fires/report/*.html
-/Fires/report/report_ar.pdf
+# investigation workspace — kept local, not published to this repo.
+# The validated release inputs it produces live under public/generated/ and public/maplibre/.
+/Fires/
 
 # generated website artifacts are validated release inputs and stay versioned
 /test-results/
