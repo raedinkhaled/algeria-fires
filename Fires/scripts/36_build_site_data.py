@@ -673,6 +673,12 @@ def publish_media_and_map_config() -> None:
     severity_target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(severity_source, severity_target)
 
+    comparison_source = FIRES / "maps" / "MAP6_sentinel2_before_after.png"
+    comparison_target = GENERATED / "media" / "sentinel-comparison.png"
+    if not comparison_source.is_file():
+        fail(f"ملف النشر مفقود: {comparison_source.relative_to(ROOT)}")
+    shutil.copyfile(comparison_source, comparison_target)
+
     metadata = strict_json(FIRES / "satellite" / "dnbr_meta.json")
     dump_json(
         MAPLIBRE / "map-config.json",

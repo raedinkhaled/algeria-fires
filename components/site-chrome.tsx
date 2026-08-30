@@ -32,50 +32,39 @@ export function SiteChrome({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="sticky top-0 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
-        <div className="border-b bg-muted/55">
-          <div className="mx-auto flex min-h-8 max-w-7xl items-center justify-between gap-4 px-4 text-xs text-muted-foreground sm:px-6 lg:px-8">
-            <p>تحليل مستقل · المراجعة 4 · بيانات مفتوحة</p>
-            <p className="hidden sm:block">
-              آخر نافذة رصد: <span className="numeric">22–29.08.2026</span>
-            </p>
-          </div>
-        </div>
-
+      <header className="sticky top-0 z-40 border-b bg-background">
         <nav
           aria-label="التنقل الرئيسي"
-          className="mx-auto flex min-h-16 max-w-7xl items-center gap-3 px-4 sm:px-6 lg:px-8"
+          className="mx-auto flex min-h-18 max-w-7xl items-stretch gap-4 px-4 sm:px-6 lg:px-8"
         >
           <Link
             href={homeSection.href}
             className="flex shrink-0 items-center gap-3 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
           >
-            <SiteMark size={34} />
-            <span className="flex flex-col leading-none">
+            <SiteMark size={32} />
+            <span className="flex flex-col gap-1 leading-none">
               <span className="text-sm font-semibold">حرائق جيجل</span>
-              <span className="mt-1 text-xs text-muted-foreground">
-                ملف البيانات المفتوحة
+              <span className="text-xs text-muted-foreground">
+                سجل التحقيق المفتوح
               </span>
             </span>
           </Link>
 
-          <div className="me-auto hidden items-center gap-1 lg:flex">
+          <div className="me-auto hidden items-stretch lg:flex">
             {siteSections.map((section) => {
               const active = isActive(pathname, section.href);
               return (
-                <Button
+                <Link
                   key={section.href}
-                  asChild
-                  variant={active ? "secondary" : "ghost"}
-                  size="sm"
+                  href={section.href}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "flex items-center border-b-2 border-transparent px-3 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                    active && "border-foreground font-medium text-foreground",
+                  )}
                 >
-                  <Link
-                    href={section.href}
-                    aria-current={active ? "page" : undefined}
-                  >
-                    {section.label}
-                  </Link>
-                </Button>
+                  {section.label}
+                </Link>
               );
             })}
           </div>
@@ -86,7 +75,7 @@ export function SiteChrome({ children }: { children: ReactNode }) {
             <Sheet>
               <SheetTrigger asChild>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="icon"
                   className="lg:hidden"
                   aria-label="فتح قائمة التنقل"
@@ -97,11 +86,11 @@ export function SiteChrome({ children }: { children: ReactNode }) {
               <SheetContent side="right" className="w-full sm:max-w-sm">
                 <SheetHeader className="border-b">
                   <SheetTitle className="flex items-center gap-3">
-                    <SiteMark size={30} />
+                    <SiteMark size={28} />
                     حرائق جيجل
                   </SheetTitle>
                   <SheetDescription>
-                    أقسام التحقيق والبيانات والمنهجية
+                    ملف توثيقي مستقل لحرائق أوت 2026
                   </SheetDescription>
                 </SheetHeader>
 
@@ -114,8 +103,8 @@ export function SiteChrome({ children }: { children: ReactNode }) {
                           href={section.href}
                           aria-current={active ? "page" : undefined}
                           className={cn(
-                            "flex items-center gap-4 border-b py-4 text-base transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-ring",
-                            active && "text-primary",
+                            "flex items-center gap-4 border-b py-4 text-base text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring",
+                            active && "font-medium text-foreground",
                           )}
                         >
                           <span className="numeric text-xs text-muted-foreground">

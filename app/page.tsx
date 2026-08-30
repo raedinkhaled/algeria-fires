@@ -1,225 +1,275 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeftIcon, CircleDotIcon } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { siteSections } from "@/lib/site-navigation";
 
 const keyFigures = [
+  { value: "9,100", label: "رصداً حرارياً صالحاً للتحليل" },
+  { value: "4,451", label: "خلية شبكية بدقة 375 م" },
+  { value: "12", label: "مرشحاً لمنشأ مستقل" },
+  { value: "17", label: "ندبة تتجاوز 100 هكتار" },
+];
+
+const timeline = [
   {
-    value: "9,100",
-    metric: "رصد حراري",
-    note: "VIIRS وMODIS",
+    date: "23 أوت",
+    title: "أقدم رصد في النطاق الأوسع",
+    body: "ظهر عند 01:35 محلياً في ولاية سطيف، خارج حدود جيجل.",
   },
   {
-    value: "4,451",
-    metric: "خلية 375 م",
-    note: "أول ظهور في الشبكة",
+    date: "24 أوت",
+    title: "أقدم رصد داخل جيجل",
+    body: "الساعة 14:53 بالجمعة بني حبيبي؛ رصد فضائي، لا نقطة اشتعال مؤكدة.",
   },
   {
-    value: "12",
-    metric: "منشأ مرشّح",
-    note: "6 داخل ولاية جيجل",
+    date: "26–27 أوت",
+    title: "ذروة الحدث",
+    body: "تزامن انفجار النشاط الحراري مع حرارة بلغت 43°م ورطوبة هبطت إلى 12.5٪.",
   },
   {
-    value: "17",
-    metric: "ندبة ≥100 هكتار",
-    note: "من Sentinel-2",
+    date: "28–29 أوت",
+    title: "توثيق الندبات وفتح التحقيقات",
+    body: "أظهرت Sentinel-2 الندبات المنفصلة، وأعلن الدرك الوطني مباشرة التحقيق في الأسباب.",
   },
 ];
 
-const evidenceLines = [
+const findings = [
   {
-    title: "الرصد لا يساوي لحظة الاشتعال",
-    body: "تعطي الأقمار نقطة الكشف الأولى، بينما قد يسبقها الاشتعال بساعات تحددها فجوات المرور.",
+    number: "01",
+    title: "الحدث لم يبدأ من بؤرة واحدة",
+    body: "تتقارب ثلاثة خطوط مستقلة: أول رصد حراري لكل خلية، فجوات غير محترقة بين المسارات، و17 ندبة منفصلة في Sentinel-2.",
+    confidence: "الثقة: عالية",
+    sources: "DS-01–05 · OF-06",
   },
   {
-    title: "السبب البشري أرجح من الطبيعي",
-    body: "لا تدعم شاشة البرق تفسيراً طبيعياً للبؤر الرئيسية، لكن ذلك لا يحدّد الفاعل أو القصد.",
+    number: "02",
+    title: "الطقس يفسّر سرعة الاتساع",
+    body: "بلغت موجة السيروكو ذروتها مع حرارة وجفاف ورياح شديدة. هذا يشرح شدة الانتشار، لكنه لا يحدد مصدر الشرارة الأولى.",
+    confidence: "الثقة: عالية",
+    sources: "DS-07 · DS-08",
   },
   {
-    title: "التنسيق غير قابل للحسم من هذه البيانات",
-    body: "اختبار التزامن ضعيف القوة؛ النتيجة العلمية هي حدّ القياس، لا إثبات التنسيق ولا نفيه.",
+    number: "03",
+    title: "السبب البشري العام أرجح من البرق",
+    body: "لم يظهر برق أو هطول يدعم تفسيراً طبيعياً لبؤر جيجل الرئيسية. الاستنتاج بالاستبعاد يبقى أضعف من فحص موقع المنشأ.",
+    confidence: "الثقة: متوسطة",
+    sources: "DS-07 · DS-08 · ME-04",
+  },
+  {
+    number: "04",
+    title: "القصد والتنسيق لا يمكن حسمهما",
+    body: "لا تحمل البيانات الفضائية خاصية تفصل بين الإهمال والحادث والفعل المتعمد، كما أن فجوات مرور الأقمار تجعل التزامن المطلوب غير قابل للقياس بدقة كافية.",
+    confidence: "الثقة: عالية في نفي القدرة على الحسم",
+    sources: "الفصول 25–27 · OF-07",
   },
 ];
 
 export default function Home() {
   return (
     <>
-      <section className="border-b">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-12 lg:gap-12 lg:px-8 lg:py-20">
-          <div className="flex flex-col justify-between gap-10 lg:col-span-7">
-            <div>
-              <div className="mb-6 flex flex-wrap items-center gap-3">
-                <Badge variant="outline">تحقيق بيانات مفتوحة</Badge>
-                <span className="text-sm text-muted-foreground">أوت 2026</span>
-                <span className="ltr-embed text-sm text-muted-foreground">
-                  36.72°N · 5.95°E
-                </span>
-              </div>
+      <section className="mx-auto max-w-7xl px-4 pb-12 pt-10 sm:px-6 sm:pb-16 sm:pt-14 lg:px-8 lg:pb-20">
+        <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
+          <aside className="text-sm leading-6 text-muted-foreground lg:col-span-3">
+            <p className="font-medium text-foreground">ملف 01 / المراجعة 4</p>
+            <p className="mt-2">ولاية جيجل، الجزائر</p>
+            <p className="numeric mt-1">22–29.08.2026</p>
+            <p className="ltr-embed mt-1">36.72°N · 5.95°E</p>
+          </aside>
 
-              <h1 className="max-w-4xl text-5xl font-semibold leading-tight tracking-tight sm:text-6xl lg:text-7xl">
-                حرائق جيجل،
-                <span className="block text-primary">
-                  كما رصدتها الأقمار.
-                </span>
-              </h1>
-
-              <p className="mt-7 max-w-2xl text-lg leading-8 text-muted-foreground sm:text-xl sm:leading-9">
-                إعادة بناء قابلة للمراجعة لأيام النار بين 22 و29 أوت: أين ظهر
-                النشاط أولاً، كيف انتشر، وما الذي تستطيع الأدلة قوله — وما لا
-                تستطيع قوله.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              <Button asChild size="lg">
-                <Link href="/investigation">
-                  اقرأ التحقيق
-                  <ArrowLeftIcon data-icon="inline-end" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link href="/methodology">راجع طريقة العمل</Link>
-              </Button>
+          <div className="lg:col-span-8 lg:col-start-5">
+            <p className="text-sm font-medium">إعادة بناء جنائي-جغرافي</p>
+            <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+              ماذا تقول بيانات الأقمار عن حرائق جيجل؟
+            </h1>
+            <p className="mt-7 max-w-3xl text-lg leading-8 text-muted-foreground sm:text-xl sm:leading-9">
+              سجل قابل للمراجعة لأيام 22–29 أوت 2026: أين ظهر النشاط أولاً،
+              كيف اتسع، وأين تنتهي قدرة البيانات المفتوحة على التفسير.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm">
+              <Link
+                href="/investigation"
+                className="font-medium underline decoration-border underline-offset-8 hover:decoration-foreground"
+              >
+                ابدأ بمسار الأدلة ←
+              </Link>
+              <Link
+                href="/report"
+                className="text-muted-foreground underline decoration-border underline-offset-8 hover:text-foreground hover:decoration-foreground"
+              >
+                اقرأ التقرير الكامل
+              </Link>
             </div>
           </div>
+        </div>
 
-          <figure className="lg:col-span-5">
-            <div className="overflow-hidden rounded-lg border bg-muted">
+        <Separator className="my-10 sm:my-14" />
+
+        <dl className="grid sm:grid-cols-2 lg:grid-cols-4">
+          {keyFigures.map((figure, index) => (
+            <div
+              key={figure.label}
+              className="border-b py-6 sm:px-6 sm:odd:border-s lg:border-b-0 lg:border-s lg:first:border-s-0 lg:first:ps-0"
+            >
+              <dt className="max-w-48 text-sm leading-6 text-muted-foreground">
+                {figure.label}
+              </dt>
+              <dd className="numeric mt-3 text-4xl font-semibold tracking-tight">
+                {figure.value}
+              </dd>
+              <p className="numeric mt-3 text-xs text-muted-foreground">
+                {String(index + 1).padStart(2, "0")} / 04
+              </p>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      <section className="border-y">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-12 lg:px-8 lg:py-20">
+          <div className="lg:col-span-3">
+            <p className="text-sm font-medium">الخلاصة التنفيذية</p>
+          </div>
+          <div className="lg:col-span-8 lg:col-start-5">
+            <h2 className="max-w-3xl text-3xl font-semibold leading-snug tracking-tight sm:text-4xl">
+              تعددت بؤر المنشأ، وكانت الظروف الجوية محرّك الاتساع. أما القصد
+              الجنائي فلا تثبته هذه البيانات.
+            </h2>
+            <p className="mt-7 max-w-3xl text-lg leading-9 text-muted-foreground">
+              تشير المعطيات بدرجة ثقة عالية إلى عدة بؤر مستقلة مكانياً، وترجّح
+              بدرجة متوسطة سبباً بشرياً بالمعنى العام بعد أن أصبح البرق تفسيراً
+              غير مرجّح. لكنها لا تفصل بين الإهمال والحادث والفعل المتعمّد؛ ذلك
+              يحتاج أدلة ميدانية لا تلتقطها الأقمار.
+            </p>
+            <blockquote className="mt-9 border-s-2 ps-6 text-base leading-8">
+              ضعف الاحتمال ليس تبرئة، وانعدام القدرة على الكشف ليس دليل غياب.
+              التحقيق الرسمي إجراء مختص، وليس نتيجة يمكن استعارتها كدليل.
+            </blockquote>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
+        <div className="grid gap-8 lg:grid-cols-12">
+          <div className="lg:col-span-3">
+            <p className="text-sm font-medium">الدليل الانعكاسي</p>
+            <p className="mt-3 max-w-xs text-sm leading-7 text-muted-foreground">
+              مقارنة Sentinel-2 قبل الحدث وبعده، مع خريطة dNBR التي تفصل بين
+              الغطاء السليم وشدة الاحتراق.
+            </p>
+          </div>
+          <figure className="lg:col-span-9">
+            <div className="overflow-hidden border bg-muted">
               <Image
-                src="/generated/media/burn-severity.png"
-                alt="خريطة شدة الاحتراق dNBR المستخرجة من صور Sentinel-2 بعد حرائق جيجل"
-                width={1484}
-                height={810}
+                src="/generated/media/sentinel-comparison.png"
+                alt="مقارنة صور Sentinel-2 قبل حرائق جيجل وبعدها مع خريطة شدة الاحتراق dNBR"
+                width={2073}
+                height={2561}
                 priority
-                className="aspect-[4/5] w-full object-cover lg:aspect-[5/6]"
+                className="h-auto w-full"
               />
             </div>
-            <figcaption className="mt-3 flex items-start justify-between gap-4 text-xs leading-5 text-muted-foreground">
-              <span>شدة الاحتراق dNBR · Sentinel-2 · 28 أوت 2026</span>
-              <span className="ltr-embed shrink-0">ESA / Copernicus</span>
+            <figcaption className="mt-4 flex flex-wrap justify-between gap-3 text-xs leading-5 text-muted-foreground">
+              <span>الشكل 01 — مشاهد 18 و28 أوت وخريطة فرق الاحتراق</span>
+              <span className="ltr-embed">Sentinel-2 / DS-05</span>
             </figcaption>
           </figure>
         </div>
       </section>
 
-      <section aria-labelledby="figures-title">
-        <h2 id="figures-title" className="sr-only">
-          الأرقام المرجعية
-        </h2>
-        <div className="mx-auto grid max-w-7xl border-b sm:grid-cols-2 lg:grid-cols-4">
-          {keyFigures.map((figure) => (
-            <div
-              key={figure.metric}
-              className="border-b px-4 py-7 last:border-b-0 sm:px-6 sm:odd:border-s lg:border-b-0 lg:border-s lg:first:border-s-0 lg:px-8"
-            >
-              <p className="numeric text-4xl font-semibold tracking-tight">
-                {figure.value}
+      <section className="border-y bg-muted/35">
+        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
+          <div className="grid gap-8 lg:grid-cols-12">
+            <div className="lg:col-span-3">
+              <p className="text-sm font-medium">التسلسل المختصر</p>
+              <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                تاريخ الرصد لا يساوي تاريخ الاشتعال؛ مرور الأقمار متقطع.
               </p>
-              <p className="mt-2 font-medium">{figure.metric}</p>
-              <p className="mt-1 text-sm text-muted-foreground">{figure.note}</p>
             </div>
-          ))}
-        </div>
-        <p className="mx-auto max-w-7xl px-4 py-3 text-xs text-muted-foreground sm:px-6 lg:px-8">
-          قيم مرجعية ثابتة؛ يتوقف إعداد بيانات الموقع تلقائياً إذا اختلفت عنها.
-        </p>
-      </section>
-
-      <section className="mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:px-6 lg:grid-cols-12 lg:px-8 lg:py-24">
-        <div className="lg:col-span-4">
-          <Badge variant="secondary">الخلاصة المنهجية</Badge>
-          <h2 className="mt-5 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
-            أقوى نتيجة ليست اتهاماً؛ بل حدود واضحة لما يمكن قياسه.
-          </h2>
-          <p className="mt-5 text-base leading-8 text-muted-foreground">
-            يفرّق الملف بين الرصد والاستنتاج، وبين السبب البشري العام والقصد
-            الجنائي. كل خطوة حساسة مرتبطة بمصدر وقيد ودرجة ثقة.
-          </p>
-        </div>
-
-        <div className="lg:col-span-7 lg:col-start-6">
-          <Separator />
-          {evidenceLines.map((line, index) => (
-            <div
-              key={line.title}
-              className="grid gap-3 border-b py-6 sm:grid-cols-[3rem_1fr]"
-            >
-              <span className="numeric text-sm text-primary">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <div>
-                <h3 className="text-lg font-semibold">{line.title}</h3>
-                <p className="mt-2 max-w-2xl leading-7 text-muted-foreground">
-                  {line.body}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="border-y bg-muted/45">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-          <div className="grid gap-8 md:grid-cols-12">
-            <div className="md:col-span-4">
-              <p className="text-sm font-medium text-primary">فهرس الملف</p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight">
-                ستة مسارات، من السرد إلى المصدر.
-              </h2>
-            </div>
-            <p className="max-w-2xl leading-8 text-muted-foreground md:col-span-7 md:col-start-6">
-              ابدأ من التحقيق لفهم التسلسل، ثم انتقل إلى الخريطة والبيانات
-              والمنهجية لاختبار الاستنتاجات بنفسك.
-            </p>
+            <ol className="lg:col-span-8 lg:col-start-5">
+              {timeline.map((event) => (
+                <li
+                  key={event.date}
+                  className="grid gap-3 border-t py-6 sm:grid-cols-4 sm:gap-6"
+                >
+                  <time className="numeric text-sm font-medium">{event.date}</time>
+                  <div className="sm:col-span-3">
+                    <h3 className="font-semibold">{event.title}</h3>
+                    <p className="mt-2 leading-7 text-muted-foreground">
+                      {event.body}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ol>
           </div>
+        </div>
+      </section>
 
-          <div className="mt-12 grid border-t md:grid-cols-2">
-            {siteSections.map((section, index) => (
-              <Link
-                key={section.href}
-                href={section.href}
-                className="group grid grid-cols-[3rem_1fr_auto] gap-3 border-b py-6 transition-colors hover:text-primary md:odd:border-s md:odd:ps-6 md:even:pe-6"
+      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
+        <div className="grid gap-8 lg:grid-cols-12">
+          <div className="lg:col-span-3">
+            <p className="text-sm font-medium">النتائج وحدودها</p>
+          </div>
+          <div className="lg:col-span-9">
+            {findings.map((finding) => (
+              <article
+                key={finding.number}
+                className="grid gap-4 border-t py-7 md:grid-cols-12 md:gap-6"
               >
-                <span className="numeric pt-1 text-xs text-muted-foreground">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <span>
-                  <span className="block text-lg font-semibold">
-                    {section.title}
-                  </span>
-                  <span className="mt-2 block text-sm leading-6 text-muted-foreground">
-                    {section.summary}
-                  </span>
-                </span>
-                <ArrowLeftIcon className="mt-1 text-muted-foreground transition-transform group-hover:-translate-x-1" />
-              </Link>
+                <p className="numeric text-xs text-muted-foreground md:col-span-1">
+                  {finding.number}
+                </p>
+                <h3 className="text-xl font-semibold leading-8 md:col-span-4">
+                  {finding.title}
+                </h3>
+                <div className="md:col-span-7">
+                  <p className="leading-8 text-muted-foreground">{finding.body}</p>
+                  <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs">
+                    <span>{finding.confidence}</span>
+                    <Link
+                      href="/sources"
+                      className="ltr-embed text-muted-foreground underline underline-offset-4 hover:text-foreground"
+                    >
+                      {finding.sources}
+                    </Link>
+                  </div>
+                </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="bg-primary text-primary-foreground">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-12 lg:px-8 lg:py-16">
-          <CircleDotIcon className="size-8 md:col-span-1" aria-hidden="true" />
-          <div className="md:col-span-8">
-            <h2 className="text-2xl font-semibold">نطاق هذا العمل</h2>
-            <p className="mt-4 max-w-3xl text-base leading-8 text-primary-foreground/85">
-              تحليل توثيقي مستقل يعتمد بيانات مفتوحة ومتاحة للتحقق. لا يحدّد
-              مسؤولية جنائية ولا يثبت إضراماً متعمداً، ولا يمثّل تحقيقاً رسمياً
-              أو بديلاً عنه.
-            </p>
+      <section className="border-t">
+        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
+          <div className="grid gap-8 lg:grid-cols-12">
+            <div className="lg:col-span-3">
+              <p className="text-sm font-medium">فهرس الملف</p>
+            </div>
+            <nav aria-label="أقسام الملف" className="lg:col-span-9">
+              {siteSections.map((section, index) => (
+                <Link
+                  key={section.href}
+                  href={section.href}
+                  className="group grid gap-3 border-t py-5 sm:grid-cols-12 sm:gap-6"
+                >
+                  <span className="numeric text-xs text-muted-foreground sm:col-span-1">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <span className="font-semibold underline-offset-4 group-hover:underline sm:col-span-3">
+                    {section.title}
+                  </span>
+                  <span className="text-sm leading-7 text-muted-foreground sm:col-span-7">
+                    {section.summary}
+                  </span>
+                  <span aria-hidden="true" className="text-end sm:col-span-1">
+                    ←
+                  </span>
+                </Link>
+              ))}
+            </nav>
           </div>
-          <Button
-            asChild
-            variant="secondary"
-            className="self-start md:col-span-3 md:justify-self-end"
-          >
-            <Link href="/sources">افتح سجل المصادر</Link>
-          </Button>
         </div>
       </section>
     </>
