@@ -1,6 +1,10 @@
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import { EdgePanel } from "@/components/editorial";
+import { StoryBreadcrumb } from "@/components/story-breadcrumb";
 
+/**
+ * رأس قسم لم يُبنَ بعد: يتبع تخطيط صفحات السرد (هامش + عمود قراءة) بهوية
+ * تحريرية، بلا شارات ولا عناوين تسويقية.
+ */
 export function PlaceholderPage({
   eyebrow,
   title,
@@ -13,26 +17,30 @@ export function PlaceholderPage({
   note?: string;
 }) {
   return (
-    <article className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
-      <header className="grid gap-8 md:grid-cols-12">
-        <div className="md:col-span-3">
-          <Badge variant="outline">{eyebrow}</Badge>
-        </div>
-        <div className="md:col-span-8">
-          <h1 className="max-w-4xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+    <article className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+      <StoryBreadcrumb current={eyebrow} />
+
+      <div className="mt-10 grid gap-8 lg:grid-cols-[210px_1fr] lg:gap-14">
+        <aside className="order-2 border-t pt-6 lg:order-1 lg:border-t-0 lg:border-e lg:pe-8 lg:pt-0">
+          <p className="text-[11px] font-medium text-muted-foreground">القسم</p>
+          <p className="mt-1 text-sm font-medium">{eyebrow}</p>
+          <p className="mt-4 text-[11px] font-medium text-muted-foreground">الحالة</p>
+          <p className="mt-1 text-sm">قيد الإعداد · المراجعة 4</p>
+        </aside>
+
+        <div className="order-1 min-w-0 lg:order-2">
+          <h1 className="max-w-2xl text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
             {title}
           </h1>
-          <p className="mt-6 max-w-3xl text-lg leading-8 text-muted-foreground">
+          <p className="mt-6 max-w-2xl text-lg leading-9 text-muted-foreground">
             {description}
           </p>
+
+          <EdgePanel className="mt-10" label="ماذا سيعرض هذا القسم">
+            <p className="leading-8 text-muted-foreground">{note}</p>
+          </EdgePanel>
         </div>
-      </header>
-
-      <Separator className="my-10 lg:my-14" />
-
-      <p className="max-w-2xl text-sm leading-7 text-muted-foreground md:me-auto md:w-8/12">
-        {note}
-      </p>
+      </div>
     </article>
   );
 }
