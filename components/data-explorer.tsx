@@ -122,9 +122,13 @@ function DownloadLink({ artifact, bundled = false }: { artifact: DownloadArtifac
         </span>
       </span>
       <span className="flex items-center gap-2 self-center text-xs text-muted-foreground">
-        <span className="numeric">
-          {artifact.rows ? `${formatNumber(artifact.rows)} صف` : formatBytes(artifact.bytes)}
-        </span>
+        {artifact.rows ? (
+          <span>
+            <span className="numeric">{formatNumber(artifact.rows)}</span> صف
+          </span>
+        ) : (
+          <span className="numeric">{formatBytes(artifact.bytes)}</span>
+        )}
         <DownloadIcon aria-hidden="true" />
       </span>
       {bundled ? (
@@ -308,48 +312,46 @@ export function DataExplorer({
             </p>
           </div>
 
-          <div className="overflow-x-auto border-x border-b">
-            <Table className="min-w-[820px]">
-              <TableHeader className="bg-muted/50">
-                <TableRow>
-                  <SortableHead label="المعرف" active={originSort === "origin_id"} descending={originDescending} onClick={() => sortOrigins("origin_id")} />
-                  <SortableHead label="أول رصد" active={originSort === "first_local"} descending={originDescending} onClick={() => sortOrigins("first_local")} />
-                  <TableHead>الموضع</TableHead>
-                  <SortableHead label="FRP" active={originSort === "frp_mw"} descending={originDescending} onClick={() => sortOrigins("frp_mw")} />
-                  <SortableHead label="الارتفاع" active={originSort === "elevation_m"} descending={originDescending} onClick={() => sortOrigins("elevation_m")} />
-                  <SortableHead label="فجوة المسار" active={originSort === "largest_unburnt_gap_km"} descending={originDescending} onClick={() => sortOrigins("largest_unburnt_gap_km")} />
-                  <TableHead>القمر</TableHead>
+          <Table className="min-w-[820px] border-x border-b">
+            <TableHeader className="bg-muted/50">
+              <TableRow>
+                <SortableHead label="المعرف" active={originSort === "origin_id"} descending={originDescending} onClick={() => sortOrigins("origin_id")} />
+                <SortableHead label="أول رصد" active={originSort === "first_local"} descending={originDescending} onClick={() => sortOrigins("first_local")} />
+                <TableHead>الموضع</TableHead>
+                <SortableHead label="FRP" active={originSort === "frp_mw"} descending={originDescending} onClick={() => sortOrigins("frp_mw")} />
+                <SortableHead label="الارتفاع" active={originSort === "elevation_m"} descending={originDescending} onClick={() => sortOrigins("elevation_m")} />
+                <SortableHead label="فجوة المسار" active={originSort === "largest_unburnt_gap_km"} descending={originDescending} onClick={() => sortOrigins("largest_unburnt_gap_km")} />
+                <TableHead>القمر</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredOrigins.map((origin) => (
+                <TableRow key={origin.origin_id}>
+                  <TableCell className="numeric text-xs font-medium">{origin.origin_id}</TableCell>
+                  <TableCell className="text-xs">
+                    <span className="numeric">{localDate(origin.first_local)}</span>
+                    {dayNightLabel(origin.daynight) ? (
+                      <span className="mt-0.5 block text-[11px] text-muted-foreground">
+                        {dayNightLabel(origin.daynight)}
+                      </span>
+                    ) : null}
+                  </TableCell>
+                  <TableCell>
+                    <span className="block text-xs">{origin.locality || origin.wilaya}</span>
+                    <span className="numeric mt-1 block text-[11px] text-muted-foreground">{origin.lat}°N · {origin.lon}°E</span>
+                  </TableCell>
+                  <TableCell className="numeric text-xs">{formatNumber(number(origin.frp_mw), 2)} MW</TableCell>
+                  <TableCell className="numeric text-xs">{formatNumber(number(origin.elevation_m))} m</TableCell>
+                  <TableCell className="numeric text-xs">
+                    {origin.largest_unburnt_gap_km
+                      ? `${formatNumber(number(origin.largest_unburnt_gap_km), 2)} km`
+                      : "—"}
+                  </TableCell>
+                  <TableCell className="ltr-embed text-xs text-muted-foreground">{origin.satellite}</TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredOrigins.map((origin) => (
-                  <TableRow key={origin.origin_id}>
-                    <TableCell className="numeric text-xs font-medium">{origin.origin_id}</TableCell>
-                    <TableCell className="text-xs">
-                      <span className="numeric">{localDate(origin.first_local)}</span>
-                      {dayNightLabel(origin.daynight) ? (
-                        <span className="mt-0.5 block text-[11px] text-muted-foreground">
-                          {dayNightLabel(origin.daynight)}
-                        </span>
-                      ) : null}
-                    </TableCell>
-                    <TableCell>
-                      <span className="block text-xs">{origin.locality || origin.wilaya}</span>
-                      <span className="numeric mt-1 block text-[11px] text-muted-foreground">{origin.lat}°N · {origin.lon}°E</span>
-                    </TableCell>
-                    <TableCell className="numeric text-xs">{formatNumber(number(origin.frp_mw), 2)} MW</TableCell>
-                    <TableCell className="numeric text-xs">{formatNumber(number(origin.elevation_m))} m</TableCell>
-                    <TableCell className="numeric text-xs">
-                      {origin.largest_unburnt_gap_km
-                        ? `${formatNumber(number(origin.largest_unburnt_gap_km), 2)} km`
-                        : "—"}
-                    </TableCell>
-                    <TableCell className="ltr-embed text-xs text-muted-foreground">{origin.satellite}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+              ))}
+            </TableBody>
+          </Table>
           <p className="mt-3 max-w-2xl text-[11px] leading-6 text-muted-foreground">
             فجوة المسار أطول امتداد غير محترق بين الموقع وأقرب حريق سابق. القيمتان
             الأوليان (O00 وO01) أقدم بؤرتين في الأرشيف، فلا رصد سابق يقاس عليه.
@@ -396,36 +398,34 @@ export function DataExplorer({
             </p>
           </div>
 
-          <div className="overflow-x-auto border-x border-b">
-            <Table className="min-w-[720px]">
-              <TableHeader className="bg-muted/50">
-                <TableRow>
-                  <SortableHead label="المعرف" active={patchSort === "patch_id"} descending={patchDescending} onClick={() => sortPatches("patch_id")} />
-                  <SortableHead label="المساحة" active={patchSort === "area_km2"} descending={patchDescending} onClick={() => sortPatches("area_km2")} />
-                  <TableHead>الموقع</TableHead>
-                  <SortableHead label="أول رصد" active={patchSort === "first_det_local"} descending={patchDescending} onClick={() => sortPatches("first_det_local")} />
-                  <SortableHead label="الامتداد" active={patchSort === "max_extent_km"} descending={patchDescending} onClick={() => sortPatches("max_extent_km")} />
-                  <SortableHead label="رصدات داخلها" active={patchSort === "n_detections_inside"} descending={patchDescending} onClick={() => sortPatches("n_detections_inside")} />
-                  <SortableHead label="dNBR" active={patchSort === "mean_dnbr"} descending={patchDescending} onClick={() => sortPatches("mean_dnbr")} />
+          <Table className="min-w-[720px] border-x border-b">
+            <TableHeader className="bg-muted/50">
+              <TableRow>
+                <SortableHead label="المعرف" active={patchSort === "patch_id"} descending={patchDescending} onClick={() => sortPatches("patch_id")} />
+                <SortableHead label="المساحة" active={patchSort === "area_km2"} descending={patchDescending} onClick={() => sortPatches("area_km2")} />
+                <TableHead>الموقع</TableHead>
+                <SortableHead label="أول رصد" active={patchSort === "first_det_local"} descending={patchDescending} onClick={() => sortPatches("first_det_local")} />
+                <SortableHead label="الامتداد" active={patchSort === "max_extent_km"} descending={patchDescending} onClick={() => sortPatches("max_extent_km")} />
+                <SortableHead label="رصدات داخلها" active={patchSort === "n_detections_inside"} descending={patchDescending} onClick={() => sortPatches("n_detections_inside")} />
+                <SortableHead label="dNBR" active={patchSort === "mean_dnbr"} descending={patchDescending} onClick={() => sortPatches("mean_dnbr")} />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredPatches.map((patch) => (
+                <TableRow key={patch.patch_id}>
+                  <TableCell className="numeric text-xs font-medium">{patch.patch_id}</TableCell>
+                  <TableCell className="numeric text-xs">{formatNumber(number(patch.area_km2), 2)} km²</TableCell>
+                  <TableCell className="text-xs text-muted-foreground">
+                    {patch.centroid_in_jijel === "True" ? "داخل جيجل" : "خارج جيجل"}
+                  </TableCell>
+                  <TableCell className="numeric text-xs">{localDate(patch.first_det_local)}</TableCell>
+                  <TableCell className="numeric text-xs">{formatNumber(number(patch.max_extent_km), 2)} km</TableCell>
+                  <TableCell className="numeric text-xs">{formatNumber(number(patch.n_detections_inside))}</TableCell>
+                  <TableCell className="numeric text-xs">{formatNumber(number(patch.mean_dnbr), 3)}</TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredPatches.map((patch) => (
-                  <TableRow key={patch.patch_id}>
-                    <TableCell className="numeric text-xs font-medium">{patch.patch_id}</TableCell>
-                    <TableCell className="numeric text-xs">{formatNumber(number(patch.area_km2), 2)} km²</TableCell>
-                    <TableCell className="text-xs text-muted-foreground">
-                      {patch.centroid_in_jijel === "True" ? "داخل جيجل" : "خارج جيجل"}
-                    </TableCell>
-                    <TableCell className="numeric text-xs">{localDate(patch.first_det_local)}</TableCell>
-                    <TableCell className="numeric text-xs">{formatNumber(number(patch.max_extent_km), 2)} km</TableCell>
-                    <TableCell className="numeric text-xs">{formatNumber(number(patch.n_detections_inside))}</TableCell>
-                    <TableCell className="numeric text-xs">{formatNumber(number(patch.mean_dnbr), 3)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+              ))}
+            </TableBody>
+          </Table>
         </section>
       </Reveal>
 

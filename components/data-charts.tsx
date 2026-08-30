@@ -91,14 +91,18 @@ function OriginTooltip({
   if (!active || !payload?.length) return null;
   const point = payload[0].payload;
   return (
-    <div className="rounded-lg border border-border/50 bg-background px-2.5 py-2 text-xs shadow-xl">
-      <p className="ltr-embed font-medium">
-        {point.origin_id} · {point.place}
+    <div
+      dir="rtl"
+      className="min-w-44 rounded-lg border border-border/50 bg-background px-2.5 py-2 text-xs shadow-xl"
+    >
+      <p className="font-medium">
+        <span className="ltr-embed">{point.origin_id}</span>
+        <span className="text-muted-foreground"> · {point.place}</span>
       </p>
       <dl className="mt-1.5 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-muted-foreground">
         <dt>أول رصد</dt>
-        <dd className="numeric text-end text-foreground">
-          {point.dateLabel}
+        <dd className="text-end text-foreground">
+          <span className="numeric">{point.dateLabel}</span>
           {point.night ? " · ليلاً" : ""}
         </dd>
         <dt>قوة الإشعاع</dt>
@@ -237,9 +241,16 @@ function PatchTooltip({
   if (!active || !payload?.length) return null;
   const patch = payload[0].payload;
   return (
-    <div className="rounded-lg border border-border/50 bg-background px-2.5 py-2 text-xs shadow-xl">
-      <p className="ltr-embed font-medium">
-        {patch.patch_id} · {patch.inJijel ? "داخل جيجل" : "خارج جيجل"}
+    <div
+      dir="rtl"
+      className="min-w-44 rounded-lg border border-border/50 bg-background px-2.5 py-2 text-xs shadow-xl"
+    >
+      <p className="font-medium">
+        <span className="ltr-embed">{patch.patch_id}</span>
+        <span className="text-muted-foreground">
+          {" · "}
+          {patch.inJijel ? "داخل جيجل" : "خارج جيجل"}
+        </span>
       </p>
       <dl className="mt-1.5 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-muted-foreground">
         <dt>المساحة</dt>
@@ -286,8 +297,11 @@ export function PatchBarsChart({ patches }: { patches: PatchPoint[] }) {
           />
           خارج جيجل
         </span>
-        <span className="ms-auto numeric">
-          {Math.round((insideArea / totalArea) * 100)}٪ من المساحة داخل جيجل
+        <span className="ms-auto">
+          <span className="numeric">
+            {Math.round((insideArea / totalArea) * 100)}٪
+          </span>{" "}
+          من المساحة داخل جيجل
         </span>
       </div>
 
@@ -335,7 +349,7 @@ export function PatchBarsChart({ patches }: { patches: PatchPoint[] }) {
       </ChartContainer>
 
       <p className="border-t px-3 py-2 text-[11px] leading-5 text-muted-foreground">
-        17 ندبة تتجاوز 100 هكتار. ندبة الشقفة الكبرى وحدها نحو 400 km²، أي أكثر من
+        17 ندبة تتجاوز 100 هكتار. ندبة الشقفة الكبرى وحدها نحو 400 كم²، أي أكثر من
         نصف المساحة المخطّطة.
       </p>
     </div>
