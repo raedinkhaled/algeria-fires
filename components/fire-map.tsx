@@ -12,6 +12,7 @@ import type { LngLat, Map as MapLibreMap, MapMouseEvent } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { mapLayers as LAYERS, type MapLayerId as LayerId } from "@/lib/map-layers";
 import { cn } from "@/lib/utils";
 
 /* ── الأيام: حدّ زمني تراكمي، نهاية كل يوم بالتوقيت المحلي (UTC+1) ── */
@@ -69,50 +70,7 @@ const DAYS = [
 
 const LAST_DAY = DAYS.length - 1;
 
-/* ── الطبقات: المعرّف في نمط الخريطة + حقل الوقت الذي يخضع للترشيح الزمني ── */
-type LayerId = "hotspots" | "origins" | "burn" | "severity" | "communes";
-
-const LAYERS: {
-  id: LayerId;
-  styleId: string;
-  label: string;
-  note: string;
-  timeField?: string;
-}[] = [
-  {
-    id: "hotspots",
-    styleId: "hotspots",
-    label: "الرصد الحراري",
-    note: "9,100 قراءة من أقمار VIIRS، حجمها بحسب قوة الإشعاع",
-    timeField: "datetime_local",
-  },
-  {
-    id: "origins",
-    styleId: "candidate-origins",
-    label: "البدايات المحتملة",
-    note: "12 بداية اجتازت شرطَي البُعد وانقطاع المسار",
-    timeField: "first_local",
-  },
-  {
-    id: "burn",
-    styleId: "burn-patch-centroids",
-    label: "مراكز الندبات",
-    note: "17 مركزاً هندسياً؛ لا حدود منشورة للندبات",
-    timeField: "first_det_local",
-  },
-  {
-    id: "severity",
-    styleId: "burn-severity",
-    label: "شدة الاحتراق",
-    note: "فرق الانعكاسية dNBR من Sentinel-2 بين 18 و28 أوت",
-  },
-  {
-    id: "communes",
-    styleId: "communes",
-    label: "حدود البلديات",
-    note: "28 بلدية داخل ولاية جيجل",
-  },
-];
+/* الطبقات وتعريفاتها في lib/map-layers.ts، مصدر واحد مع دليل الطبقات في الصفحة. */
 
 const INITIAL_VISIBILITY: Record<LayerId, boolean> = {
   hotspots: true,
@@ -367,7 +325,13 @@ function MapLegend({
   );
 }
 
-export function FireMap({ activity }: { activity: ActivityDay[] }) {
+export function FireMap({
+  activity,
+  className,
+}: {
+  activity: ActivityDay[];
+  className?: string;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const readyRef = useRef(false);
@@ -601,16 +565,16 @@ export function FireMap({ activity }: { activity: ActivityDay[] }) {
     return (
       <section
         aria-label="خريطة تفاعلية لحرائق جيجل"
-        className="border-y px-4 py-6 sm:px-6"
+        className={cn("border bg-card p-4 sm:p-6", className)}
       >
-        <Alert className="mx-auto max-w-3xl">
+        <Alert className="max-w-3xl">
           <AlertTitle>تعذّر تشغيل الخريطة التفاعلية</AlertTitle>
           <AlertDescription>
             قد يكون متصفحك لا يدعم WebGL أو تعذّر تحميل ملفات الخريطة. تابع أثر
             الاحتراق في الصورة الثابتة أدناه؛ لم تُحذف أي بيانات.
           </AlertDescription>
         </Alert>
-        <figure className="mx-auto mt-5 max-w-4xl">
+        <figure className="mt-5">
           <Image
             src="/generated/media/burn-severity.png"
             alt="خريطة ثابتة لشدة الاحتراق في جيجل من Sentinel-2"
@@ -630,7 +594,7 @@ export function FireMap({ activity }: { activity: ActivityDay[] }) {
   return (
     <section
       aria-label="خريطة تفاعلية لحرائق جيجل"
-      className="mx-auto max-w-7xl border-y xl:border-x"
+      className={cn("border bg-card", className)}
     >
       {/* شريط الطبقات مطابق لبنية سطح الخريطة المرجعي، مع تمرير أفقي عند الضيق */}
       <div
@@ -695,7 +659,7 @@ export function FireMap({ activity }: { activity: ActivityDay[] }) {
           role="application"
           aria-label="خريطة قابلة للتحريك والتكبير"
           className={cn(
-            "fire-map-canvas h-[min(68dvh,34rem)] min-h-[27rem] w-full sm:h-[min(70dvh,42rem)] lg:h-[min(72dvh,48rem)]",
+            "fire-map-canvas h-[min(64dvh,30rem)] min-h-[25rem] w-full sm:h-[min(64dvh,32rem)] lg:h-[min(68dvh,36rem)]",
             status !== "ready" && "invisible",
           )}
         />
@@ -803,9 +767,9 @@ export function FireMap({ activity }: { activity: ActivityDay[] }) {
         </div>
       </div>
 
-      <p className="px-3 py-2.5 text-[11px] leading-5 text-muted-foreground sm:px-4">
-        كل نقطة هي أقدم رصد رآه القمر لا لحظة الاشتعال، بدقة مكانية تقارب 375 م.
-        انقر أي نقطة لعرض تفاصيلها.
+      <p className="border-t px-4 py-2.5 text-xs leading-6 text-muted-foreground">
+        كل نقطة رصد هي أقدم لحظة رآها القمر، لا لحظة الاشتعال، بدقة مكانية تقارب
+        375 م. انقر أي نقطة لعرض تفاصيلها.
       </p>
     </section>
   );
