@@ -5,7 +5,7 @@
   "scripts": {
     "predev": "node scripts/vendor-map-worker.mjs",
     "dev": "next dev",
-    "data:build": "python3 Fires/scripts/36_build_site_data.py",
+    "data:build": "python3 Fires/scripts/36_build_site_data.py && node scripts/build-download-bundle.mjs",
     "prebuild": "node scripts/vendor-map-worker.mjs && node scripts/validate-generated-data.mjs",
     "build": "next build",
     "start": "next start",
