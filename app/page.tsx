@@ -11,6 +11,14 @@ import {
 } from "@/components/ui/accordion";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
   Item,
   ItemActions,
   ItemContent,
@@ -59,7 +67,7 @@ const findings = [
     value: "cause",
     question: "هل كانت البداية طبيعية؟",
     answer: "السبب المرتبط بنشاط بشري أرجح من البرق.",
-    evidence: "لم تسجل بيانات الطقس برقاً أو أمطاراً تفسر البدايات الرئيسية في جيجل. لذلك يصبح السبب البشري، مثل حادث أو إهمال أو فعل متعمد، هو التفسير الأرجح.",
+    evidence: "لم يظهر نشاط رعدي على مسافة أقل من 81 كم من البؤر الرئيسية، وكان الهطول صفراً، وآخر رعد في محطة جيجل يوم 21 أوت. لذلك يبقى السبب البشري هو التفسير الأرجح.",
     limit: "هذا استنتاج بالاستبعاد، وليس دليلاً ميدانياً على سبب محدد.",
     confidence: "الثقة: متوسطة",
     sources: "DS-07 · DS-08 · ME-04",
@@ -68,8 +76,8 @@ const findings = [
     value: "intent",
     question: "هل تثبت البيانات أن الحرائق كانت متعمدة؟",
     answer: "لا. صور الأقمار لا تستطيع حسم النية أو المسؤولية.",
-    evidence: "الرصد الحراري يحدد المكان والوقت التقريبي، لكنه لا يفرق بين حادث وإهمال وفعل متعمد. كما أن الأقمار لا تمر بشكل متواصل.",
-    limit: "حسم النية يحتاج إلى تحقيق ميداني وأدلة قضائية، لا إلى صور الأقمار وحدها.",
+    evidence: "لا يوجد دليل مباشر على التنسيق. لكن اختبار التزامن نفسه ضعيف جداً: كشف تجربة من 45 بؤرة متزامنة في 1.5٪ من الحالات فقط، لذلك لا تصلح نتيجته السلبية للنفي.",
+    limit: "يبقى الفعل المنسق احتمالاً مفتوحاً بين 11٪ و26٪، لا نتيجة مثبتة. حسم النية يحتاج إلى تحقيق ميداني وأدلة قضائية.",
     confidence: "الثقة: عالية في عدم القدرة على الحسم",
     sources: "الفصول 25–27 · OF-07",
   },
@@ -95,8 +103,27 @@ export default function Home() {
               كيف بدأت حرائق جيجل، وكيف انتشرت؟
             </h1>
             <p className="mt-7 max-w-3xl text-lg leading-8 text-muted-foreground sm:text-xl sm:leading-9">
-              جمعنا صور الأقمار وبيانات الطقس لنرتب ما حدث يوماً بيوم. النتيجة الأقوى: النار ظهرت في أكثر من مكان، والطقس القاسي سرّع انتشارها. أما سبب كل بداية، فلا تحسمه البيانات وحدها.
+              جمعنا صور الأقمار وبيانات الطقس لنرتب ما حدث يوماً بيوم. ما وجدناه
+              يرجّح أن البداية لم تكن طبيعية، وأن نشاطاً بشرياً كان وراءها. أما
+              نوع هذا النشاط ومن المسؤول عنه، فلا تحسمه البيانات وحدها.
             </p>
+
+            <Card className="mt-8">
+              <CardHeader>
+                <CardTitle>خلاصة التحقيق</CardTitle>
+                <CardDescription>النتيجة الأقوى التي تسمح بها الأدلة المفتوحة</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-lg font-medium leading-8">
+                  البرق مستبعد من البؤر الرئيسية، ولا يظهر سبب طبيعي معقول آخر.
+                  لذلك يرجّح التحليل سبباً بشرياً.
+                </p>
+              </CardContent>
+              <CardFooter className="flex-wrap justify-between gap-2 text-xs">
+                <span>الثقة: متوسطة إلى عالية في استبعاد السبب الطبيعي</span>
+                <span className="ltr-embed">DS-07 · DS-08 · الفصل 32</span>
+              </CardFooter>
+            </Card>
           </div>
         </div>
 
@@ -197,11 +224,11 @@ export default function Home() {
       <section className="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:px-6 lg:grid-cols-12 lg:px-8 lg:py-20">
         <div className="lg:col-span-3"><p className="text-sm font-medium">أين نتوقف؟</p></div>
         <div className="lg:col-span-8 lg:col-start-5">
-          <h2 className="max-w-3xl text-3xl font-semibold leading-snug tracking-tight sm:text-4xl">نعرف أن النار بدأت في أكثر من مكان. لا نعرف من أشعل كل حريق، ولا إن كان متعمداً.</h2>
+          <h2 className="max-w-3xl text-3xl font-semibold leading-snug tracking-tight sm:text-4xl">نعرف أن السبب الطبيعي غير مرجح، وأن فعلاً بشرياً أرجح. لا نعرف أي فعل بشري كان، ولا من المسؤول.</h2>
           <p className="mt-6 max-w-3xl leading-8 text-muted-foreground">هذا تحليل مستقل للبيانات المفتوحة، وليس تحقيقاً رسمياً. أي حكم على المسؤولية يحتاج إلى فحص ميداني وشهادات وأدلة قضائية.</p>
           <Alert className="mt-8">
             <AlertTitle>الخلاصة الدقيقة</AlertTitle>
-            <AlertDescription>السبب المرتبط بنشاط بشري أرجح من البرق، لكن البيانات لا تفرق بين الحادث والإهمال والفعل المتعمد.</AlertDescription>
+            <AlertDescription>البيانات تفرق بين الطبيعة والفعل البشري بدرجة معتبرة، لكنها لا تفرق بين الحادث والإهمال والفعل المتعمد.</AlertDescription>
           </Alert>
         </div>
       </section>
