@@ -55,88 +55,93 @@
 }
 
 /*
- * لوحة محايدة أحادية اللون بلمسة دافئة: ورق شبه أبيض (#F8F8F7) وحبر شبه أسود،
- * وحدود شعرة رفيعة. مطابقة لتصميم التحقيق المرجعي، ومحوّلة إلى oklch.
- * اللون العلمي (خرائط الأقمار، شدة الاحتراق) يبقى داخل المادة نفسها لا في الرموز.
+ * لوحة محايدة أحادية اللون بلمسة دافئة، على هيئة سلّم ارتفاع واحد:
+ *   فاتح  → الخلفية بيضاء، والأسطح (بطاقة، منبثق) تنزوي بدرجة دافئة خفيفة،
+ *           ثم الحشوات (muted) تنزوي درجةً أخرى.
+ *   داكن  → تُقلب العلاقة: خلفية شبه سوداء دافئة، والأسطح ترتفع بدرجة،
+ *           والحشوات ترتفع أكثر. الفارق الإدراكي بين الطبقات نفسه في الوضعين.
+ * كل الدرجات على تدرّج رمادي دافئ واحد (لون ~75–95، إشباع ضئيل). الحدّ شعرة
+ * مرئية، والارتفاع يُقرأ من الفرق في الإضاءة ومن الحدّ لا من الظل.
+ * اللون الدلالي (خرائط الأقمار، شدة الاحتراق، درجات الثقة) داخل المادة نفسها
+ * لا في رموز الواجهة، ويبلغ AA (~4.5:1 فأعلى) على الخلفية والبطاقة في الوضعين.
  */
 :root {
-  --background: oklch(0.9789 0.0013 106.4); /* #F8F8F7 */
-  --foreground: oklch(0.16 0.004 60); /* حبر شبه أسود دافئ */
-  --card: oklch(1 0 0); /* #FFFFFF */
-  --card-foreground: oklch(0.16 0.004 60);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.16 0.004 60);
-  --primary: oklch(0.16 0.004 60);
-  --primary-foreground: oklch(0.9789 0.0013 106.4);
-  --secondary: oklch(0.949 0.004 75);
-  --secondary-foreground: oklch(0.16 0.004 60);
-  --muted: oklch(0.949 0.004 75);
-  --muted-foreground: oklch(0.438 0.008 52); /* ~7.5:1 على الورق، يقرأ للنص الثانوي */
-  --accent: oklch(0.949 0.004 75);
-  --accent-foreground: oklch(0.16 0.004 60);
-  --border: oklch(0.858 0.006 75); /* حدود مرئية لا شعرة باهتة */
-  --input: oklch(0.858 0.006 75);
-  --ring: oklch(0.16 0.004 60);
-  /* ألوان دلالية للمادة العلمية فقط، لا في chrome الواجهة.
-     مُعمّقة عن درجات فيغما لتبلغ AA (~5:1) حين تُستعمل نصاً صغيراً (درجات الثقة). */
-  --destructive: oklch(0.505 0.19 27.5); /* #B91C1C */
-  --ok: oklch(0.5 0.14 150); /* أخضر، ثقة عالية / مصدر أساسي */
-  --warn: oklch(0.52 0.105 72); /* كهرماني غامق، ثقة متوسطة / تنبيه */
-  --info: oklch(0.5 0.2 262); /* أزرق، تحقّق متقاطع */
-  --support: oklch(0.53 0.155 47); /* برتقالي غامق، مصدر داعم */
-  --chart-1: oklch(0.16 0.004 60);
-  --chart-2: oklch(0.44 0.006 70);
-  --chart-3: oklch(0.58 0.006 75);
-  --chart-4: oklch(0.7 0.006 80);
-  --chart-5: oklch(0.82 0.005 85);
+  --background: oklch(0.9955 0.0009 95); /* أبيض بلمسة دافئة */
+  --foreground: oklch(0.171 0.006 75); /* حبر شبه أسود دافئ */
+  --card: oklch(0.9775 0.0018 95); /* سطح منزوٍ بدرجة */
+  --card-foreground: oklch(0.171 0.006 75);
+  --popover: oklch(0.9775 0.0018 95);
+  --popover-foreground: oklch(0.171 0.006 75);
+  --primary: oklch(0.171 0.006 75);
+  --primary-foreground: oklch(0.9955 0.0009 95);
+  --secondary: oklch(0.9555 0.003 95);
+  --secondary-foreground: oklch(0.171 0.006 75);
+  --muted: oklch(0.9555 0.003 95); /* حشوة وحالة تمرير، أعمق من البطاقة */
+  --muted-foreground: oklch(0.462 0.01 74); /* ~7:1 على الخلفية والبطاقة */
+  --accent: oklch(0.9555 0.003 95);
+  --accent-foreground: oklch(0.171 0.006 75);
+  --border: oklch(0.865 0.005 92); /* شعرة مرئية على الخلفية والبطاقة */
+  --input: oklch(0.865 0.005 92);
+  --ring: oklch(0.171 0.006 75);
+  /* ألوان دلالية للمادة العلمية فقط، لا في chrome الواجهة. */
+  --destructive: oklch(0.495 0.19 27.5); /* أحمر */
+  --ok: oklch(0.49 0.14 150); /* أخضر، ثقة عالية / مصدر أساسي */
+  --warn: oklch(0.505 0.105 72); /* كهرماني غامق، ثقة متوسطة / تنبيه */
+  --info: oklch(0.49 0.2 262); /* أزرق، تحقّق متقاطع */
+  --support: oklch(0.515 0.155 47); /* برتقالي غامق، مصدر داعم */
+  --chart-1: oklch(0.171 0.006 75);
+  --chart-2: oklch(0.42 0.006 75);
+  --chart-3: oklch(0.56 0.006 78);
+  --chart-4: oklch(0.7 0.005 82);
+  --chart-5: oklch(0.83 0.004 88);
   --radius: 0.1875rem; /* 3px */
-  --sidebar: oklch(0.9789 0.0013 106.4);
-  --sidebar-foreground: oklch(0.16 0.004 60);
-  --sidebar-primary: oklch(0.16 0.004 60);
-  --sidebar-primary-foreground: oklch(0.9789 0.0013 106.4);
-  --sidebar-accent: oklch(0.949 0.004 75);
-  --sidebar-accent-foreground: oklch(0.16 0.004 60);
-  --sidebar-border: oklch(0.858 0.006 75);
-  --sidebar-ring: oklch(0.16 0.004 60);
+  --sidebar: oklch(0.9955 0.0009 95);
+  --sidebar-foreground: oklch(0.171 0.006 75);
+  --sidebar-primary: oklch(0.171 0.006 75);
+  --sidebar-primary-foreground: oklch(0.9955 0.0009 95);
+  --sidebar-accent: oklch(0.9555 0.003 95);
+  --sidebar-accent-foreground: oklch(0.171 0.006 75);
+  --sidebar-border: oklch(0.865 0.005 92);
+  --sidebar-ring: oklch(0.171 0.006 75);
 }
 
 .dark {
-  --background: oklch(0.16 0.004 60); /* #0D0D0D دافئ */
-  --foreground: oklch(0.9546 0.0027 106.4); /* #F0F0EE */
-  --card: oklch(0.205 0.004 60); /* #161616 دافئ */
-  --card-foreground: oklch(0.9546 0.0027 106.4);
-  --popover: oklch(0.205 0.004 60);
-  --popover-foreground: oklch(0.9546 0.0027 106.4);
-  --primary: oklch(0.9546 0.0027 106.4);
-  --primary-foreground: oklch(0.16 0.004 60);
-  --secondary: oklch(0.248 0.004 60);
-  --secondary-foreground: oklch(0.9546 0.0027 106.4);
-  --muted: oklch(0.248 0.004 60);
-  --muted-foreground: oklch(0.723 0.006 72); /* ~7.8:1 على الحبر الداكن */
-  --accent: oklch(0.248 0.004 60);
-  --accent-foreground: oklch(0.9546 0.0027 106.4);
-  --border: oklch(0.32 0.006 65); /* حدود مرئية */
-  --input: oklch(0.32 0.006 65);
-  --ring: oklch(0.9546 0.0027 106.4);
-  /* ألوان دلالية، نسخ الوضع الداكن أفتح لتقرأ على خلفية شبه سوداء */
-  --destructive: oklch(0.637 0.208 25.3); /* #EF4444 */
-  --ok: oklch(0.8 0.182 151.7); /* #4ADE80 */
-  --warn: oklch(0.795 0.162 86); /* #EAB308 */
-  --info: oklch(0.714 0.143 254.6); /* #60A5FA */
-  --support: oklch(0.758 0.159 55.9); /* #FB923C */
-  --chart-1: oklch(0.9546 0.0027 106.4);
-  --chart-2: oklch(0.72 0.006 70);
-  --chart-3: oklch(0.58 0.006 65);
-  --chart-4: oklch(0.44 0.006 60);
-  --chart-5: oklch(0.34 0.005 60);
-  --sidebar: oklch(0.205 0.004 60);
-  --sidebar-foreground: oklch(0.9546 0.0027 106.4);
-  --sidebar-primary: oklch(0.9546 0.0027 106.4);
-  --sidebar-primary-foreground: oklch(0.16 0.004 60);
-  --sidebar-accent: oklch(0.248 0.004 60);
-  --sidebar-accent-foreground: oklch(0.9546 0.0027 106.4);
-  --sidebar-border: oklch(0.32 0.006 65);
-  --sidebar-ring: oklch(0.9546 0.0027 106.4);
+  --background: oklch(0.158 0.004 75); /* شبه أسود دافئ */
+  --foreground: oklch(0.953 0.003 92);
+  --card: oklch(0.205 0.0045 75); /* سطح مرتفع بدرجة */
+  --card-foreground: oklch(0.953 0.003 92);
+  --popover: oklch(0.205 0.0045 75);
+  --popover-foreground: oklch(0.953 0.003 92);
+  --primary: oklch(0.953 0.003 92);
+  --primary-foreground: oklch(0.158 0.004 75);
+  --secondary: oklch(0.246 0.005 75);
+  --secondary-foreground: oklch(0.953 0.003 92);
+  --muted: oklch(0.246 0.005 75); /* حشوة وحالة تمرير، أرفع من البطاقة */
+  --muted-foreground: oklch(0.722 0.008 80); /* ~7.9:1 على الخلفية */
+  --accent: oklch(0.246 0.005 75);
+  --accent-foreground: oklch(0.953 0.003 92);
+  --border: oklch(0.318 0.006 75); /* شعرة مرئية */
+  --input: oklch(0.318 0.006 75);
+  --ring: oklch(0.953 0.003 92);
+  /* ألوان دلالية، نسخة أفتح لتقرأ على خلفية شبه سوداء */
+  --destructive: oklch(0.637 0.208 25.3);
+  --ok: oklch(0.8 0.182 151.7);
+  --warn: oklch(0.795 0.162 86);
+  --info: oklch(0.714 0.143 254.6);
+  --support: oklch(0.758 0.159 55.9);
+  --chart-1: oklch(0.953 0.003 92);
+  --chart-2: oklch(0.74 0.006 78);
+  --chart-3: oklch(0.58 0.006 75);
+  --chart-4: oklch(0.44 0.006 72);
+  --chart-5: oklch(0.34 0.005 72);
+  --sidebar: oklch(0.205 0.0045 75);
+  --sidebar-foreground: oklch(0.953 0.003 92);
+  --sidebar-primary: oklch(0.953 0.003 92);
+  --sidebar-primary-foreground: oklch(0.158 0.004 75);
+  --sidebar-accent: oklch(0.246 0.005 75);
+  --sidebar-accent-foreground: oklch(0.953 0.003 92);
+  --sidebar-border: oklch(0.318 0.006 75);
+  --sidebar-ring: oklch(0.953 0.003 92);
 }
 
 @layer base {
