@@ -8,6 +8,7 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
+import { MotionConfig } from "motion/react";
 
 import {
   COLOR_MODE_STORAGE_KEY,
@@ -54,7 +55,12 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <ColorModeContext.Provider value={contextValue}>
-      {children}
+      <MotionConfig
+        reducedMotion="user"
+        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+      >
+        {children}
+      </MotionConfig>
     </ColorModeContext.Provider>
   );
 }

@@ -19,8 +19,8 @@ const documents = [
 
 const colophon = [
   { term: "آخر تحديث", value: "29.08.2026", mono: true },
-  { term: "المراجعة", value: "4", mono: true },
-  { term: "نافذة الرصد", value: "22–29.08.2026", mono: true },
+  { term: "نافذة الرصد", value: "22-29.08.2026", mono: true },
+  { term: "المنطقة", value: "36.72°N · 5.95°E", mono: true },
   { term: "اللغة", value: "العربية" },
 ];
 
@@ -45,7 +45,7 @@ export function SiteFooter() {
               جنائية، ولا يثبت إضراماً متعمداً، ولا يحلّ محل التحقيق الميداني.
             </p>
             <p className="mt-3 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
-              <span className="ltr-embed">DS-01 – DS-11</span>
+              <span className="ltr-embed">DS-01 - DS-09</span>
               <span aria-hidden="true">·</span>
               <span>مصادر مفتوحة</span>
             </p>

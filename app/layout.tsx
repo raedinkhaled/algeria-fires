@@ -23,7 +23,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "حرائق جيجل — إعادة بناء بالبيانات المفتوحة",
+    default: "حرائق جيجل: إعادة بناء بالبيانات المفتوحة",
     template: "%s · حرائق جيجل",
   },
   description:
@@ -41,6 +41,7 @@ export default function RootLayout({
     <html
       lang="ar-DZ"
       dir="rtl"
+      data-scroll-behavior="smooth"
       className={`${ibmPlexSansArabic.variable} ${ibmPlexMono.variable}`}
       suppressHydrationWarning
     >

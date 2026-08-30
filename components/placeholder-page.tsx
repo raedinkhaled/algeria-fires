@@ -25,7 +25,7 @@ export function PlaceholderPage({
           <p className="text-[11px] font-medium text-muted-foreground">القسم</p>
           <p className="mt-1 text-sm font-medium">{eyebrow}</p>
           <p className="mt-4 text-[11px] font-medium text-muted-foreground">الحالة</p>
-          <p className="mt-1 text-sm">قيد الإعداد · المراجعة 4</p>
+          <p className="mt-1 text-sm">قيد الإعداد</p>
         </aside>
 
         <div className="order-1 min-w-0 lg:order-2">

@@ -81,7 +81,7 @@ const components: Components = {
   code: (props) => (
     <code
       dir="ltr"
-      className="ltr-embed rounded-sm bg-muted px-1.5 py-0.5 text-sm"
+      className="ltr-embed rounded-sm bg-muted px-1.5 py-0.5 text-sm [overflow-wrap:anywhere]"
       {...withoutNode(props)}
     />
   ),

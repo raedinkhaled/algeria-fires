@@ -117,7 +117,7 @@ export function FireMap() {
         const time = String(feature.properties?.first_local ?? feature.properties?.datetime_local ?? "");
         new maplibregl.Popup({ closeButton: true })
           .setLngLat([Number(point[0]), Number(point[1])])
-          .setText(time ? `${label} — ${time}` : label)
+          .setText(time ? `${label}: ${time}` : label)
           .addTo(map);
       });
       map.on("mouseenter", layerId, () => { map.getCanvas().style.cursor = "pointer"; });

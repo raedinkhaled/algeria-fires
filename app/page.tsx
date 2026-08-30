@@ -2,18 +2,24 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeftIcon } from "lucide-react";
 
+import { ChekfaTexennaDiagram } from "@/components/evidence-diagrams";
 import {
+  ClaimBasis,
   ConfidenceDot,
-  ConfidenceMeter,
   confidenceTone,
   DataFigure,
   EdgePanel,
   FileMeta,
-  Register,
-  RegisterRow,
   SectionLabel,
   StatStrip,
+  Timeline,
+  TimelineRow,
 } from "@/components/editorial";
+import {
+  type DailyActivity,
+  DailyActivityChart,
+} from "@/components/investigation-charts";
+import { Reveal } from "@/components/motion";
 import { StoryBreadcrumb } from "@/components/story-breadcrumb";
 import {
   Accordion,
@@ -23,14 +29,15 @@ import {
 } from "@/components/ui/accordion";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { siteSections } from "@/lib/site-navigation";
+import dailyActivity from "@/public/generated/data/daily_activity.json";
 
 const fileMeta = [
-  { term: "رقم الملف", value: "01 · مراجعة 4" },
   { term: "الولاية", value: "جيجل، الجزائر" },
-  { term: "الفترة", value: "22–29.08.2026", mono: true },
+  { term: "الفترة", value: "22-29.08.2026", mono: true },
   { term: "الإحداثيات", value: "36.72°N · 5.95°E", mono: true },
   { term: "المصادر", value: "VIIRS · S2 · ERA5", mono: true },
-  { term: "الحالة", value: "مكتمل · أوت 2026" },
+  { term: "الطبيعة", value: "تحليل مستقل" },
+  { term: "البيانات حتى", value: "29.08.2026", mono: true },
 ];
 
 const headlineStats = [
@@ -40,33 +47,85 @@ const headlineStats = [
   { value: "17", unit: "ندبة كبيرة" },
 ];
 
-const evidenceRegister = [
-  { value: "9,100", label: "رصد حراري", detail: "قراءات صالحة بعد التنظيف والتحقق" },
-  { value: "4,451", label: "خلية مكانية", detail: "شبكة بدقة 375 م لتتبع الحركة" },
-  { value: "12", label: "بداية محتملة", detail: "مواقع اجتازت شروط المسافة والانفصال" },
-  { value: "17", label: "منطقة محترقة كبيرة", detail: "كل واحدة تتجاوز 100 هكتار" },
+const conclusionLevels = [
+  {
+    level: 3,
+    heading: "السبب ليس طبيعياً",
+    body: "لم يُرصد نشاط رعدي على أقل من 81 كم من البؤر الرئيسية، والهطول صفر، وآخر رعد بمحطة جيجل يوم 21 أوت. ولا آلية طبيعية أخرى معقولة في هذا السياق.",
+    confidence: "ثقة متوسطة إلى عالية",
+  },
+  {
+    level: 2,
+    heading: "إذاً الفعل بشري، بالمعنى العام",
+    body: "بعد استبعاد البرق وغياب أي سبب طبيعي آخر، ووقوع البؤر في كتلة جبلية مأهولة، يصبح الفعل البشري التفسير الأرجح. السؤال المتبقّي ليس «إنسان أم طبيعة»، بل «أي فعل بشري».",
+    confidence: "ثقة متوسطة",
+  },
+  {
+    level: 3,
+    heading: "الحادث والإهمال والتعمّد لا تفصل بينها هذه البيانات",
+    body: "صور الأقمار لا تميّز بين عقب سيجارة وشرارة احتكاك وحرق فلاحي وإضرام متعمّد. والفعل المنسّق فرضية مفتوحة احتمالها بين 11٪ و26٪، لا نتيجة. تحقيقات الدرك الوطني في الأسباب جارية.",
+    confidence: "ثقة عالية في نفي القدرة على الحسم",
+  },
 ];
 
 const timeline = [
   {
     date: "23 أوت",
     title: "أول إشارة في المنطقة الأوسع",
-    body: "ظهر رصد حراري عند 01:35 في ولاية سطيف، خارج جيجل.",
+    body: "بؤر حرارية ليلية ضعيفة في ولايتَي سطيف وبجاية، جنوب غرب جيجل وخارج حدودها.",
   },
   {
     date: "24 أوت",
     title: "أول إشارة داخل جيجل",
-    body: "سجّل القمر نقطة ساخنة عند 14:53 في الجمعة بني حبيبي.",
+    body: "نقطة ساخنة الساعة 14:53 في الجمعة بني حبيبي بثقة رصد مرتفعة، ثم اختفت من السجل 22 ساعة.",
   },
   {
-    date: "26–27 أوت",
-    title: "انتشار سريع تحت طقس قاسٍ",
-    body: "ارتفع النشاط مع حرارة وصلت إلى 43°م ورطوبة هبطت إلى 12.5٪.",
+    date: "25 أوت",
+    title: "بؤرة الشقفة",
+    body: "نواة المجمّع الرئيسي الذي سيبلغ 446 كم². سطوع مشبع وثقة رصد مرتفعة.",
   },
   {
-    date: "28–29 أوت",
-    title: "ظهرت آثار الحرائق بوضوح",
-    body: "كشفت صور Sentinel-2 مناطق محترقة منفصلة، وبدأ التحقيق الرسمي في الأسباب.",
+    date: "26 أوت",
+    title: "الانفجار تحت السيروكو",
+    body: "جبهة تاكسنة تظهر بـ43 خلية دفعة واحدة. المحطة تسجّل 43°م ورطوبة 12.5٪ مساءً وهبّات 68 كم/س. في هذه الليلة وقعت الحصيلة البشرية الأثقل.",
+  },
+  {
+    date: "27 أوت",
+    title: "الذروة الوطنية",
+    body: "780 بؤرة في تمريرة ليلية واحدة، وحرائق في 13 ولاية خلال 24 ساعة. الحكومة تعلن تحقيقات في «الاندلاع المتزامن».",
+  },
+  {
+    date: "28-29 أوت",
+    title: "الانحسار",
+    body: "عودة الرطوبة إلى جيجل، وانخفاض حادّ في النشاط. الدرك الوطني يباشر تحقيقات في الأسباب ومدى ارتباطها بأفعال إجرامية.",
+  },
+];
+
+const suspicion = [
+  {
+    title: "الشقفة وتاكسنة: أقوى مؤشر في الملف",
+    body: "بؤرتان تفصلهما 19.52 كم وظهرتا بفارق 24 ساعة. السمت بينهما 262° بينما الريح تدفع بين 33° و35°، وبينهما فجوة غير محترقة طولها 22.78 كم، وندبتان منفصلتان في Sentinel-2 يفصل بينهما غطاء سليم. حريق تاكسنة اشتعال مستقل لم يأتِ من الشقفة.",
+    tag: "ثقة عالية في الاستقلال المكاني",
+  },
+  {
+    title: "تعدّد بؤر المنشأ",
+    body: "12 مرشّحاً، 6 منها بجيجل. كلٌّ يستوفي معاً معيارَي البُعد (≥5 كم عن أقرب حريق سابق) وانقطاع المسار (فجوة غير محترقة ≥4 كم). ويطابق التحليل الفضائي خمساً من ست بلديات وردت بالاسم في بلاغ الحماية المدنية.",
+    tag: "مؤكَّد كواقعة؛ لا يدلّ بذاته على التعمّد",
+  },
+  {
+    title: "شذوذ بؤرة الجمعة بني حبيبي",
+    body: "أدنى ارتفاع بين كل البؤر (نحو 55 م مقابل نطاق من 190 إلى 923 م)، و22 م فقط من طريق ثانوي، وأعلى «درجة مدخنة» في المجموعة، وهي بلدية الحصيلة البشرية الأثقل. لكن القرب من الطريق يتوافق مع سبب عرضي بقدر ما يتوافق مع التعمّد.",
+    tag: "ملاحظة تستحق فحصاً ميدانياً",
+  },
+  {
+    title: "إشارات التوقيت",
+    body: "حالتا ظهور بؤرتين في تمريرة قمر واحدة، وأربع بؤر أول رصدها ليلاً، والوزير يصف «الاندلاع المتزامن»، و705 مواقع أعادت الاشتعال وطنياً بعد خمود.",
+    tag: "لافتة، وغامضة الدلالة",
+  },
+  {
+    title: "اختبارات النفي بلا قوة",
+    body: "اختبار التزامن يكشف عملية محقونة من 45 بؤرة متزامنة في 1.5٪ من الحالات فقط، والتزامن بالدقّة المطلوبة غير قابل للقياس أصلاً من الأقمار القطبية. غياب البصمة ليس تبرئة.",
+    tag: "ثقة عالية في ضعف الاختبار",
   },
 ];
 
@@ -76,60 +135,69 @@ const findings = [
     question: "هل كان حريقاً واحداً؟",
     answer: "على الأرجح لا. البيانات تشير إلى بدايات منفصلة.",
     evidence:
-      "تظهر 12 بداية محتملة، وتفصل بينها مسافات وأراضٍ لم تحترق. وتؤكد صور Sentinel-2 وجود 17 منطقة محترقة كبيرة منفصلة.",
+      "12 بداية محتملة تفصل بينها مسافات وأراضٍ لم تحترق، و17 ندبة كبيرة منفصلة في صور Sentinel-2. الطريقتان مستقلتان وتصلان إلى النتيجة نفسها.",
     limit:
-      "لا تعني كل نقطة بداية حريقاً مستقلاً مؤكداً؛ إنها أفضل المواقع التي اجتازت شروط التحليل.",
+      "لا تعني كل نقطة حريقاً مستقلاً مؤكداً؛ إنها المواقع التي اجتازت شرطين كمّيين معاً.",
     confidence: "عالية",
-    confShort: "عالية",
     level: 3,
-    sources: "DS-01–05 · OF-06",
+    sources: "الفصل 8 · الفصل 31 · OF-06",
   },
   {
     value: "weather",
     question: "لماذا انتشرت النار بهذه السرعة؟",
-    answer: "الحرارة والجفاف والرياح تفسر سرعة الانتشار.",
+    answer: "الحرارة والجفاف والرياح تفسّر سرعة الانتشار.",
     evidence:
-      "وصلت موجة السيروكو إلى ذروتها في الوقت نفسه الذي قفز فيه النشاط الحراري: حرارة مرتفعة جداً، رطوبة شديدة الانخفاض، وهبات قوية.",
-    limit: "الطقس يشرح كيف كبر الحريق، لكنه لا يخبرنا كيف بدأت الشرارة الأولى.",
+      "بلغت موجة السيروكو ذروتها في الوقت نفسه الذي قفز فيه النشاط الحراري إلى 60,792 ميغاواط في تمريرة واحدة: حرارة تتجاوز 43°م، ورطوبة تحت 13٪، وهبّات حتى 68 كم/س.",
+    limit: "الطقس يشرح كيف كبر الحريق، لا كيف بدأت الشرارة الأولى.",
     confidence: "عالية",
-    confShort: "عالية",
     level: 3,
-    sources: "DS-07 · DS-08",
+    sources: "DS-07 · DS-08 · الفصل 12",
   },
   {
     value: "cause",
     question: "هل كانت البداية طبيعية؟",
-    answer: "السبب المرتبط بنشاط بشري أرجح من البرق.",
+    answer: "غير مرجّح. البرق مستبعد ولا آلية طبيعية أخرى.",
     evidence:
-      "لم يظهر نشاط رعدي على مسافة أقل من 81 كم من البؤر الرئيسية، وكان الهطول صفراً، وآخر رعد في محطة جيجل يوم 21 أوت. لذلك يبقى السبب البشري هو التفسير الأرجح.",
-    limit: "هذا استنتاج بالاستبعاد، وليس دليلاً ميدانياً على سبب محدد.",
+      "لا نشاط رعدي دون 81 كم من البؤر الرئيسية، هطول صفر، وآخر رعد بمحطة جيجل يوم 21 أوت، أي قبل أقدم بؤرة بالولاية بأكثر من ثلاثة أيام.",
+    limit:
+      "استنتاج بالاستبعاد لا دليل ميداني. وتعذّر الوصول إلى أي شبكة لتحديد مواقع الصواعق يبقي الاستدلال غير مباشر.",
+    confidence: "متوسطة إلى عالية",
+    level: 3,
+    sources: "DS-07 · DS-08 · الفصل 13",
+  },
+  {
+    value: "human",
+    question: "هل السبب بشري؟",
+    answer: "يرجّح، بالمعنى العام.",
+    evidence:
+      "بعد أن أصبح البرق غير مرجّح، ومع انتفاء أي سبب طبيعي آخر، ووقوع البؤر في كتلة جبلية مأهولة بنشاط بشري واسع، يصبح الفعل البشري التفسير الأرجح.",
+    limit:
+      "هذا ترجيح بالاستبعاد، وقوّته محدودة بجودة البيانات التي استبعدت البرق.",
     confidence: "متوسطة",
-    confShort: "متوسطة",
     level: 2,
-    sources: "DS-07 · DS-08 · ME-04",
+    sources: "الفصل 14 · الفصل 32",
   },
   {
     value: "intent",
-    question: "هل تثبت البيانات أن الحرائق كانت متعمدة؟",
-    answer: "لا. صور الأقمار لا تستطيع حسم النية أو المسؤولية.",
+    question: "هل كان متعمّداً أو منسّقاً؟",
+    answer: "لا تحسمه هذه البيانات.",
     evidence:
-      "لا يوجد دليل مباشر على التنسيق. لكن اختبار التزامن نفسه ضعيف جداً: كشف تجربة من 45 بؤرة متزامنة في 1.5٪ من الحالات فقط، لذلك لا تصلح نتيجته السلبية للنفي.",
+      "لا فحص ميداني، ولا شهود، ولا مواد إشعال، ولا توقيفات تخصّ حرائق 24-29 أوت. واختبار التزامن، وهو المؤشر المركزي، قوّته صفر عملياً، فلا تصلح نتيجته السلبية للنفي.",
     limit:
-      "يبقى الفعل المنسق احتمالاً مفتوحاً بين 11٪ و26٪، لا نتيجة مثبتة. حسم النية يحتاج إلى تحقيق ميداني وأدلة قضائية.",
-    confidence: "عالية في عدم القدرة على الحسم",
-    confShort: "عالية",
+      "الفعل المنسّق فرضية مفتوحة احتمالها بين 11٪ و26٪، لا نتيجة مثبتة ولا منفية. الحسم من اختصاص التحقيق الرسمي.",
+    confidence: "عالية في نفي القدرة على الحسم",
     level: 3,
-    sources: "الفصول 25–27 · OF-07",
+    sources: "الفصل 26 · الفصل 27 · OF-07",
   },
 ];
 
 export default function Home() {
   return (
-    <article className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+    <article className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
       <StoryBreadcrumb current="الملخص التنفيذي" />
 
-      <div className="mt-10 grid gap-8 lg:grid-cols-[210px_1fr] lg:gap-14">
-        <aside className="order-2 border-t pt-6 lg:order-1 lg:border-t-0 lg:border-e lg:pe-8 lg:pt-0">
+      <div className="mt-10 grid gap-x-8 gap-y-10 lg:grid-cols-[190px_minmax(0,45rem)] lg:justify-center lg:gap-x-16">
+        <aside className="order-2 border-t pt-6 lg:sticky lg:top-16 lg:order-1 lg:self-start lg:border-t-0 lg:border-e lg:pe-8 lg:pt-0">
           <FileMeta heading="بيانات الملف" rows={fileMeta} />
           <div className="mt-8 hidden border-t pt-5 lg:block">
             <p className="mb-2 text-[11px] text-muted-foreground">التصنيف</p>
@@ -141,201 +209,285 @@ export default function Home() {
         </aside>
 
         <div className="order-1 min-w-0 lg:order-2">
-          <p className="text-[11px] font-medium text-muted-foreground">
-            تحقيق مفتوح بالبيانات
-          </p>
-          <h1 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
-            كيف بدأت حرائق جيجل، وكيف انتشرت؟
-          </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-9 text-muted-foreground">
-            جمعنا صور الأقمار وبيانات الطقس لنرتب ما حدث يوماً بيوم. ما وجدناه
-            يرجّح أن البداية لم تكن طبيعية، وأن نشاطاً بشرياً كان وراءها. أما
-            نوع هذا النشاط ومن المسؤول عنه، فلا تحسمه البيانات وحدها.
-          </p>
+          <Reveal>
+            <p className="text-[11px] font-medium text-muted-foreground">
+              تحقيق مستقل بالبيانات المفتوحة
+            </p>
+            <h1 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+              كيف بدأت حرائق جيجل، وكيف انتشرت؟
+            </h1>
+            <p className="mt-6 max-w-2xl text-lg leading-9">
+              جمعنا صور الأقمار وبيانات الطقس ورتّبنا ما حدث يوماً بيوم. الأرقام
+              ترجّح أن البداية لم تكن طبيعية، وأن وراءها فعلاً بشرياً. أما نوع هذا
+              الفعل، حادث أم إهمال أم تعمّد، ومن يقف خلفه، فلا تحسمه هذه البيانات.
+            </p>
+            <StatStrip className="mt-8" items={headlineStats} />
+          </Reveal>
 
-          <StatStrip className="mt-8" items={headlineStats} />
-        </div>
-      </div>
+          <Reveal className="mt-14">
+            <section>
+              <SectionLabel>الخلاصة على ثلاث درجات</SectionLabel>
+              <ol className="mt-4 max-w-3xl divide-y border border-s-[3px] border-s-foreground">
+                {conclusionLevels.map((item, index) => (
+                  <li key={item.heading} className="px-5 py-5">
+                    <div className="flex items-baseline gap-3">
+                      <span className="numeric text-xs text-muted-foreground">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <div className="min-w-0">
+                        <h3 className="text-base font-semibold leading-6">
+                          {item.heading}
+                        </h3>
+                        <p className="mt-2 leading-8">{item.body}</p>
+                        <p
+                          className={`mt-3 flex items-center gap-1.5 text-xs font-medium ${confidenceTone(item.level).text}`}
+                        >
+                          <ConfidenceDot level={item.level} />
+                          {item.confidence}
+                        </p>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          </Reveal>
 
-      <EdgePanel className="mt-12" label="خلاصة التحقيق">
-        <p className="text-lg font-medium leading-8">
-          البرق مستبعد من البؤر الرئيسية، ولا يظهر سبب طبيعي معقول آخر. لذلك
-          يرجّح التحليل سبباً بشرياً.
-        </p>
-        <div className="mt-4 flex flex-wrap justify-between gap-2 border-t pt-4 text-xs text-muted-foreground">
-          <span>الثقة: متوسطة إلى عالية في استبعاد السبب الطبيعي</span>
-          <span>
-            <span className="ltr-embed">DS-07 · DS-08</span> · الفصل 32
-          </span>
-        </div>
-      </EdgePanel>
-
-      <div className="mt-14">
-        <SectionLabel index="01">دليل بصري</SectionLabel>
-        <DataFigure
-          className="mx-auto mt-4 max-w-2xl"
-          caption={
-            <>
-              ثلاث لوحات من <span className="ltr-embed">Sentinel-2</span>: الغطاء
-              قبل الحريق (18 أوت)، بعده (28 أوت)، وخريطة شدة الاحتراق. الأحمر
-              مساحات احترقت بشدة، والرمادي غطاء لم يحترق.
-            </>
-          }
-        >
-          <Image
-            src="/generated/media/sentinel-comparison.png"
-            alt="ثلاث لوحات من Sentinel-2 لمنطقة جيجل: الغطاء النباتي في 18 أوت قبل الحريق، الوضع في 28 أوت بعده، وخريطة شدة الاحتراق dNBR"
-            width={2073}
-            height={2561}
-            priority
-            className="h-auto w-full bg-white"
-          />
-        </DataFigure>
-      </div>
-
-      <Alert className="mt-8">
-        <AlertTitle>فرق مهم قبل القراءة</AlertTitle>
-        <AlertDescription>
-          أول رصد فضائي ليس لحظة الاشتعال. قد تبدأ النار قبل مرور القمر بساعات.
-        </AlertDescription>
-      </Alert>
-
-      <div className="mt-14">
-        <SectionLabel index="02">سجل الأدلة</SectionLabel>
-        <Register className="mt-4">
-          {evidenceRegister.map((row) => (
-            <RegisterRow
-              key={row.label}
-              value={row.value}
-              label={row.label}
-              detail={row.detail}
-            />
-          ))}
-        </Register>
-      </div>
-
-      <div className="mt-14">
-        <SectionLabel index="03">التسلسل الزمني · 23–29 أوت 2026</SectionLabel>
-        <div className="mt-4 divide-y border">
-          {timeline.map((event) => (
-            <div
-              key={event.title}
-              className="grid gap-x-5 gap-y-2 px-4 py-5 sm:grid-cols-[120px_1fr]"
+          <Reveal className="mt-14">
+            <SectionLabel index="01">النشاط يوماً بيوم</SectionLabel>
+            <DataFigure
+              className="mt-4"
+              sensor="VIIRS · P1_Chekfa_origin"
+              meta="23-29.08.2026 · توقيت محلي"
+              caption={
+                <>
+                  بلغت القفزة الحاسمة يومَي 26 و27 أوت. بيانات الطقس في تبويب
+                  «الطقس» مشتقة من السلسلة الساعية المنمذجة عند منشأ الشقفة، وليست
+                  متوسطاً مكانياً لولاية جيجل.
+                </>
+              }
             >
-              <p className="text-sm font-medium text-muted-foreground">
-                {event.date}
-              </p>
-              <div>
-                <h3 className="text-sm font-semibold">{event.title}</h3>
-                <p className="mt-1.5 text-sm leading-7 text-muted-foreground">
-                  {event.body}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+              <DailyActivityChart days={dailyActivity.days as DailyActivity[]} />
+            </DataFigure>
+          </Reveal>
 
-      <div className="mt-14">
-        <SectionLabel index="04">النتيجة في أربعة أسئلة</SectionLabel>
-        <Accordion
-          type="single"
-          collapsible
-          defaultValue="origins"
-          className="mt-4 border"
-        >
-          {findings.map((finding, index) => (
-            <AccordionItem
-              key={finding.value}
-              value={finding.value}
-              className="px-4"
+          <Reveal className="mt-14">
+            <SectionLabel index="02">دليل بصري من Sentinel-2</SectionLabel>
+            <DataFigure
+              className="mt-4 max-w-xl"
+              sensor="Sentinel-2 · MSI L2A"
+              meta="18 → 28.08.2026 · dNBR"
+              caption={
+                <>
+                  ثلاث لوحات من <span className="ltr-embed">Sentinel-2</span>:
+                  الغطاء قبل الحريق (18 أوت)، بعده (28 أوت)، وخريطة شدة الاحتراق.
+                  الأحمر مساحات احترقت بشدة، والرمادي غطاء لم يحترق.
+                </>
+              }
             >
-              <AccordionTrigger className="py-4 text-base hover:no-underline">
-                <span className="flex flex-1 items-center gap-3 pe-3 sm:gap-4">
-                  <span className="numeric text-xs text-muted-foreground">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <span className="text-start">{finding.question}</span>
-                  <span
-                    className={`ms-auto flex shrink-0 items-center gap-1.5 text-xs font-medium ${confidenceTone(finding.level).text}`}
-                  >
-                    <ConfidenceDot level={finding.level} />
-                    {finding.confShort}
-                  </span>
-                </span>
-              </AccordionTrigger>
-              <AccordionContent className="pb-6">
-                <p className="text-base font-medium leading-7">
-                  {finding.answer}
-                </p>
-                <p className="mt-4 leading-7 text-muted-foreground">
-                  <span className="font-medium text-foreground">الدليل: </span>
-                  {finding.evidence}
-                </p>
-                <p className="mt-3 leading-7 text-muted-foreground">
-                  <span className="font-medium text-foreground">الحد: </span>
-                  {finding.limit}
-                </p>
-                <div className="mt-5 grid gap-4 border-t pt-4 sm:grid-cols-[200px_1fr] sm:items-center">
-                  <ConfidenceMeter
-                    level={finding.level}
-                    label={`الثقة: ${finding.confidence}`}
-                  />
-                  <Link
-                    href="/sources"
-                    className="text-xs text-muted-foreground underline decoration-border underline-offset-4 hover:text-foreground hover:decoration-foreground sm:text-end"
-                  >
-                    {finding.sources}
-                  </Link>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </div>
-
-      <EdgePanel className="mt-14" label="حدود ما تقوله البيانات">
-        <h2 className="max-w-3xl text-2xl font-semibold leading-snug tracking-tight sm:text-3xl">
-          نعرف أن السبب الطبيعي غير مرجح، وأن فعلاً بشرياً أرجح. لا نعرف أي فعل
-          بشري كان، ولا من المسؤول.
-        </h2>
-        <p className="mt-5 max-w-2xl leading-8 text-muted-foreground">
-          هذا تحليل مستقل للبيانات المفتوحة، وليس تحقيقاً رسمياً. أي حكم على
-          المسؤولية يحتاج إلى فحص ميداني وشهادات وأدلة قضائية.
-        </p>
-        <Alert className="mt-6">
-          <AlertTitle>الخلاصة الدقيقة</AlertTitle>
-          <AlertDescription>
-            البيانات تفرق بين الطبيعة والفعل البشري بدرجة معتبرة، لكنها لا تفرق
-            بين الحادث والإهمال والفعل المتعمد.
-          </AlertDescription>
-        </Alert>
-      </EdgePanel>
-
-      <div className="mt-14">
-        <SectionLabel index="05">تابع القراءة</SectionLabel>
-        <nav aria-label="أقسام المنصة" className="mt-4 divide-y border">
-          {siteSections.map((section) => (
-            <Link
-              key={section.href}
-              href={section.href}
-              className="group flex items-center justify-between gap-4 px-4 py-4 transition-colors hover:bg-muted/50"
-            >
-              <span>
-                <span className="block text-sm font-medium">
-                  {section.title}
-                </span>
-                <span className="mt-0.5 block text-xs leading-6 text-muted-foreground">
-                  {section.summary}
-                </span>
-              </span>
-              <ArrowLeftIcon
-                aria-hidden="true"
-                className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-x-0.5"
+              <Image
+                src="/generated/media/sentinel-comparison.png"
+                alt="ثلاث لوحات من Sentinel-2 لمنطقة جيجل: الغطاء النباتي في 18 أوت قبل الحريق، الوضع في 28 أوت بعده، وخريطة شدة الاحتراق dNBR"
+                width={2073}
+                height={2561}
+                className="h-auto w-full bg-white"
               />
-            </Link>
-          ))}
-        </nav>
+            </DataFigure>
+
+            <Alert className="mt-6 max-w-2xl">
+              <AlertTitle>فرق مهم قبل القراءة</AlertTitle>
+              <AlertDescription>
+                أول رصد فضائي ليس لحظة الاشتعال. قد تبدأ النار قبل مرور القمر
+                بساعات؛ بلغت فجوة الرصد فوق القطاع الغربي نحو عشر ساعات يوم 26 أوت.
+              </AlertDescription>
+            </Alert>
+          </Reveal>
+
+          <Reveal className="mt-14">
+            <SectionLabel index="03">
+              التسلسل الزمني · 23-29 أوت 2026
+            </SectionLabel>
+            <Timeline className="mt-4 max-w-3xl">
+              {timeline.map((event) => (
+                <TimelineRow
+                  key={event.title}
+                  date={event.date}
+                  title={event.title}
+                >
+                  {event.body}
+                </TimelineRow>
+              ))}
+            </Timeline>
+          </Reveal>
+
+          <Reveal className="mt-14">
+            <SectionLabel index="04">أقوى اختبار مكاني</SectionLabel>
+            <DataFigure
+              className="mt-4"
+              sensor="O05 → O08"
+              meta="25-26.08.2026 · 24 h"
+              caption="يتجه المسار من الشقفة إلى تاكسنة غرباً، بينما كانت الريح تدفع النار نحو الشمال الشرقي. مع الفجوة غير المحترقة والندبتين المنفصلتين، يستبعد ذلك وصول نار الشقفة إلى تاكسنة بالانتشار السطحي المرصود."
+            >
+              <ChekfaTexennaDiagram />
+            </DataFigure>
+          </Reveal>
+
+          <Reveal className="mt-14">
+            <SectionLabel index="05">أدلة الاشتباه</SectionLabel>
+            <p className="mt-4 max-w-2xl leading-8">
+              خمسة عناصر استوقفت التحليل، مرتّبة بحسب قوّتها. لا واحد منها دليل على
+              فعل متعمّد، لكنها مجتمعة ترسم ما يستحق تحقيقاً ميدانياً.
+            </p>
+            <div className="mt-5 max-w-3xl divide-y border">
+              {suspicion.map((item) => (
+                <div key={item.title} className="px-4 py-5">
+                  <h3 className="text-sm font-semibold leading-6">
+                    {item.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-7">{item.body}</p>
+                  <p className="mt-3 text-[11px] text-muted-foreground">
+                    {item.tag}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+
+          <EdgePanel className="mt-14 max-w-3xl" label="المادة المضادة">
+            <p className="leading-8">
+              يُذكر ما يشدّ في الاتجاه الآخر، لأن إخفاءه يفسد التحليل:
+            </p>
+            <ul className="mt-3 flex list-disc flex-col gap-2 pe-5 leading-8 marker:text-border">
+              <li>
+                الاشتعالات تتبّع طقس الحرائق بقوة شديدة؛ احتمال أن يكون ذلك مصادفة
+                ضئيل جداً (<span className="ltr-embed">p = 1×10⁻²³</span>).
+              </li>
+              <li>
+                تعدّد البؤر هو الخلفية الوطنية الدائمة صيفاً: 199 بؤرة مستقلة عبر
+                الشمال الجزائري، بمعدل من 7 إلى 58 يومياً.
+              </li>
+              <li>
+                لا بصمة اختيار تكتيكي للمواقع، ولا دليل إيجابي واحد على التنسيق.
+              </li>
+            </ul>
+            <p className="mt-4 border-t pt-4 text-sm leading-7">
+              لكن ثقل هذه المادة لا يقلب الدرجتين الأوليين: السبب ما زال غير
+              طبيعي، والفعل البشري ما زال أرجح.
+            </p>
+          </EdgePanel>
+
+          <Reveal className="mt-14">
+            <SectionLabel index="06">النتيجة في خمسة أسئلة</SectionLabel>
+            <Accordion
+              type="single"
+              collapsible
+              defaultValue="origins"
+              className="mt-4 max-w-3xl border"
+            >
+              {findings.map((finding, index) => (
+                <AccordionItem
+                  key={finding.value}
+                  value={finding.value}
+                  className="px-4"
+                >
+                  <AccordionTrigger className="py-4 text-base hover:no-underline">
+                    <span className="flex flex-1 items-center gap-3 pe-3 sm:gap-4">
+                      <span className="numeric text-xs text-muted-foreground">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <span className="text-start">{finding.question}</span>
+                      <span
+                        className={`ms-auto flex shrink-0 items-center gap-1.5 text-xs font-medium ${confidenceTone(finding.level).text}`}
+                      >
+                        <ConfidenceDot level={finding.level} />
+                        <span className="hidden sm:inline">
+                          {finding.confidence}
+                        </span>
+                      </span>
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-6">
+                    <p className="text-base font-medium leading-7">
+                      {finding.answer}
+                    </p>
+                    <p className="mt-4 leading-7">
+                      <span className="font-medium">الدليل: </span>
+                      {finding.evidence}
+                    </p>
+                    <p className="mt-3 leading-7 text-muted-foreground">
+                      <span className="font-medium text-foreground">
+                        الحد:{" "}
+                      </span>
+                      {finding.limit}
+                    </p>
+                    <ClaimBasis
+                      level={finding.level}
+                      confidence={finding.confidence}
+                      sources={finding.sources}
+                      sourcesHref="/report"
+                    />
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </Reveal>
+
+          <EdgePanel className="mt-14 max-w-3xl" label="حدود ما تقوله البيانات">
+            <h2 className="max-w-2xl text-2xl font-semibold leading-snug tracking-tight sm:text-3xl">
+              نعرف أن السبب الطبيعي غير مرجّح، وأن فعلاً بشرياً أرجح. لا نعرف أي
+              فعل بشري كان، ولا من يقف خلفه.
+            </h2>
+            <p className="mt-5 max-w-2xl leading-8">
+              هذا تحليل مستقل للبيانات المفتوحة، لا تحقيق رسمي. لا يصف الحرائق
+              بأنها «مفتعلة» ولا «هجوم»، ولا ينسب مسؤولية جنائية لأحد. الحدث كارثة
+              بشرية حقيقية، مع أكثر من 70 وفاة في الجمعة بني حبيبي وحدها، وتحقيقات
+              الدرك الوطني في الأسباب جارية.
+            </p>
+            <p className="mt-4 max-w-2xl border-t pt-4 text-sm leading-7 text-muted-foreground">
+              لا يتناول هذا التحليل فرضية العطل الكهربائي أو المرفقي: هي خارج نطاق
+              التقرير، والبيانات المفتوحة لا تتيح اختبارها أصلاً لأن شبكة التوزيع
+              متوسّط الجهد غائبة كلياً عنها. واستبعاد فرضية من المقارنة يرفع آلياً
+              وزن ما تبقّى، ومنه الفعل المتعمّد؛ فالأسباب العرضية غير الكهربائية
+              تبقى قائمة بكامل وزنها.
+            </p>
+            <Alert className="mt-6 max-w-2xl">
+              <AlertTitle>الخلاصة الدقيقة</AlertTitle>
+              <AlertDescription>
+                البيانات تفرّق بين الطبيعة والفعل البشري بدرجة معتبرة، لكنها لا
+                تفرّق بين الحادث والإهمال والفعل المتعمّد.
+              </AlertDescription>
+            </Alert>
+          </EdgePanel>
+
+          <Reveal className="mt-14">
+            <SectionLabel index="07">تابع القراءة</SectionLabel>
+            <nav
+              aria-label="أقسام المنصة"
+              className="mt-4 max-w-3xl divide-y border"
+            >
+              {siteSections.map((section) => (
+                <Link
+                  key={section.href}
+                  href={section.href}
+                  className="group flex items-center justify-between gap-4 px-4 py-4 transition-colors hover:bg-muted/50"
+                >
+                  <span>
+                    <span className="block text-sm font-medium">
+                      {section.title}
+                    </span>
+                    <span className="mt-0.5 block text-xs leading-6 text-muted-foreground">
+                      {section.summary}
+                    </span>
+                  </span>
+                  <ArrowLeftIcon
+                    aria-hidden="true"
+                    className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-x-0.5"
+                  />
+                </Link>
+              ))}
+            </nav>
+          </Reveal>
+        </div>
       </div>
     </article>
   );

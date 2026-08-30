@@ -15,8 +15,8 @@ export const siteSections: readonly SiteSection[] = [
   {
     href: "/investigation",
     label: "التحقيق",
-    title: "كيف وصلنا إلى النتيجة؟",
-    summary: "شرح بسيط لأول الإشارات والانتشار والطقس، مع توضيح قوة كل دليل وحدوده.",
+    title: "كيف عرفنا أن السبب ليس طبيعياً؟",
+    summary: "الأدلة خطوة بخطوة: أول إشارة، تعدّد البدايات، البرق، الطقس، ثم ما يبقى.",
   },
   {
     href: "/map",
@@ -50,5 +50,5 @@ export const siteSections: readonly SiteSection[] = [
   },
 ] as const;
 
-/** رابط الصفحة الرئيسية (الملخص) — منفصل لأن الشعار يقود إليه. */
+/** رابط الصفحة الرئيسية (الملخص)، منفصل لأن الشعار يقود إليه. */
 export const homeSection = { href: "/", label: "الملخص" } as const;

@@ -17,6 +17,8 @@ const eslintConfig = defineConfig([
     "Fires/**",
     "tmp/**",
     "themes/*.d.ts",
+    // Local visual reference (Vite app), kept out of the Next build and checks.
+    "Arabic RTL Investigation Platform/**",
   ]),
 ]);
 

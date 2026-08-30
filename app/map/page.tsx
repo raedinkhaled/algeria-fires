@@ -6,7 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export const metadata: Metadata = {
   title: "خريطة حرائق جيجل",
-  description: "خريطة تفاعلية للرصد الحراري والبدايات المحتملة وشدة الاحتراق في حرائق جيجل خلال 23–29 أوت 2026.",
+  description: "خريطة تفاعلية للرصد الحراري والبدايات المحتملة وشدة الاحتراق في حرائق جيجل خلال 23-29 أوت 2026.",
 };
 
 export default function MapPage() {
@@ -17,7 +17,7 @@ export default function MapPage() {
         <div className="mt-10 grid gap-8 lg:grid-cols-12">
           <div className="text-sm leading-6 text-muted-foreground lg:col-span-3">
             <p className="font-medium text-foreground">المشهد الكامل</p>
-            <p className="mt-2">23–29 أوت 2026</p>
+            <p className="mt-2">23-29 أوت 2026</p>
             <p className="mt-1">ولاية جيجل وما حولها</p>
           </div>
           <div className="lg:col-span-8 lg:col-start-5">

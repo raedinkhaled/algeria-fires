@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 
@@ -7,16 +8,19 @@ import { cn } from "@/lib/utils";
  * كلها عرضية بلا حالة، فتصلح للمكوّنات الخادمة. اللون داخل المادة العلمية فقط.
  */
 
-/* ── عنوان قسم: نص عربي هادئ + خط شعرة، مع رقم اختياري بخط أحادي ── */
+/* ── عنوان قسم: نص عربي هادئ + خط شعرة، مع رقم اختياري بخط أحادي ──
+   الوسم الافتراضي h2 ليبني هيكل الصفحة؛ مرّر as="p" حيث تكون مجرّد تسمية. */
 export function SectionLabel({
   children,
   index,
   id,
+  as: Heading = "h2",
   className,
 }: {
   children: ReactNode;
   index?: string;
   id?: string;
+  as?: "h2" | "h3" | "p";
   className?: string;
 }) {
   return (
@@ -27,9 +31,9 @@ export function SectionLabel({
       {index ? (
         <span className="numeric text-xs text-muted-foreground">{index}</span>
       ) : null}
-      <span className="text-[11px] font-medium text-muted-foreground">
+      <Heading className="text-[11px] font-medium text-muted-foreground">
         {children}
-      </span>
+      </Heading>
       <span aria-hidden="true" className="h-px flex-1 bg-border" />
     </div>
   );
@@ -309,6 +313,73 @@ function FigureChip({
       )}
     >
       {children}
+    </div>
+  );
+}
+
+/* ── تسلسل زمني: حاوية محدودة بصفوف تاريخ/عنوان/تفصيل ── */
+export function Timeline({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return <div className={cn("divide-y border", className)}>{children}</div>;
+}
+
+export function TimelineRow({
+  date,
+  title,
+  children,
+}: {
+  date: ReactNode;
+  title: ReactNode;
+  children?: ReactNode;
+}) {
+  return (
+    <div className="grid gap-x-5 gap-y-1.5 px-4 py-4 sm:grid-cols-[minmax(0,9rem)_1fr]">
+      <p className="text-sm font-medium text-muted-foreground">{date}</p>
+      <div>
+        <h3 className="text-sm font-semibold leading-6">{title}</h3>
+        {children ? (
+          <div className="mt-1.5 text-sm leading-7 text-muted-foreground">
+            {children}
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+/* ── سند الادعاء: خط شعرة أعلاه، ثم مقياس ثقة ورابط المصدر ── */
+export function ClaimBasis({
+  level,
+  confidence,
+  sources,
+  sourcesHref = "/sources",
+  className,
+}: {
+  level: number;
+  confidence: string;
+  sources: ReactNode;
+  sourcesHref?: string;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "mt-5 grid gap-3 border-t pt-4 sm:grid-cols-[minmax(0,13rem)_1fr] sm:items-center",
+        className,
+      )}
+    >
+      <ConfidenceMeter level={level} label={`الثقة: ${confidence}`} />
+      <Link
+        href={sourcesHref}
+        className="text-xs text-muted-foreground underline decoration-border underline-offset-4 hover:text-foreground hover:decoration-foreground sm:text-end"
+      >
+        {sources}
+      </Link>
     </div>
   );
 }
