@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "data:build": "python Fires/scripts/36_build_site_data.py",
+    "prebuild": "npm run data:build",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

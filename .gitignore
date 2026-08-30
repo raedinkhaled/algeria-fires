@@ -64,9 +64,7 @@ next-env.d.ts
 /Fires/report/*.html
 /Fires/report/report_ar.pdf
 
-# generated website artifacts
-/public/generated/
-/public/maplibre/
+# generated website artifacts are validated release inputs and stay versioned
 /test-results/
 /playwright-report/
 /tmp/
