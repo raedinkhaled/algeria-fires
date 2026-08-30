@@ -45,7 +45,7 @@ export function SiteChrome({ children }: { children: ReactNode }) {
             <span className="flex flex-col gap-1 leading-none">
               <span className="text-sm font-semibold">حرائق جيجل</span>
               <span className="text-xs text-muted-foreground">
-                سجل التحقيق المفتوح
+                تحقيق حرائق أوت 2026
               </span>
             </span>
           </Link>
@@ -90,7 +90,7 @@ export function SiteChrome({ children }: { children: ReactNode }) {
                     حرائق جيجل
                   </SheetTitle>
                   <SheetDescription>
-                    ملف توثيقي مستقل لحرائق أوت 2026
+                    تحقيق مستقل بالبيانات المفتوحة
                   </SheetDescription>
                 </SheetHeader>
 

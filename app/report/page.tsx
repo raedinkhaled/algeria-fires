@@ -2,8 +2,18 @@ import type { Metadata } from "next";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import GithubSlugger from "github-slugger";
+import { DownloadIcon } from "lucide-react";
 
 import { ReportMarkdown } from "@/components/report-markdown";
+import { StoryBreadcrumb } from "@/components/story-breadcrumb";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 
 export const metadata: Metadata = {
@@ -60,7 +70,9 @@ export default async function ReportPage() {
   return (
     <article className="overflow-x-clip">
       <header className="mx-auto max-w-7xl px-4 pb-12 pt-10 sm:px-6 sm:pb-16 sm:pt-14 lg:px-8 lg:pb-20">
-        <div className="grid gap-10 lg:grid-cols-12">
+        <StoryBreadcrumb current="التقرير الكامل" />
+
+        <div className="mt-10 grid gap-10 lg:grid-cols-12">
           <div className="text-sm leading-6 text-muted-foreground lg:col-span-3">
             <p className="font-medium text-foreground">وثيقة التحقيق</p>
             <p className="mt-2">المراجعة 4</p>
@@ -72,68 +84,57 @@ export default async function ReportPage() {
               {documentTitle}
             </h1>
             <p className="mt-7 max-w-3xl text-lg leading-9 text-muted-foreground">
-              النص الكامل كما تولّده سلسلة التحقيق، بما في ذلك التصحيحات،
-              الجداول، درجات الثقة، القيود، وسجل ما يلزم لحسم الأسئلة المفتوحة.
+              هنا توجد كل التفاصيل: البيانات، الحسابات، الجداول، درجات الثقة،
+              وما نحتاج إليه للإجابة عن الأسئلة التي ما زالت مفتوحة.
             </p>
-            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm">
-              <a
-                href="/generated/report/report_ar_compact.pdf"
-                download
-                className="font-medium underline decoration-border underline-offset-8 hover:decoration-foreground"
-              >
-                تنزيل PDF المضغوط
-              </a>
-              <a
-                href="/generated/documentation/report_ar.md"
-                download
-                className="text-muted-foreground underline decoration-border underline-offset-8 hover:text-foreground hover:decoration-foreground"
-              >
-                تنزيل Markdown
-              </a>
+            <div className="mt-8 flex flex-wrap gap-2">
+              <Button asChild variant="outline">
+                <a href="/generated/report/report_ar_compact.pdf" download>
+                  <DownloadIcon data-icon="inline-start" />
+                  نسخة PDF
+                </a>
+              </Button>
+              <Button asChild variant="ghost">
+                <a href="/generated/documentation/report_ar.md" download>
+                  <DownloadIcon data-icon="inline-start" />
+                  ملف Markdown
+                </a>
+              </Button>
             </div>
           </div>
         </div>
 
-        <details className="mt-10 border-y py-4 lg:hidden">
-          <summary className="cursor-pointer font-medium">فهرس الفصول</summary>
-          <nav aria-label="فهرس التقرير للهاتف" className="mt-5 flex flex-col">
-            {tableOfContents.map((item, index) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className="flex gap-3 border-t py-3 text-sm"
-              >
-                <span className="numeric w-8 shrink-0 text-xs text-muted-foreground">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <span>{item.label}</span>
-              </a>
-            ))}
-          </nav>
-        </details>
+        <Accordion type="single" collapsible className="mt-10 border-y lg:hidden">
+          <AccordionItem value="toc" className="border-0">
+            <AccordionTrigger>فهرس الفصول</AccordionTrigger>
+            <AccordionContent>
+              <nav aria-label="فهرس التقرير للهاتف" className="flex flex-col">
+                {tableOfContents.map((item, index) => (
+                  <a key={item.href} href={item.href} className="flex gap-3 border-t py-3 text-sm no-underline">
+                    <span className="numeric w-8 shrink-0 text-xs text-muted-foreground">{String(index + 1).padStart(2, "0")}</span>
+                    <span>{item.label}</span>
+                  </a>
+                ))}
+              </nav>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </header>
 
       <Separator />
 
       <div className="mx-auto grid max-w-7xl gap-12 px-4 pb-20 sm:px-6 lg:grid-cols-12 lg:px-8">
         <aside className="hidden lg:col-span-3 lg:block">
-          <nav
-            aria-label="فهرس التقرير"
-            className="sticky top-24 max-h-screen overflow-y-auto py-10 pe-5"
-          >
+          <nav aria-label="فهرس التقرير" className="sticky top-24 py-10">
             <p className="mb-4 text-xs font-medium">فهرس الفصول</p>
-            {tableOfContents.map((item, index) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className="flex gap-3 border-t py-3 text-xs leading-5 text-muted-foreground hover:text-foreground"
-              >
-                <span className="numeric w-8 shrink-0">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <span>{item.label}</span>
-              </a>
-            ))}
+            <ScrollArea className="h-screen pe-5">
+              {tableOfContents.map((item, index) => (
+                <a key={item.href} href={item.href} className="flex gap-3 border-t py-3 text-xs leading-5 text-muted-foreground hover:text-foreground">
+                  <span className="numeric w-8 shrink-0">{String(index + 1).padStart(2, "0")}</span>
+                  <span>{item.label}</span>
+                </a>
+              ))}
+            </ScrollArea>
           </nav>
         </aside>
 
