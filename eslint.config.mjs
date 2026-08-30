@@ -17,6 +17,8 @@ const eslintConfig = defineConfig([
     "Fires/**",
     "tmp/**",
     "themes/*.d.ts",
+    // Vendored MapLibre worker copied from node_modules — not our source.
+    "public/vendor/**",
     // Local visual reference (Vite app), kept out of the Next build and checks.
     "Arabic RTL Investigation Platform/**",
   ]),

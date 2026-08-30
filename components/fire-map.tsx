@@ -1,219 +1,746 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
-import * as maplibregl from "maplibre-gl";
-import type { Map as MapLibreMap } from "maplibre-gl";
+import {
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  LayersIcon,
+} from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { LngLat, Map as MapLibreMap, MapMouseEvent } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-  FieldLegend,
-  FieldSet,
-} from "@/components/ui/field";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 
-const days = [
-  { label: "23 أوت", cutoff: "2026-08-23 23:59" },
-  { label: "24 أوت", cutoff: "2026-08-24 23:59" },
-  { label: "25 أوت", cutoff: "2026-08-25 23:59" },
-  { label: "26 أوت", cutoff: "2026-08-26 23:59" },
-  { label: "27 أوت", cutoff: "2026-08-27 23:59" },
-  { label: "28 أوت", cutoff: "2026-08-28 23:59" },
-  { label: "29 أوت", cutoff: "2026-08-29 23:59" },
+/* ── الأيام: حدّ زمني تراكمي، نهاية كل يوم بالتوقيت المحلي (UTC+1) ── */
+const DAYS = [
+  { key: "23", label: "23 أوت", cutoff: "2026-08-23 23:59" },
+  { key: "24", label: "24 أوت", cutoff: "2026-08-24 23:59" },
+  { key: "25", label: "25 أوت", cutoff: "2026-08-25 23:59" },
+  { key: "26", label: "26 أوت", cutoff: "2026-08-26 23:59" },
+  { key: "27", label: "27 أوت", cutoff: "2026-08-27 23:59" },
+  { key: "28", label: "28 أوت", cutoff: "2026-08-28 23:59" },
+  { key: "29", label: "29 أوت", cutoff: "2026-08-29 23:59" },
 ] as const;
 
-const layerOptions = [
-  { id: "hotspots", mapId: "hotspots", label: "الرصد الحراري", description: "9,100 قراءة من أقمار VIIRS" },
-  { id: "origins", mapId: "candidate-origins", label: "البدايات المحتملة", description: "12 موقعاً اجتازت شروط التحليل" },
-  { id: "burn", mapId: "burn-patch-centroids", label: "مراكز المناطق المحترقة", description: "17 مركزاً؛ ليست حدوداً للمناطق" },
-  { id: "severity", mapId: "burn-severity", label: "شدة الاحتراق", description: "صورة Sentinel-2 ليوم 28 أوت" },
-  { id: "communes", mapId: "communes", label: "حدود البلديات", description: "28 بلدية داخل ولاية جيجل" },
-] as const;
+const LAST_DAY = DAYS.length - 1;
 
-type LayerId = (typeof layerOptions)[number]["id"];
+/* ── الطبقات: المعرّف في نمط الخريطة + حقل الوقت الذي يخضع للترشيح الزمني ── */
+type LayerId = "hotspots" | "origins" | "burn" | "severity" | "communes";
 
-const initialVisibility: Record<LayerId, boolean> = {
+const LAYERS: {
+  id: LayerId;
+  styleId: string;
+  label: string;
+  note: string;
+  timeField?: string;
+}[] = [
+  {
+    id: "hotspots",
+    styleId: "hotspots",
+    label: "الرصد الحراري",
+    note: "9,100 قراءة من أقمار VIIRS، حجمها بحسب قوة الإشعاع",
+    timeField: "datetime_local",
+  },
+  {
+    id: "origins",
+    styleId: "candidate-origins",
+    label: "البدايات المحتملة",
+    note: "12 بداية اجتازت شرطَي البُعد وانقطاع المسار",
+    timeField: "first_local",
+  },
+  {
+    id: "burn",
+    styleId: "burn-patch-centroids",
+    label: "مراكز الندبات",
+    note: "17 مركزاً هندسياً؛ لا حدود منشورة للندبات",
+    timeField: "first_det_local",
+  },
+  {
+    id: "severity",
+    styleId: "burn-severity",
+    label: "شدة الاحتراق",
+    note: "فرق الانعكاسية dNBR من Sentinel-2 بين 18 و28 أوت",
+  },
+  {
+    id: "communes",
+    styleId: "communes",
+    label: "حدود البلديات",
+    note: "28 بلدية داخل ولاية جيجل",
+  },
+];
+
+const INITIAL_VISIBILITY: Record<LayerId, boolean> = {
   hotspots: true,
   origins: true,
   burn: true,
   severity: true,
-  communes: true,
+  communes: false,
 };
 
-function currentStyle(): string {
-  return document.documentElement.classList.contains("dark")
-    ? "/maplibre/style-dark.json"
-    : "/maplibre/style-light.json";
+/* فئات شدّة الاحتراق ولونها كما في صورة Sentinel-2 (مادة علمية، اللون مسموح) */
+const SEVERITY_CLASSES = [
+  { label: "لم تحترق", color: "#c8c8c8" },
+  { label: "منخفضة", color: "#7cc76a" },
+  { label: "متوسطة-منخفضة", color: "#ffeb64" },
+  { label: "متوسطة-عالية", color: "#f2942a" },
+  { label: "عالية", color: "#c81e1e" },
+];
+
+/* ألوان احتياطية مطابقة لملفَّي النمط، تُستعمل لو تعذّرت قراءتها من الخريطة */
+const FALLBACK_PALETTE = {
+  light: { hotspot: "#b93518", origin: "#7a230f", burnRing: "#b93518", commune: "#a89d91" },
+  dark: { hotspot: "#ff7654", origin: "#ffd08a", burnRing: "#ff7654", commune: "#8b8178" },
+};
+
+type Palette = (typeof FALLBACK_PALETTE)["light"];
+
+type MapStatus = "loading" | "ready" | "failed";
+
+type ActivityDay = { date: string; detections: number };
+
+/* نوع مرشّح الطبقة كما يقبله setFilter، ومساعد لبناء الترشيح الزمني */
+type MapFilter = Parameters<MapLibreMap["setFilter"]>[1];
+
+function timeExpr(field: string, cutoff: string): MapFilter {
+  return ["<=", ["get", field], cutoff] as unknown as MapFilter;
 }
 
-function supportsWebGL(): boolean {
-  const canvas = document.createElement("canvas");
-  return Boolean(canvas.getContext("webgl2") ?? canvas.getContext("webgl"));
+function isDark(): boolean {
+  return document.documentElement.classList.contains("dark");
 }
 
-export function FireMap() {
+function styleUrl(): string {
+  return isDark() ? "/maplibre/style-dark.json" : "/maplibre/style-light.json";
+}
+
+function supportsWebGL2(): boolean {
+  try {
+    return Boolean(document.createElement("canvas").getContext("webgl2"));
+  } catch {
+    return false;
+  }
+}
+
+const AR_CONFIDENCE: Record<string, string> = {
+  high: "عالية",
+  nominal: "متوسطة",
+  low: "منخفضة",
+};
+
+function num(value: unknown, digits = 2): string {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "—";
+  return n.toLocaleString("en-US", { maximumFractionDigits: digits });
+}
+
+function esc(value: unknown): string {
+  return String(value ?? "").replace(/[&<>"]/g, (c) =>
+    c === "&" ? "&amp;" : c === "<" ? "&lt;" : c === ">" ? "&gt;" : "&quot;",
+  );
+}
+
+/* نافذة معلومات منسّقة: عنوان + صفوف مفتاح/قيمة، القيم LTR بخط أحادي */
+function popupHTML(kind: LayerId, p: Record<string, unknown>): string {
+  const rows: [string, string][] = [];
+  let title = "";
+
+  if (kind === "origins") {
+    const place = p.locality || p.daira || p.wilaya;
+    title = `${esc(p.origin_id)}${place ? ` · ${esc(place)}` : ""}`;
+    rows.push(["أول رصد", esc(p.first_local)]);
+    rows.push(["الثقة", AR_CONFIDENCE[String(p.confidence)] ?? esc(p.confidence)]);
+    rows.push(["قوة الإشعاع", `${num(p.frp_mw, 1)} MW`]);
+    rows.push(["الارتفاع", `${num(p.elevation_m, 0)} م`]);
+    rows.push(["الميل", `${num(p.slope_deg, 1)}°`]);
+    if (p.largest_unburnt_gap_km != null) {
+      rows.push(["أوسع فجوة غير محترقة", `${num(p.largest_unburnt_gap_km, 1)} كم`]);
+    }
+    rows.push(["الموقع", esc([p.daira, p.wilaya].filter(Boolean).join(" · "))]);
+  } else if (kind === "burn") {
+    title = esc(p.patch_id);
+    rows.push(["أول رصد", esc(p.first_det_local)]);
+    rows.push(["المساحة", `${num(p.area_km2, 1)} كم²`]);
+    rows.push(["أقصى امتداد", `${num(p.max_extent_km, 1)} كم`]);
+    rows.push(["متوسط dNBR", num(p.mean_dnbr, 3)]);
+    rows.push(["أقصى dNBR", num(p.max_dnbr, 3)]);
+  } else {
+    title = "رصد حراري";
+    rows.push(["الوقت المحلي", esc(p.datetime_local)]);
+    rows.push(["المستشعر", esc([p.instrument, p.sat_code].filter(Boolean).join(" · "))]);
+    rows.push(["الثقة", AR_CONFIDENCE[String(p.conf_class)] ?? esc(p.conf_class)]);
+    rows.push(["قوة الإشعاع", `${num(p.frp_mw, 1)} MW`]);
+    rows.push(["الرصد", p.daynight === "N" ? "ليلي" : "نهاري"]);
+  }
+
+  const body = rows
+    .map(
+      ([k, v]) =>
+        `<div class="fire-popup__row"><span class="fire-popup__key">${k}</span><span class="fire-popup__val">${v}</span></div>`,
+    )
+    .join("");
+  return `<div class="fire-popup"><p class="fire-popup__title">${title}</p>${body}</div>`;
+}
+
+function LegendRow({
+  swatch,
+  label,
+  note,
+}: {
+  swatch: React.ReactNode;
+  label: string;
+  note?: string;
+}) {
+  return (
+    <div className="flex items-start gap-2">
+      <span className="mt-0.5 flex h-3 w-4 shrink-0 items-center justify-center">
+        {swatch}
+      </span>
+      <span className="min-w-0">
+        <span className="text-foreground">{label}</span>
+        {note ? (
+          <span className="block text-[10px] leading-4 text-muted-foreground">
+            {note}
+          </span>
+        ) : null}
+      </span>
+    </div>
+  );
+}
+
+function MapLegend({
+  visibility,
+  palette,
+}: {
+  visibility: Record<LayerId, boolean>;
+  palette: Palette;
+}) {
+  const anyVisible = LAYERS.some((l) => visibility[l.id]);
+  const [open, setOpen] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return window.matchMedia("(min-width: 640px)").matches;
+  });
+  if (!anyVisible) return null;
+
+  return (
+    <div className="absolute start-3 top-3 z-10 max-w-[min(15rem,calc(100%-1.5rem))]">
+      <div className="border bg-background/95 shadow-sm backdrop-blur-sm">
+        <button
+          type="button"
+          onClick={() => setOpen((value) => !value)}
+          aria-expanded={open}
+          className="flex w-full items-center justify-between gap-3 px-2.5 py-1.5 text-[10px] font-medium uppercase tracking-label text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+        >
+          مفتاح الطبقات
+          <ChevronDownIcon
+            className={cn("size-3 transition-transform", open && "rotate-180")}
+            aria-hidden
+          />
+        </button>
+        <div
+          className={cn(
+            "space-y-1.5 border-t px-2.5 py-2 text-[11px] leading-5",
+            !open && "hidden",
+          )}
+        >
+          {visibility.hotspots ? (
+            <LegendRow
+              label="الرصد الحراري"
+              note="الحجم ∝ قوة الإشعاع"
+              swatch={
+                <span className="flex items-center gap-0.5">
+                  <span
+                    className="size-1 rounded-full"
+                    style={{ background: palette.hotspot }}
+                  />
+                  <span
+                    className="size-1.5 rounded-full"
+                    style={{ background: palette.hotspot }}
+                  />
+                  <span
+                    className="size-2 rounded-full"
+                    style={{ background: palette.hotspot }}
+                  />
+                </span>
+              }
+            />
+          ) : null}
+          {visibility.origins ? (
+            <LegendRow
+              label="البدايات المحتملة"
+              swatch={
+                <span
+                  className="size-2.5 rounded-full ring-2 ring-background"
+                  style={{ background: palette.origin }}
+                />
+              }
+            />
+          ) : null}
+          {visibility.burn ? (
+            <LegendRow
+              label="مراكز الندبات"
+              swatch={
+                <span
+                  className="size-2 rounded-full bg-foreground"
+                  style={{ boxShadow: `0 0 0 2px ${palette.burnRing}` }}
+                />
+              }
+            />
+          ) : null}
+          {visibility.communes ? (
+            <LegendRow
+              label="حدود البلديات"
+              swatch={
+                <span
+                  className="h-px w-4"
+                  style={{ background: palette.commune }}
+                />
+              }
+            />
+          ) : null}
+          {visibility.severity ? (
+            <div>
+              <span className="text-foreground">شدة الاحتراق</span>
+              <span className="mt-1 flex h-2 w-full overflow-hidden border">
+                {SEVERITY_CLASSES.map((c) => (
+                  <span
+                    key={c.label}
+                    className="flex-1"
+                    style={{ background: c.color }}
+                    title={c.label}
+                  />
+                ))}
+              </span>
+              <span className="mt-0.5 flex justify-between text-[9px] text-muted-foreground">
+                <span>سطحية</span>
+                <span>شديدة</span>
+              </span>
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function FireMap({ activity }: { activity: ActivityDay[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
-  const dayRef = useRef(days.length - 1);
-  const visibilityRef = useRef<Record<LayerId, boolean>>(initialVisibility);
-  const [day, setDay] = useState(days.length - 1);
-  const [visibility, setVisibility] = useState(initialVisibility);
-  const [failed, setFailed] = useState(false);
+  const readyRef = useRef(false);
+  const dayRef = useRef(LAST_DAY);
+  const visibilityRef = useRef(INITIAL_VISIBILITY);
+  const themeRef = useRef<"light" | "dark">("light");
+
+  const [day, setDay] = useState(LAST_DAY);
+  const [visibility, setVisibility] = useState(INITIAL_VISIBILITY);
+  const [status, setStatus] = useState<MapStatus>("loading");
+  const [palette, setPalette] = useState<Palette>(FALLBACK_PALETTE.light);
+  const [view, setView] = useState<{ lng: number; lat: number; zoom: number } | null>(
+    null,
+  );
+
+  const maxDetections = useMemo(
+    () => Math.max(1, ...activity.map((d) => d.detections)),
+    [activity],
+  );
 
   useEffect(() => {
-    if (!containerRef.current || !supportsWebGL()) {
-      setFailed(true);
-      return;
-    }
+    let cancelled = false;
+    const container = containerRef.current;
+    if (!container) return;
 
-    const map = new maplibregl.Map({
-      container: containerRef.current,
-      style: currentStyle(),
-      bounds: [5.0, 36.2, 6.8, 37.2],
-      fitBoundsOptions: { padding: 28 },
-      attributionControl: false,
-      cooperativeGestures: true,
-      maxBounds: [[4.5, 35.8], [7.3, 37.6]],
-    });
-    mapRef.current = map;
-    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-left");
-    map.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-left");
+    let map: MapLibreMap | undefined;
+    let watchdog: ReturnType<typeof setTimeout> | undefined;
 
-    const applyState = () => {
-      const cutoff = days[dayRef.current].cutoff;
-      if (map.getLayer("hotspots")) map.setFilter("hotspots", ["<=", ["get", "datetime_local"], cutoff]);
-      for (const layer of layerOptions) {
-        if (map.getLayer(layer.mapId)) map.setLayoutProperty(layer.mapId, "visibility", visibilityRef.current[layer.id] ? "visible" : "none");
+    const start = async () => {
+      const maplibregl = await import("maplibre-gl");
+      if (cancelled || !container) return;
+
+      if (!supportsWebGL2()) {
+        setStatus("failed");
+        return;
       }
-    };
 
-    map.on("style.load", applyState);
-    map.on("error", (event) => {
-      if (event.error) setFailed(true);
-    });
+      // نسخة العامل من الحزمة نفسها، تُنشر تحت public/vendor. حزم dev لا تحلّ
+      // مسار العامل الداخلي في MapLibre حلاً صحيحاً، فنمرّره صراحةً.
+      maplibregl.setWorkerUrl("/vendor/maplibre/maplibre-gl-worker.mjs");
+      themeRef.current = isDark() ? "dark" : "light";
 
-    const showPopup = (layerId: string, property: string) => {
-      map.on("click", layerId, (event) => {
-        const feature = event.features?.[0];
-        const point = feature?.geometry.type === "Point" ? feature.geometry.coordinates : null;
-        if (!feature || !point) return;
-        const label = String(feature.properties?.[property] ?? "رصد بلا معرّف");
-        const time = String(feature.properties?.first_local ?? feature.properties?.datetime_local ?? "");
-        new maplibregl.Popup({ closeButton: true })
-          .setLngLat([Number(point[0]), Number(point[1])])
-          .setText(time ? `${label}: ${time}` : label)
-          .addTo(map);
+      const m = new maplibregl.Map({
+        container,
+        style: styleUrl(),
+        bounds: [5.37, 36.4, 6.63, 36.96],
+        fitBoundsOptions: { padding: 26 },
+        attributionControl: false,
+        cooperativeGestures: true,
+        maxBounds: [
+          [4.4, 35.7],
+          [7.4, 37.7],
+        ],
+        locale: {
+          "NavigationControl.ZoomIn": "تكبير",
+          "NavigationControl.ZoomOut": "تصغير",
+          "AttributionControl.ToggleAttribution": "مصادر الخريطة",
+          "Popup.Close": "إغلاق",
+          "CooperativeGesturesHandler.WindowsHelpText":
+            "اضغط Ctrl مع التمرير للتكبير",
+          "CooperativeGesturesHandler.MacHelpText": "اضغط ⌘ مع التمرير للتكبير",
+          "CooperativeGesturesHandler.MobileHelpText":
+            "استخدم إصبعين لتحريك الخريطة",
+        },
       });
-      map.on("mouseenter", layerId, () => { map.getCanvas().style.cursor = "pointer"; });
-      map.on("mouseleave", layerId, () => { map.getCanvas().style.cursor = ""; });
+      map = m;
+      mapRef.current = m;
+
+      m.addControl(
+        new maplibregl.NavigationControl({ showCompass: false }),
+        "top-left",
+      );
+      m.addControl(
+        new maplibregl.AttributionControl({ compact: true }),
+        "bottom-left",
+      );
+      m.addControl(
+        new maplibregl.ScaleControl({ unit: "metric", maxWidth: 110 }),
+        "bottom-right",
+      );
+
+      const readPalette = () => {
+        const fallback = FALLBACK_PALETTE[themeRef.current];
+        const read = (
+          id: string,
+          prop: "circle-color" | "circle-stroke-color" | "line-color",
+          key: keyof Palette,
+        ) => {
+          try {
+            const value = m.getPaintProperty(id, prop);
+            return typeof value === "string" ? value : fallback[key];
+          } catch {
+            return fallback[key];
+          }
+        };
+        setPalette({
+          hotspot: read("hotspots", "circle-color", "hotspot"),
+          origin: read("candidate-origins", "circle-color", "origin"),
+          burnRing: read("burn-patch-centroids", "circle-stroke-color", "burnRing"),
+          commune: read("communes", "line-color", "commune"),
+        });
+      };
+
+      const applyState = () => {
+        const cutoff = DAYS[dayRef.current].cutoff;
+        for (const layer of LAYERS) {
+          if (!m.getLayer(layer.styleId)) continue;
+          if (layer.timeField) {
+            m.setFilter(layer.styleId, timeExpr(layer.timeField, cutoff));
+          }
+          m.setLayoutProperty(
+            layer.styleId,
+            "visibility",
+            visibilityRef.current[layer.id] ? "visible" : "none",
+          );
+        }
+        readPalette();
+      };
+
+      // ترتيب أولوية النقر عند تراكب النقاط: المنشأ ثم الندبة ثم الرصد
+      const PICK_ORDER: { styleId: string; kind: LayerId }[] = [
+        { styleId: "candidate-origins", kind: "origins" },
+        { styleId: "burn-patch-centroids", kind: "burn" },
+        { styleId: "hotspots", kind: "hotspots" },
+      ];
+      const pickLayerIds = PICK_ORDER.map((entry) => entry.styleId);
+
+      m.on("click", (event: MapMouseEvent) => {
+        const hits = m.queryRenderedFeatures(event.point, {
+          layers: pickLayerIds.filter((id) => m.getLayer(id)),
+        });
+        if (!hits.length) return;
+        const chosen = PICK_ORDER.map((entry) => ({
+          entry,
+          feature: hits.find((hit) => hit.layer.id === entry.styleId),
+        })).find((candidate) => candidate.feature);
+        if (!chosen?.feature || chosen.feature.geometry.type !== "Point") return;
+        const [lng, lat] = chosen.feature.geometry.coordinates as [number, number];
+        new maplibregl.Popup({ closeButton: true, offset: 12, maxWidth: "260px" })
+          .setLngLat([lng, lat])
+          .setHTML(popupHTML(chosen.entry.kind, chosen.feature.properties ?? {}))
+          .addTo(m);
+      });
+
+      m.on("mousemove", (event: MapMouseEvent) => {
+        const hit = m.queryRenderedFeatures(event.point, {
+          layers: pickLayerIds.filter((id) => m.getLayer(id)),
+        });
+        m.getCanvas().style.cursor = hit.length ? "pointer" : "";
+      });
+
+      const syncView = () => {
+        const c: LngLat = m.getCenter();
+        setView({ lng: c.lng, lat: c.lat, zoom: m.getZoom() });
+      };
+
+      m.on("style.load", applyState);
+      m.on("load", () => {
+        if (cancelled) return;
+        readyRef.current = true;
+        setStatus("ready");
+        syncView();
+        if (watchdog) clearTimeout(watchdog);
+      });
+      m.on("moveend", syncView);
+      m.on("error", (event) => {
+        console.error("MapLibre error", event.error);
+        // فشل تحميل النمط نفسه = عطل قاتل؛ أخطاء المصادر بعده غير قاتلة
+        if (!readyRef.current && !m.isStyleLoaded()) setStatus("failed");
+      });
+      m.on("webglcontextlost", () => setStatus("failed"));
+
+      watchdog = setTimeout(() => {
+        if (!readyRef.current && !cancelled) setStatus("failed");
+      }, 12000);
     };
 
-    showPopup("candidate-origins", "origin_id");
-    showPopup("burn-patch-centroids", "patch_id");
-    showPopup("hotspots", "sat_code");
+    void start();
 
     const observer = new MutationObserver(() => {
-      const style = currentStyle();
-      if (!map.getStyle()?.name?.includes(style.includes("dark") ? "dark" : "light")) map.setStyle(style);
+      const next = isDark() ? "dark" : "light";
+      if (next === themeRef.current || !map) return;
+      themeRef.current = next;
+      map.setStyle(styleUrl());
     });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
 
     return () => {
+      cancelled = true;
       observer.disconnect();
-      map.remove();
+      if (watchdog) clearTimeout(watchdog);
+      map?.remove();
       mapRef.current = null;
+      readyRef.current = false;
     };
   }, []);
 
-  const updateDay = (value: number[]) => {
-    const next = value[0] ?? days.length - 1;
-    dayRef.current = next;
-    setDay(next);
+  const applyDay = useCallback((next: number) => {
+    const clamped = Math.min(LAST_DAY, Math.max(0, next));
+    dayRef.current = clamped;
+    setDay(clamped);
     const map = mapRef.current;
-    if (map?.getLayer("hotspots")) map.setFilter("hotspots", ["<=", ["get", "datetime_local"], days[next].cutoff]);
-  };
+    if (!map) return;
+    const cutoff = DAYS[clamped].cutoff;
+    for (const layer of LAYERS) {
+      if (layer.timeField && map.getLayer(layer.styleId)) {
+        map.setFilter(layer.styleId, timeExpr(layer.timeField, cutoff));
+      }
+    }
+  }, []);
 
-  const updateLayer = (id: LayerId, checked: boolean) => {
-    const next = { ...visibilityRef.current, [id]: checked };
+  const toggleLayer = useCallback((id: LayerId) => {
+    const next = { ...visibilityRef.current, [id]: !visibilityRef.current[id] };
     visibilityRef.current = next;
     setVisibility(next);
-    const option = layerOptions.find((layer) => layer.id === id);
     const map = mapRef.current;
-    if (option && map?.getLayer(option.mapId)) map.setLayoutProperty(option.mapId, "visibility", checked ? "visible" : "none");
-  };
+    const layer = LAYERS.find((l) => l.id === id);
+    if (map && layer && map.getLayer(layer.styleId)) {
+      map.setLayoutProperty(
+        layer.styleId,
+        "visibility",
+        next[id] ? "visible" : "none",
+      );
+    }
+  }, []);
+
+  if (status === "failed") {
+    return (
+      <section
+        aria-label="خريطة تفاعلية لحرائق جيجل"
+        className="border-y px-4 py-6 sm:px-6"
+      >
+        <Alert className="mx-auto max-w-3xl">
+          <AlertTitle>تعذّر تشغيل الخريطة التفاعلية</AlertTitle>
+          <AlertDescription>
+            قد يكون متصفحك لا يدعم WebGL أو تعذّر تحميل ملفات الخريطة. تابع أثر
+            الاحتراق في الصورة الثابتة أدناه؛ لم تُحذف أي بيانات.
+          </AlertDescription>
+        </Alert>
+        <figure className="mx-auto mt-5 max-w-4xl">
+          <Image
+            src="/generated/media/burn-severity.png"
+            alt="خريطة ثابتة لشدة الاحتراق في جيجل من Sentinel-2"
+            width={4946}
+            height={2700}
+            className="h-auto w-full border"
+          />
+          <figcaption className="mt-2 text-xs leading-5 text-muted-foreground">
+            بديل ثابت من Sentinel-2 (dNBR بين 18 و28 أوت): الأحمر شدة احتراق
+            عالية، الأخضر منخفضة. لا حدود منشورة للندبات، ولم نختلقها.
+          </figcaption>
+        </figure>
+      </section>
+    );
+  }
 
   return (
-    <div className="grid border-y lg:grid-cols-12">
-      <aside className="border-b p-4 sm:p-6 lg:col-span-3 lg:border-b-0 lg:border-e">
-        <Card size="sm">
-          <CardHeader>
-            <CardTitle>إعداد الخريطة</CardTitle>
-            <CardDescription>اختر اليوم والطبقات التي تريد مقارنتها.</CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-6">
-            <FieldSet>
-              <div className="flex items-baseline justify-between gap-4">
-                <FieldLegend>الزمن</FieldLegend>
-                <output className="numeric text-sm font-medium">حتى {days[day].label}</output>
-              </div>
-              <FieldDescription>حرّك المؤشر لرؤية الرصد المتراكم يوماً بعد يوم.</FieldDescription>
-              <Field>
-                <FieldLabel htmlFor="map-day" className="sr-only">آخر يوم ظاهر</FieldLabel>
-                <Slider id="map-day" min={0} max={days.length - 1} step={1} value={[day]} onValueChange={updateDay} aria-label="اختيار آخر يوم ظاهر على الخريطة" />
-                <div className="numeric flex justify-between text-xs text-muted-foreground"><span>23 أوت</span><span>29 أوت</span></div>
-              </Field>
-            </FieldSet>
+    <section aria-label="خريطة تفاعلية لحرائق جيجل" className="border-y">
+      {/* شريط الطبقات: ملتصق أسفل ترويسة الموقع ليبقى في المتناول أثناء التمرير */}
+      <div
+        role="group"
+        aria-label="طبقات الخريطة"
+        className="sticky top-12 z-30 flex items-stretch overflow-x-auto border-b bg-background text-[11px]"
+      >
+        <span className="flex shrink-0 items-center gap-1.5 border-e px-3 py-2.5 font-medium text-muted-foreground">
+          <LayersIcon className="size-3.5" aria-hidden />
+          الطبقات
+        </span>
+        {LAYERS.map((layer) => {
+          const on = visibility[layer.id];
+          return (
+            <button
+              key={layer.id}
+              type="button"
+              aria-pressed={on}
+              title={layer.note}
+              onClick={() => toggleLayer(layer.id)}
+              className={cn(
+                "flex shrink-0 items-center gap-1.5 border-e px-3 py-2.5 whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
+                on
+                  ? "bg-muted text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <span
+                aria-hidden
+                className="size-2 shrink-0 rounded-full"
+                style={{
+                  background: on
+                    ? layer.id === "severity"
+                      ? SEVERITY_CLASSES[4].color
+                      : layer.id === "origins"
+                        ? palette.origin
+                        : layer.id === "communes"
+                          ? palette.commune
+                          : palette.hotspot
+                    : "var(--border)",
+                }}
+              />
+              {layer.label}
+            </button>
+          );
+        })}
+        {view ? (
+          <span className="ms-auto hidden shrink-0 items-center border-s px-3 py-2.5 text-muted-foreground sm:flex">
+            <span className="ltr-embed">
+              {view.lat.toFixed(2)}°N · {view.lng.toFixed(2)}°E · z
+              {view.zoom.toFixed(1)}
+            </span>
+          </span>
+        ) : null}
+      </div>
 
-            <FieldSet>
-              <FieldLegend>الطبقات</FieldLegend>
-              <FieldGroup data-slot="checkbox-group">
-                {layerOptions.map((layer) => (
-                  <Field key={layer.id} orientation="horizontal">
-                    <Checkbox id={`layer-${layer.id}`} checked={visibility[layer.id]} onCheckedChange={(checked) => updateLayer(layer.id, checked === true)} />
-                    <FieldContent>
-                      <FieldLabel htmlFor={`layer-${layer.id}`}>{layer.label}</FieldLabel>
-                      <FieldDescription>{layer.description}</FieldDescription>
-                    </FieldContent>
-                  </Field>
-                ))}
-              </FieldGroup>
-            </FieldSet>
-          </CardContent>
-          <CardFooter className="text-xs leading-6 text-muted-foreground">انقر على نقطة لعرض معرّفها ووقت رصدها. الإحداثيات والوقت تقريبيان بحسب مرور القمر.</CardFooter>
-        </Card>
-      </aside>
+      {/* الخريطة والطبقات فوقها */}
+      <div className="relative">
+        <div
+          ref={containerRef}
+          dir="ltr"
+          role="application"
+          aria-label="خريطة قابلة للتحريك والتكبير"
+          className={cn(
+            "fire-map-canvas h-[46vh] min-h-[19rem] w-full sm:h-[58vh] lg:h-[66vh]",
+            status !== "ready" && "invisible",
+          )}
+        />
 
-      <div className="relative min-h-96 lg:col-span-9">
-        {failed ? (
-          <div className="flex h-dvh min-h-96 flex-col justify-center p-6 sm:p-10">
-            <Alert>
-              <AlertTitle>تعذر تشغيل الخريطة التفاعلية</AlertTitle>
-              <AlertDescription>يمكنك متابعة أثر الاحتراق في الصورة الثابتة أدناه. لم تُحذف أي بيانات من الصفحة.</AlertDescription>
-            </Alert>
-            <figure className="mt-6">
-              <Image src="/generated/media/burn-severity.png" alt="خريطة ثابتة لشدة الاحتراق في جيجل" width={4946} height={2700} className="h-auto w-full border" />
-              <figcaption className="mt-3 text-xs leading-5 text-muted-foreground">بديل ثابت من Sentinel-2. يعرض شدة الاحتراق ولا يعرض حدوداً مخترعة للندبات.</figcaption>
-            </figure>
+        {status === "ready" ? (
+          <MapLegend visibility={visibility} palette={palette} />
+        ) : null}
+
+        {status === "loading" ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-background">
+            <p className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span
+                aria-hidden
+                className="size-1.5 animate-pulse rounded-full bg-muted-foreground"
+              />
+              جارٍ تحميل الخريطة…
+            </p>
           </div>
         ) : null}
-        <div ref={containerRef} dir="ltr" aria-label="خريطة تفاعلية لحرائق جيجل" className={cn("h-dvh min-h-96 w-full", failed && "hidden")} />
       </div>
-    </div>
+
+      {/* شريط الزمن: محور زمني يُقرأ من اليسار (الأقدم) إلى اليمين (الأحدث) */}
+      <div className="border-t px-3 py-2.5">
+        <div
+          dir="rtl"
+          className="mb-1.5 flex items-baseline justify-between gap-3"
+        >
+          <span className="text-[11px] text-muted-foreground">
+            الرصد المتراكم حتى نهاية اليوم
+          </span>
+          <span className="text-xs font-medium">حتى {DAYS[day].label}</span>
+        </div>
+
+        <div dir="ltr" className="flex items-center gap-2 sm:gap-3">
+          <button
+            type="button"
+            onClick={() => applyDay(day - 1)}
+            disabled={day === 0}
+            aria-label="اليوم السابق"
+            className="flex size-7 shrink-0 items-center justify-center border text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          >
+            <ChevronLeftIcon className="size-4" aria-hidden />
+          </button>
+
+          <div className="min-w-0 flex-1">
+            <div aria-hidden className="mb-1 flex h-6 items-end gap-1">
+              {activity.map((entry, index) => (
+                <span
+                  key={entry.date}
+                  className={cn(
+                    "flex-1 transition-colors",
+                    index <= day ? "bg-foreground/70" : "bg-border",
+                  )}
+                  style={{
+                    height: `${Math.max(8, (entry.detections / maxDetections) * 100)}%`,
+                  }}
+                />
+              ))}
+            </div>
+            <Slider
+              min={0}
+              max={LAST_DAY}
+              step={1}
+              value={[day]}
+              onValueChange={(value) => applyDay(value[0] ?? LAST_DAY)}
+              aria-label="اليوم الأخير الظاهر على الخريطة"
+            />
+            <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
+              <span>23 أوت</span>
+              <span>29 أوت</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => applyDay(day + 1)}
+            disabled={day === LAST_DAY}
+            aria-label="اليوم التالي"
+            className="flex size-7 shrink-0 items-center justify-center border text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          >
+            <ChevronRightIcon className="size-4" aria-hidden />
+          </button>
+        </div>
+      </div>
+
+      <p className="border-t px-3 py-2.5 text-xs leading-6 text-muted-foreground">
+        كل نقطة هي أقدم رصد رآه القمر لا لحظة الاشتعال، بدقة مكانية تقارب 375 م.
+        انقر أي نقطة لعرض تفاصيلها.
+      </p>
+    </section>
   );
 }

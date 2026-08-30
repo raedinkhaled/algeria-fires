@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/vendor-map-worker.mjs",
     "dev": "next dev",
     "data:build": "python3 Fires/scripts/36_build_site_data.py",
-    "prebuild": "node scripts/validate-generated-data.mjs",
+    "prebuild": "node scripts/vendor-map-worker.mjs && node scripts/validate-generated-data.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

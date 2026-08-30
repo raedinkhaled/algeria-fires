@@ -60,3 +60,6 @@ next-env.d.ts
 /test-results/
 /playwright-report/
 /tmp/
+
+# vendored MapLibre worker, copied from node_modules by scripts/vendor-map-worker.mjs
+/public/vendor/
