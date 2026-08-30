@@ -12,18 +12,59 @@ import type { LngLat, Map as MapLibreMap, MapMouseEvent } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 
 /* ── الأيام: حدّ زمني تراكمي، نهاية كل يوم بالتوقيت المحلي (UTC+1) ── */
 const DAYS = [
-  { key: "23", label: "23 أوت", cutoff: "2026-08-23 23:59" },
-  { key: "24", label: "24 أوت", cutoff: "2026-08-24 23:59" },
-  { key: "25", label: "25 أوت", cutoff: "2026-08-25 23:59" },
-  { key: "26", label: "26 أوت", cutoff: "2026-08-26 23:59" },
-  { key: "27", label: "27 أوت", cutoff: "2026-08-27 23:59" },
-  { key: "28", label: "28 أوت", cutoff: "2026-08-28 23:59" },
-  { key: "29", label: "29 أوت", cutoff: "2026-08-29 23:59" },
+  {
+    key: "23",
+    label: "23 أوت",
+    short: "23.08",
+    day: "الأحد",
+    cutoff: "2026-08-23 23:59",
+  },
+  {
+    key: "24",
+    label: "24 أوت",
+    short: "24.08",
+    day: "الاثنين",
+    cutoff: "2026-08-24 23:59",
+  },
+  {
+    key: "25",
+    label: "25 أوت",
+    short: "25.08",
+    day: "الثلاثاء",
+    cutoff: "2026-08-25 23:59",
+  },
+  {
+    key: "26",
+    label: "26 أوت",
+    short: "26.08",
+    day: "الأربعاء",
+    cutoff: "2026-08-26 23:59",
+  },
+  {
+    key: "27",
+    label: "27 أوت",
+    short: "27.08",
+    day: "الخميس",
+    cutoff: "2026-08-27 23:59",
+  },
+  {
+    key: "28",
+    label: "28 أوت",
+    short: "28.08",
+    day: "الجمعة",
+    cutoff: "2026-08-28 23:59",
+  },
+  {
+    key: "29",
+    label: "29 أوت",
+    short: "29.08",
+    day: "السبت",
+    cutoff: "2026-08-29 23:59",
+  },
 ] as const;
 
 const LAST_DAY = DAYS.length - 1;
@@ -587,15 +628,18 @@ export function FireMap({ activity }: { activity: ActivityDay[] }) {
   }
 
   return (
-    <section aria-label="خريطة تفاعلية لحرائق جيجل" className="border-y">
-      {/* شريط الطبقات: ملتصق أسفل ترويسة الموقع ليبقى في المتناول أثناء التمرير */}
+    <section
+      aria-label="خريطة تفاعلية لحرائق جيجل"
+      className="mx-auto max-w-7xl border-y xl:border-x"
+    >
+      {/* شريط الطبقات مطابق لبنية سطح الخريطة المرجعي، مع تمرير أفقي عند الضيق */}
       <div
         role="group"
         aria-label="طبقات الخريطة"
-        className="sticky top-12 z-30 flex items-stretch overflow-x-auto border-b bg-background text-[11px]"
+        className="flex h-10 items-stretch overflow-x-auto border-b bg-background text-[11px]"
       >
-        <span className="flex shrink-0 items-center gap-1.5 border-e px-3 py-2.5 font-medium text-muted-foreground">
-          <LayersIcon className="size-3.5" aria-hidden />
+        <span className="flex shrink-0 items-center gap-1.5 border-e px-3 font-medium text-muted-foreground sm:px-4">
+          <LayersIcon aria-hidden />
           الطبقات
         </span>
         {LAYERS.map((layer) => {
@@ -608,7 +652,7 @@ export function FireMap({ activity }: { activity: ActivityDay[] }) {
               title={layer.note}
               onClick={() => toggleLayer(layer.id)}
               className={cn(
-                "flex shrink-0 items-center gap-1.5 border-e px-3 py-2.5 whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
+                "flex shrink-0 items-center gap-1.5 border-e px-3 whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring sm:px-3.5",
                 on
                   ? "bg-muted text-foreground"
                   : "text-muted-foreground hover:text-foreground",
@@ -634,7 +678,7 @@ export function FireMap({ activity }: { activity: ActivityDay[] }) {
           );
         })}
         {view ? (
-          <span className="ms-auto hidden shrink-0 items-center border-s px-3 py-2.5 text-muted-foreground sm:flex">
+          <span className="ms-auto hidden shrink-0 items-center border-s px-3 text-[10px] text-muted-foreground md:flex">
             <span className="ltr-embed">
               {view.lat.toFixed(2)}°N · {view.lng.toFixed(2)}°E · z
               {view.zoom.toFixed(1)}
@@ -651,7 +695,7 @@ export function FireMap({ activity }: { activity: ActivityDay[] }) {
           role="application"
           aria-label="خريطة قابلة للتحريك والتكبير"
           className={cn(
-            "fire-map-canvas h-[46vh] min-h-[19rem] w-full sm:h-[58vh] lg:h-[66vh]",
+            "fire-map-canvas h-[min(68dvh,34rem)] min-h-[27rem] w-full sm:h-[min(70dvh,42rem)] lg:h-[min(72dvh,48rem)]",
             status !== "ready" && "invisible",
           )}
         />
@@ -671,73 +715,95 @@ export function FireMap({ activity }: { activity: ActivityDay[] }) {
             </p>
           </div>
         ) : null}
-      </div>
 
-      {/* شريط الزمن: محور زمني يُقرأ من اليسار (الأقدم) إلى اليمين (الأحدث) */}
-      <div className="border-t px-3 py-2.5">
-        <div
-          dir="rtl"
-          className="mb-1.5 flex items-baseline justify-between gap-3"
-        >
-          <span className="text-[11px] text-muted-foreground">
-            الرصد المتراكم حتى نهاية اليوم
-          </span>
-          <span className="text-xs font-medium">حتى {DAYS[day].label}</span>
-        </div>
-
-        <div dir="ltr" className="flex items-center gap-2 sm:gap-3">
-          <button
-            type="button"
-            onClick={() => applyDay(day - 1)}
-            disabled={day === 0}
-            aria-label="اليوم السابق"
-            className="flex size-7 shrink-0 items-center justify-center border text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-          >
-            <ChevronLeftIcon className="size-4" aria-hidden />
-          </button>
-
-          <div className="min-w-0 flex-1">
-            <div aria-hidden className="mb-1 flex h-6 items-end gap-1">
-              {activity.map((entry, index) => (
-                <span
-                  key={entry.date}
-                  className={cn(
-                    "flex-1 transition-colors",
-                    index <= day ? "bg-foreground/70" : "bg-border",
-                  )}
-                  style={{
-                    height: `${Math.max(8, (entry.detections / maxDetections) * 100)}%`,
-                  }}
-                />
-              ))}
+        {/* شريط الزمن داخل الخريطة كما في المرجع: التاريخ، القراءة اليومية، ثم أعمدة الأيام */}
+        <div className="absolute inset-x-0 bottom-0 z-10 border-t border-white/10 bg-black/82 text-white backdrop-blur-sm">
+          <div className="px-3 pb-2.5 pt-2 sm:px-4 sm:pb-3">
+            <div className="mb-2 flex items-center justify-between gap-3 text-[11px]">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <button
+                  type="button"
+                  onClick={() => applyDay(day - 1)}
+                  disabled={day === 0}
+                  aria-label="اليوم السابق"
+                  className="flex size-6 items-center justify-center border border-white/15 text-white/60 transition-colors hover:text-white disabled:opacity-25 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                >
+                  <ChevronLeftIcon aria-hidden />
+                </button>
+                <span className="font-medium text-white/90">
+                  <span className="ltr-embed">{DAYS[day].short}.2026</span>
+                  <span className="hidden sm:inline"> · {DAYS[day].day}</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => applyDay(day + 1)}
+                  disabled={day === LAST_DAY}
+                  aria-label="اليوم التالي"
+                  className="flex size-6 items-center justify-center border border-white/15 text-white/60 transition-colors hover:text-white disabled:opacity-25 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                >
+                  <ChevronRightIcon aria-hidden />
+                </button>
+              </div>
+              <span className="text-white/55">
+                <span className="numeric text-white/80">
+                  {activity[day]?.detections.toLocaleString("en-US") ?? 0}
+                </span>{" "}
+                رصد في اليوم
+              </span>
             </div>
-            <Slider
-              min={0}
-              max={LAST_DAY}
-              step={1}
-              value={[day]}
-              onValueChange={(value) => applyDay(value[0] ?? LAST_DAY)}
-              aria-label="اليوم الأخير الظاهر على الخريطة"
-            />
-            <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
-              <span>23 أوت</span>
-              <span>29 أوت</span>
+
+            <div
+              dir="ltr"
+              role="group"
+              aria-label="اختر آخر يوم ظاهر على الخريطة"
+              className="grid h-10 grid-cols-7 items-end gap-1"
+            >
+              {activity.map((entry, index) => {
+                const active = index === day;
+                const included = index <= day;
+                return (
+                  <button
+                    key={entry.date}
+                    type="button"
+                    aria-pressed={active}
+                    aria-label={`${DAYS[index]?.label ?? entry.date}: ${entry.detections.toLocaleString("en-US")} رصد`}
+                    title={`${DAYS[index]?.label ?? entry.date} · ${entry.detections.toLocaleString("en-US")} رصد`}
+                    onClick={() => applyDay(index)}
+                    className="group flex h-full min-w-0 flex-col items-center justify-end gap-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                  >
+                    <span
+                      aria-hidden
+                      className={cn(
+                        "w-full transition-colors",
+                        active
+                          ? "bg-white"
+                          : included
+                            ? "bg-white/45 group-hover:bg-white/65"
+                            : "bg-white/15 group-hover:bg-white/30",
+                      )}
+                      style={{
+                        height: `${Math.max(4, (entry.detections / maxDetections) * 24)}px`,
+                      }}
+                    />
+                    <span
+                      aria-hidden
+                      className={cn(
+                        "numeric text-[8px] leading-none",
+                        active ? "text-white" : "text-white/40",
+                      )}
+                    >
+                      <span className="sm:hidden">{DAYS[index]?.key}</span>
+                      <span className="hidden sm:inline">{DAYS[index]?.short}</span>
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
-
-          <button
-            type="button"
-            onClick={() => applyDay(day + 1)}
-            disabled={day === LAST_DAY}
-            aria-label="اليوم التالي"
-            className="flex size-7 shrink-0 items-center justify-center border text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-          >
-            <ChevronRightIcon className="size-4" aria-hidden />
-          </button>
         </div>
       </div>
 
-      <p className="border-t px-3 py-2.5 text-xs leading-6 text-muted-foreground">
+      <p className="px-3 py-2.5 text-[11px] leading-5 text-muted-foreground sm:px-4">
         كل نقطة هي أقدم رصد رآه القمر لا لحظة الاشتعال، بدقة مكانية تقارب 375 م.
         انقر أي نقطة لعرض تفاصيلها.
       </p>

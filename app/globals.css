@@ -242,6 +242,19 @@
   font-family: var(--font-mono);
 }
 
+/* شريط الزمن يغطي أسفل الخريطة؛ تبقى المصادر والمقياس فوقه وفي المتناول. */
+.fire-map-canvas .maplibregl-ctrl-bottom-left,
+.fire-map-canvas .maplibregl-ctrl-bottom-right {
+  bottom: 5.75rem;
+}
+
+@media (min-width: 640px) {
+  .fire-map-canvas .maplibregl-ctrl-bottom-left,
+  .fire-map-canvas .maplibregl-ctrl-bottom-right {
+    bottom: 6rem;
+  }
+}
+
 .fire-map-canvas .maplibregl-ctrl-attrib.maplibregl-compact {
   background: color-mix(in oklch, var(--background) 82%, transparent);
 }
