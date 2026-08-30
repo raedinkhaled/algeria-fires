@@ -3,8 +3,11 @@
 import { useMemo, useState } from "react";
 import { ArrowDownUpIcon, DownloadIcon } from "lucide-react";
 
+import { OriginScatterChart, PatchBarsChart } from "@/components/data-charts";
 import { DailyActivityChart, type DailyActivity } from "@/components/investigation-charts";
 import { DataFigure, EdgePanel, SectionLabel, StatStrip } from "@/components/editorial";
+import { Reveal } from "@/components/motion";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -23,7 +26,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export type OriginRow = {
   origin_id: string;
@@ -61,7 +63,32 @@ type DownloadArtifact = {
   rows?: number;
 };
 
-type SortKey = "origin_id" | "first_local" | "frp_mw" | "elevation_m";
+type OriginSortKey =
+  | "origin_id"
+  | "first_local"
+  | "frp_mw"
+  | "elevation_m"
+  | "largest_unburnt_gap_km";
+
+type PatchSortKey =
+  | "patch_id"
+  | "area_km2"
+  | "first_det_local"
+  | "max_extent_km"
+  | "n_detections_inside"
+  | "mean_dnbr";
+
+const NUMERIC_ORIGIN_KEYS: OriginSortKey[] = [
+  "frp_mw",
+  "elevation_m",
+  "largest_unburnt_gap_km",
+];
+const NUMERIC_PATCH_KEYS: PatchSortKey[] = [
+  "area_km2",
+  "max_extent_km",
+  "n_detections_inside",
+  "mean_dnbr",
+];
 
 function number(value: string) {
   return Number(value || 0);
@@ -95,12 +122,22 @@ function DownloadLink({ artifact, bundled = false }: { artifact: DownloadArtifac
         </span>
       </span>
       <span className="flex items-center gap-2 self-center text-xs text-muted-foreground">
-        <span className="numeric">{artifact.rows ? `${formatNumber(artifact.rows)} rows` : formatBytes(artifact.bytes)}</span>
+        <span className="numeric">
+          {artifact.rows ? `${formatNumber(artifact.rows)} صف` : formatBytes(artifact.bytes)}
+        </span>
         <DownloadIcon aria-hidden="true" />
       </span>
-      {bundled ? <span className="col-span-2 text-[11px] text-muted-foreground">يشمل بيانات CSV وملفات JSON المنشورة دون الأصول الخام.</span> : null}
+      {bundled ? (
+        <span className="col-span-2 text-[11px] text-muted-foreground">
+          يشمل بيانات CSV وملفات JSON المنشورة دون الأصول الخام.
+        </span>
+      ) : null}
     </a>
   );
+}
+
+function dayNightLabel(value: string) {
+  return value === "N" ? "ليلاً" : value === "D" ? "نهاراً" : "";
 }
 
 export function DataExplorer({
@@ -116,8 +153,12 @@ export function DataExplorer({
 }) {
   const [wilaya, setWilaya] = useState("all");
   const [satellite, setSatellite] = useState("all");
-  const [sortKey, setSortKey] = useState<SortKey>("first_local");
-  const [descending, setDescending] = useState(false);
+  const [originSort, setOriginSort] = useState<OriginSortKey>("first_local");
+  const [originDescending, setOriginDescending] = useState(false);
+
+  const [patchLocation, setPatchLocation] = useState("all");
+  const [patchSort, setPatchSort] = useState<PatchSortKey>("area_km2");
+  const [patchDescending, setPatchDescending] = useState(true);
 
   const wilayas = useMemo(
     () => [...new Set(origins.map((origin) => origin.wilaya).filter(Boolean))].sort((a, b) => a.localeCompare(b, "ar")),
@@ -127,110 +168,156 @@ export function DataExplorer({
     () => [...new Set(origins.map((origin) => origin.satellite).filter(Boolean))].sort(),
     [origins],
   );
+
   const filteredOrigins = useMemo(() => {
-    const direction = descending ? -1 : 1;
+    const direction = originDescending ? -1 : 1;
     return origins
       .filter((origin) => wilaya === "all" || origin.wilaya === wilaya)
       .filter((origin) => satellite === "all" || origin.satellite === satellite)
       .toSorted((left, right) => {
-        const leftValue = left[sortKey];
-        const rightValue = right[sortKey];
-        const comparison = ["frp_mw", "elevation_m"].includes(sortKey)
-          ? number(leftValue) - number(rightValue)
-          : leftValue.localeCompare(rightValue, "ar");
+        const comparison = NUMERIC_ORIGIN_KEYS.includes(originSort)
+          ? number(left[originSort]) - number(right[originSort])
+          : left[originSort].localeCompare(right[originSort], "ar");
         return comparison * direction;
       });
-  }, [descending, origins, satellite, sortKey, wilaya]);
+  }, [origins, wilaya, satellite, originSort, originDescending]);
+
+  const filteredPatches = useMemo(() => {
+    const direction = patchDescending ? -1 : 1;
+    return patches
+      .filter((patch) => {
+        if (patchLocation === "in") return patch.centroid_in_jijel === "True";
+        if (patchLocation === "out") return patch.centroid_in_jijel !== "True";
+        return true;
+      })
+      .toSorted((left, right) => {
+        const comparison = NUMERIC_PATCH_KEYS.includes(patchSort)
+          ? number(left[patchSort]) - number(right[patchSort])
+          : left[patchSort].localeCompare(right[patchSort], "ar");
+        return comparison * direction;
+      });
+  }, [patches, patchLocation, patchSort, patchDescending]);
 
   const totalBurned = patches.reduce((sum, patch) => sum + number(patch.area_km2), 0);
   const totalDetections = activity.reduce((sum, day) => sum + day.detections, 0);
   const bundle = downloads.find((artifact) => artifact.media_type === "application/zip");
   const individualDownloads = downloads.filter((artifact) => artifact.media_type !== "application/zip");
 
-  function sortBy(key: SortKey) {
-    if (key === sortKey) setDescending((current) => !current);
+  function sortOrigins(key: OriginSortKey) {
+    if (key === originSort) setOriginDescending((current) => !current);
     else {
-      setSortKey(key);
-      setDescending(key === "frp_mw" || key === "elevation_m");
+      setOriginSort(key);
+      setOriginDescending(NUMERIC_ORIGIN_KEYS.includes(key));
+    }
+  }
+
+  function sortPatches(key: PatchSortKey) {
+    if (key === patchSort) setPatchDescending((current) => !current);
+    else {
+      setPatchSort(key);
+      setPatchDescending(NUMERIC_PATCH_KEYS.includes(key));
     }
   }
 
   return (
-    <div className="mt-10 flex flex-col gap-12">
-      <StatStrip
-        items={[
-          { value: formatNumber(totalDetections), unit: "رصد حراري منشور" },
-          { value: formatNumber(origins.length), unit: "مرشح منشأ مستقل" },
-          { value: formatNumber(patches.length), unit: "ندبة فوق 100 هكتار" },
-          { value: `${formatNumber(totalBurned, 1)} km²`, unit: "مساحة الندبات المنشورة" },
-        ]}
-      />
+    <div className="mt-10 flex flex-col gap-14">
+      <Reveal>
+        <StatStrip
+          items={[
+            { value: formatNumber(totalDetections), unit: "رصد حراري منشور" },
+            { value: formatNumber(origins.length), unit: "مرشح منشأ مستقل" },
+            { value: formatNumber(patches.length), unit: "ندبة فوق 100 هكتار" },
+            { value: `${formatNumber(totalBurned, 1)} km²`, unit: "مساحة الندبات المنشورة" },
+          ]}
+        />
+      </Reveal>
 
-      <section>
-        <SectionLabel>النشاط اليومي</SectionLabel>
-        <DataFigure
-          className="mt-4"
-          sensor="VIIRS · MODIS"
-          meta="23-29.08.2026"
-          caption="التجميع حسب التاريخ المحلي. سلسلة الطقس مأخوذة عند منشأ الشقفة، فلا تمثّل متوسطاً مكانياً للولاية."
-        >
-          <DailyActivityChart days={activity} />
-        </DataFigure>
-      </section>
+      <Reveal>
+        <section id="daily" className="scroll-mt-20">
+          <SectionLabel index="01">النشاط اليومي</SectionLabel>
+          <DataFigure
+            className="mt-4"
+            sensor="VIIRS · MODIS"
+            meta="23-29.08.2026"
+            caption="التجميع حسب التاريخ المحلي. سلسلة الطقس مأخوذة عند منشأ الشقفة، فلا تمثّل متوسطاً مكانياً للولاية."
+          >
+            <DailyActivityChart days={activity} />
+          </DataFigure>
+        </section>
+      </Reveal>
 
-      <section>
-        <SectionLabel>سجل المنشأ والندبات</SectionLabel>
-        <Tabs defaultValue="origins" className="mt-4">
-          <TabsList variant="line" className="border-b">
-            <TabsTrigger value="origins">مرشحو المنشأ</TabsTrigger>
-            <TabsTrigger value="patches">الندبات الكبرى</TabsTrigger>
-          </TabsList>
+      <Reveal>
+        <section id="origins" className="scroll-mt-20">
+          <SectionLabel index="02">مرشحو المنشأ</SectionLabel>
+          <p className="mt-4 max-w-2xl leading-8">
+            كل مرشّح موقع اجتاز معاً شرط البُعد عن أقرب حريق سابق وشرط انقطاع
+            المسار بأرض غير محترقة. الرسم يوزّعها على أيام الحدث، والجدول يحمل
+            قيم اختبارات البلوغ.
+          </p>
 
-          <TabsContent value="origins" className="mt-4">
-            <div className="flex flex-wrap items-end gap-3 border px-3 py-3">
-              <label className="flex flex-col gap-1.5 text-[11px] text-muted-foreground">
-                الولاية
-                <Select value={wilaya} onValueChange={setWilaya}>
-                  <SelectTrigger aria-label="تصفية مرشحي المنشأ حسب الولاية">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>الولاية</SelectLabel>
-                      <SelectItem value="all">كل الولايات</SelectItem>
-                      {wilayas.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </label>
-              <label className="flex flex-col gap-1.5 text-[11px] text-muted-foreground">
-                القمر
-                <Select value={satellite} onValueChange={setSatellite}>
-                  <SelectTrigger aria-label="تصفية مرشحي المنشأ حسب القمر">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>القمر</SelectLabel>
-                      <SelectItem value="all">كل الأقمار</SelectItem>
-                      {satellites.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </label>
-              <p className="ms-auto text-xs text-muted-foreground">
-                <span className="numeric">{formatNumber(filteredOrigins.length)} / {formatNumber(origins.length)}</span> مرشحاً
-              </p>
-            </div>
+          <Alert className="mt-6 max-w-2xl">
+            <AlertTitle>أول رصد ليس لحظة الاشتعال</AlertTitle>
+            <AlertDescription>
+              كل توقيت هنا هو أقدم نقطة حرارية رآها القمر. الاشتعال يسبقه بفترة
+              تحدّها فجوة المرور بين تمريرتين، وقد تبلغ ساعات.
+            </AlertDescription>
+          </Alert>
 
-            <Table className="min-w-[760px] border-x border-b">
+          <DataFigure
+            className="mt-6"
+            sensor="VIIRS · MODIS"
+            meta="12 مرشحاً · 23-27.08.2026"
+            caption="المحور الأفقي وقت أول رصد، والرأسي ارتفاع الموقع بالأمتار، وحجم النقطة قوة الإشعاع الحراري. الدائرة المفرغة أول رصد ليلاً."
+          >
+            <OriginScatterChart origins={origins} />
+          </DataFigure>
+
+          <div className="mt-6 flex flex-wrap items-end gap-3 border px-3 py-3">
+            <label className="flex flex-col gap-1.5 text-[11px] text-muted-foreground">
+              الولاية
+              <Select value={wilaya} onValueChange={setWilaya}>
+                <SelectTrigger aria-label="تصفية مرشحي المنشأ حسب الولاية">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>الولاية</SelectLabel>
+                    <SelectItem value="all">كل الولايات</SelectItem>
+                    {wilayas.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </label>
+            <label className="flex flex-col gap-1.5 text-[11px] text-muted-foreground">
+              القمر
+              <Select value={satellite} onValueChange={setSatellite}>
+                <SelectTrigger aria-label="تصفية مرشحي المنشأ حسب القمر">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>القمر</SelectLabel>
+                    <SelectItem value="all">كل الأقمار</SelectItem>
+                    {satellites.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </label>
+            <p className="ms-auto text-xs text-muted-foreground">
+              <span className="numeric">{formatNumber(filteredOrigins.length)} / {formatNumber(origins.length)}</span> مرشحاً
+            </p>
+          </div>
+
+          <div className="overflow-x-auto border-x border-b">
+            <Table className="min-w-[820px]">
               <TableHeader className="bg-muted/50">
                 <TableRow>
-                  <SortableHead label="المعرف" active={sortKey === "origin_id"} descending={descending} onClick={() => sortBy("origin_id")} />
-                  <SortableHead label="أول رصد" active={sortKey === "first_local"} descending={descending} onClick={() => sortBy("first_local")} />
+                  <SortableHead label="المعرف" active={originSort === "origin_id"} descending={originDescending} onClick={() => sortOrigins("origin_id")} />
+                  <SortableHead label="أول رصد" active={originSort === "first_local"} descending={originDescending} onClick={() => sortOrigins("first_local")} />
                   <TableHead>الموضع</TableHead>
-                  <SortableHead label="FRP" active={sortKey === "frp_mw"} descending={descending} onClick={() => sortBy("frp_mw")} />
-                  <SortableHead label="الارتفاع" active={sortKey === "elevation_m"} descending={descending} onClick={() => sortBy("elevation_m")} />
+                  <SortableHead label="FRP" active={originSort === "frp_mw"} descending={originDescending} onClick={() => sortOrigins("frp_mw")} />
+                  <SortableHead label="الارتفاع" active={originSort === "elevation_m"} descending={originDescending} onClick={() => sortOrigins("elevation_m")} />
+                  <SortableHead label="فجوة المسار" active={originSort === "largest_unburnt_gap_km"} descending={originDescending} onClick={() => sortOrigins("largest_unburnt_gap_km")} />
                   <TableHead>القمر</TableHead>
                 </TableRow>
               </TableHeader>
@@ -238,37 +325,98 @@ export function DataExplorer({
                 {filteredOrigins.map((origin) => (
                   <TableRow key={origin.origin_id}>
                     <TableCell className="numeric text-xs font-medium">{origin.origin_id}</TableCell>
-                    <TableCell className="numeric text-xs">{localDate(origin.first_local)}</TableCell>
+                    <TableCell className="text-xs">
+                      <span className="numeric">{localDate(origin.first_local)}</span>
+                      {dayNightLabel(origin.daynight) ? (
+                        <span className="mt-0.5 block text-[11px] text-muted-foreground">
+                          {dayNightLabel(origin.daynight)}
+                        </span>
+                      ) : null}
+                    </TableCell>
                     <TableCell>
                       <span className="block text-xs">{origin.locality || origin.wilaya}</span>
                       <span className="numeric mt-1 block text-[11px] text-muted-foreground">{origin.lat}°N · {origin.lon}°E</span>
                     </TableCell>
                     <TableCell className="numeric text-xs">{formatNumber(number(origin.frp_mw), 2)} MW</TableCell>
                     <TableCell className="numeric text-xs">{formatNumber(number(origin.elevation_m))} m</TableCell>
+                    <TableCell className="numeric text-xs">
+                      {origin.largest_unburnt_gap_km
+                        ? `${formatNumber(number(origin.largest_unburnt_gap_km), 2)} km`
+                        : "—"}
+                    </TableCell>
                     <TableCell className="ltr-embed text-xs text-muted-foreground">{origin.satellite}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
-          </TabsContent>
+          </div>
+          <p className="mt-3 max-w-2xl text-[11px] leading-6 text-muted-foreground">
+            فجوة المسار أطول امتداد غير محترق بين الموقع وأقرب حريق سابق. القيمتان
+            الأوليان (O00 وO01) أقدم بؤرتين في الأرشيف، فلا رصد سابق يقاس عليه.
+          </p>
+        </section>
+      </Reveal>
 
-          <TabsContent value="patches" className="mt-4">
-            <Table className="min-w-[680px] border">
+      <Reveal>
+        <section id="patches" className="scroll-mt-20">
+          <SectionLabel index="03">الندبات الكبرى</SectionLabel>
+          <p className="mt-4 max-w-2xl leading-8">
+            ندبات الحريق المستخرجة من فرق الانعكاسية dNBR في صور Sentinel-2 بين 18
+            و28 أوت، مقصورة على ما تبلغ مساحته 100 هكتار فأكثر.
+          </p>
+
+          <DataFigure
+            className="mt-6"
+            sensor="Sentinel-2 · MSI L2A"
+            meta="dNBR · 18 → 28.08.2026"
+            caption="ترتيب الندبات بالمساحة بالكيلومتر المربّع. اللون يفصل ما مركزه داخل حدود ولاية جيجل عمّا يقع خارجها."
+          >
+            <PatchBarsChart patches={patches} />
+          </DataFigure>
+
+          <div className="mt-6 flex flex-wrap items-end gap-3 border px-3 py-3">
+            <label className="flex flex-col gap-1.5 text-[11px] text-muted-foreground">
+              الموقع
+              <Select value={patchLocation} onValueChange={setPatchLocation}>
+                <SelectTrigger aria-label="تصفية الندبات حسب الموقع">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>الموقع</SelectLabel>
+                    <SelectItem value="all">كل المواقع</SelectItem>
+                    <SelectItem value="in">داخل جيجل</SelectItem>
+                    <SelectItem value="out">خارج جيجل</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </label>
+            <p className="ms-auto text-xs text-muted-foreground">
+              <span className="numeric">{formatNumber(filteredPatches.length)} / {formatNumber(patches.length)}</span> ندبة
+            </p>
+          </div>
+
+          <div className="overflow-x-auto border-x border-b">
+            <Table className="min-w-[720px]">
               <TableHeader className="bg-muted/50">
                 <TableRow>
-                  <TableHead>المعرف</TableHead>
-                  <TableHead>المساحة</TableHead>
-                  <TableHead>أول رصد داخل الندبة</TableHead>
-                  <TableHead>الامتداد الأقصى</TableHead>
-                  <TableHead>رصدات داخل الندبة</TableHead>
-                  <TableHead>dNBR المتوسط</TableHead>
+                  <SortableHead label="المعرف" active={patchSort === "patch_id"} descending={patchDescending} onClick={() => sortPatches("patch_id")} />
+                  <SortableHead label="المساحة" active={patchSort === "area_km2"} descending={patchDescending} onClick={() => sortPatches("area_km2")} />
+                  <TableHead>الموقع</TableHead>
+                  <SortableHead label="أول رصد" active={patchSort === "first_det_local"} descending={patchDescending} onClick={() => sortPatches("first_det_local")} />
+                  <SortableHead label="الامتداد" active={patchSort === "max_extent_km"} descending={patchDescending} onClick={() => sortPatches("max_extent_km")} />
+                  <SortableHead label="رصدات داخلها" active={patchSort === "n_detections_inside"} descending={patchDescending} onClick={() => sortPatches("n_detections_inside")} />
+                  <SortableHead label="dNBR" active={patchSort === "mean_dnbr"} descending={patchDescending} onClick={() => sortPatches("mean_dnbr")} />
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {patches.map((patch) => (
+                {filteredPatches.map((patch) => (
                   <TableRow key={patch.patch_id}>
                     <TableCell className="numeric text-xs font-medium">{patch.patch_id}</TableCell>
                     <TableCell className="numeric text-xs">{formatNumber(number(patch.area_km2), 2)} km²</TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {patch.centroid_in_jijel === "True" ? "داخل جيجل" : "خارج جيجل"}
+                    </TableCell>
                     <TableCell className="numeric text-xs">{localDate(patch.first_det_local)}</TableCell>
                     <TableCell className="numeric text-xs">{formatNumber(number(patch.max_extent_km), 2)} km</TableCell>
                     <TableCell className="numeric text-xs">{formatNumber(number(patch.n_detections_inside))}</TableCell>
@@ -277,34 +425,36 @@ export function DataExplorer({
                 ))}
               </TableBody>
             </Table>
-          </TabsContent>
-        </Tabs>
-      </section>
-
-      <section>
-        <SectionLabel>التنزيلات</SectionLabel>
-        <EdgePanel className="mt-4" label="نطاق النشر">
-          <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
-            التنزيلات تشمل البيانات المعالجة التي استند إليها العرض، لا الملفات الخام الثقيلة. تحمل كل مادة بصمتها في فهرس التنزيلات للتحقق من السلامة.
-          </p>
-        </EdgePanel>
-        {bundle ? (
-          <div className="mt-4 border">
-            <DownloadLink artifact={bundle} bundled />
           </div>
-        ) : null}
-        <div className="mt-4 divide-y border">
-          {individualDownloads.map((artifact) => <DownloadLink key={artifact.path} artifact={artifact} />)}
-        </div>
-        <div className="mt-4 flex justify-end">
-          <Button asChild variant="outline" size="sm">
-            <a href="/generated/downloads.json" download>
-              <DownloadIcon data-icon="inline-start" />
-              فهرس التنزيلات
-            </a>
-          </Button>
-        </div>
-      </section>
+        </section>
+      </Reveal>
+
+      <Reveal>
+        <section id="downloads" className="scroll-mt-20">
+          <SectionLabel index="04">التنزيلات</SectionLabel>
+          <EdgePanel className="mt-4" label="نطاق النشر">
+            <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
+              التنزيلات تشمل البيانات المعالجة التي استند إليها العرض، لا الملفات الخام الثقيلة. تحمل كل مادة بصمتها في فهرس التنزيلات للتحقق من السلامة.
+            </p>
+          </EdgePanel>
+          {bundle ? (
+            <div className="mt-4 border">
+              <DownloadLink artifact={bundle} bundled />
+            </div>
+          ) : null}
+          <div className="mt-4 divide-y border">
+            {individualDownloads.map((artifact) => <DownloadLink key={artifact.path} artifact={artifact} />)}
+          </div>
+          <div className="mt-4 flex justify-end">
+            <Button asChild variant="outline" size="sm">
+              <a href="/generated/downloads.json" download>
+                <DownloadIcon data-icon="inline-start" />
+                فهرس التنزيلات
+              </a>
+            </Button>
+          </div>
+        </section>
+      </Reveal>
     </div>
   );
 }

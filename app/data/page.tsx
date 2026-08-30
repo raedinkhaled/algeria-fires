@@ -5,6 +5,7 @@ import path from "node:path";
 import { DataExplorer, type OriginRow, type PatchRow } from "@/components/data-explorer";
 import { FileMeta } from "@/components/editorial";
 import { StoryBreadcrumb } from "@/components/story-breadcrumb";
+import { dataSections } from "@/lib/data-sections";
 import activity from "@/public/generated/data/daily_activity.json";
 import downloads from "@/public/generated/downloads.json";
 
@@ -80,6 +81,27 @@ export default async function DataPage() {
       <div className="mt-10 grid gap-8 lg:grid-cols-[220px_1fr] lg:gap-14">
         <aside className="order-2 border-t pt-6 lg:sticky lg:top-14 lg:order-1 lg:self-start lg:border-t-0 lg:border-e lg:pe-8 lg:pt-0">
           <FileMeta heading="بيانات الملف" rows={fileMeta} />
+          <nav
+            aria-label="أقسام الصفحة"
+            className="mt-8 hidden border-t pt-5 lg:block"
+          >
+            <p className="mb-3 text-[11px] font-medium text-muted-foreground">
+              الأقسام
+            </p>
+            <ol className="flex flex-col gap-2">
+              {dataSections.map((section) => (
+                <li key={section.id}>
+                  <a
+                    href={`#${section.id}`}
+                    className="flex gap-2.5 text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    <span className="numeric">{section.index}</span>
+                    <span>{section.label}</span>
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
         </aside>
 
         <div className="order-1 min-w-0 lg:order-2">
