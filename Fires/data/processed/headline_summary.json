@@ -1,0 +1,17 @@
+{
+  "detections_total_analysis_set": 9100,
+  "detections_in_province": 7482,
+  "grid_cells_375m": 4451,
+  "clusters_reference_config": 9,
+  "earliest_detection_local": "2026-08-23 01:35",
+  "earliest_detection_utc": "2026-08-23 00:35",
+  "earliest_detection_latlon": [
+    36.45563,
+    5.45562
+  ],
+  "largest_cluster": "F08",
+  "burned_area_km2_dnbr_gte_0_10": 900.5,
+  "burn_patches_ge_100ha": 17,
+  "burn_patch_area_km2": 751.7,
+  "static_industrial_sources_masked": 1
+}

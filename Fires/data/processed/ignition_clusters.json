@@ -1,0 +1,526 @@
+{
+  "meta": {
+    "title": "إعادة بناء جنائي-جغرافي لحرائق ولاية جيجل — أوت 2026",
+    "generated_utc": "2026-08-29T22:37:02Z",
+    "study_area": "ولاية جيجل، الجزائر، مع نطاق عازل 10 كم يشمل حرائق مجاورة في بجاية وميلة وسكيكدة وسطيف",
+    "analysis_bbox_lonlat": [
+      5.0,
+      36.2,
+      6.8,
+      37.2
+    ],
+    "period_local": "2026-08-22 00:00 — 2026-08-29 23:59 (UTC+1)",
+    "timezone_note": "التوقيت المحلي في الجزائر = ت.ع.م +1 طوال السنة (لا يوجد توقيت صيفي).",
+    "sensors": [
+      "VIIRS 375 m C2 (Suomi-NPP / NOAA-20 / NOAA-21)",
+      "MODIS C6.1 (Terra / Aqua)",
+      "Sentinel-2 MSI L2A",
+      "Copernicus DEM GLO-30"
+    ],
+    "critical_rule": "كل إحداثية هنا هي «أقدم نقطة حرارية رصدها القمر الصناعي» وليست «نقطة اشتعال مؤكدة». الدقة المكانية الاسمية لـ VIIRS ≈ 375 م، والاشتعال يسبق الرصد بفترة تحدّها فجوات المرور.",
+    "independence_criteria": {
+      "nearest_prior_fire_km_min": 5.0,
+      "largest_unburnt_path_gap_km_min": 4.0,
+      "path_corridor_half_width_km": 2.5,
+      "note": "المعياران معاً؛ استيفاؤهما يعني تعذّر التفسير بانتشار سطحي مرصود، لا تحديد السبب."
+    },
+    "counts": {
+      "independent_origin_candidates_total": 12,
+      "inside_jijel": 6
+    }
+  },
+  "clusters": [
+    {
+      "cluster_id": "O00",
+      "first_detection_utc": "2026-08-23 00:35",
+      "first_detection_local": "2026-08-23 01:35",
+      "latitude": 36.45955,
+      "longitude": 5.45085,
+      "coordinate_source": "satellite detection centroid (FIRMS), NOT a municipality centre",
+      "satellite": "N21",
+      "instrument": "VIIRS",
+      "frp": 6.68,
+      "confidence": "nominal",
+      "daynight": "N",
+      "nearest_locality": "بابور",
+      "wilaya": "سطيف",
+      "daira": "دائرة بابور",
+      "n_cells_same_overpass": 4,
+      "terrain": {
+        "elevation_m": 798,
+        "slope_deg": 14.5,
+        "aspect_deg": 75
+      },
+      "reachability": {
+        "nearest_prior_fire_km": null,
+        "nearest_prior_dt_h": null,
+        "min_required_spread_rate_kmh": null,
+        "largest_unburnt_path_gap_km": null
+      },
+      "sentinel2_burn_patch": {
+        "patch_id": null,
+        "patch_area_km2": null,
+        "assignment": "outside Sentinel-2 analysis window"
+      },
+      "lightning_screen": {
+        "nearest_ts": "DAAE 2026-08-23 19:00",
+        "dist_km": 44.1,
+        "dt_h": 17.4,
+        "assessment": "أقرب إبلاغ على بعد 44 كم — دليل ضعيف وغير محدد"
+      },
+      "independent_ignition_probability": "متوسطة",
+      "notes": "أقدم بؤرتين ليليتين في مجموعة البيانات (ولاية سطيف)؛ لا يوجد رصد سابق يمكن الاستناد إليه، فلا يمكن اختبار الاستقلالية إحصائياً."
+    },
+    {
+      "cluster_id": "O01",
+      "first_detection_utc": "2026-08-23 00:35",
+      "first_detection_local": "2026-08-23 01:35",
+      "latitude": 36.54239,
+      "longitude": 5.4214,
+      "coordinate_source": "satellite detection centroid (FIRMS), NOT a municipality centre",
+      "satellite": "N21",
+      "instrument": "VIIRS",
+      "frp": 4.65,
+      "confidence": "nominal",
+      "daynight": "N",
+      "nearest_locality": "درقينة",
+      "wilaya": "بجاية",
+      "daira": "دائرة درقينة",
+      "n_cells_same_overpass": 1,
+      "terrain": {
+        "elevation_m": 923,
+        "slope_deg": 34.1,
+        "aspect_deg": 276
+      },
+      "reachability": {
+        "nearest_prior_fire_km": null,
+        "nearest_prior_dt_h": null,
+        "min_required_spread_rate_kmh": null,
+        "largest_unburnt_path_gap_km": null
+      },
+      "sentinel2_burn_patch": {
+        "patch_id": null,
+        "patch_area_km2": null,
+        "assignment": "no mapped burn patch >=100 ha at this location"
+      },
+      "lightning_screen": {
+        "nearest_ts": "DAAE 2026-08-23 19:00",
+        "dist_km": 36.6,
+        "dt_h": 17.4,
+        "assessment": "أقرب إبلاغ على بعد 37 كم — دليل ضعيف وغير محدد"
+      },
+      "independent_ignition_probability": "متوسطة",
+      "notes": "بؤرة ليلية في ولاية بجاية، على بعد ~10 كم من البؤرة السابقة وفي التمريرة نفسها."
+    },
+    {
+      "cluster_id": "O02",
+      "first_detection_utc": "2026-08-24 12:29",
+      "first_detection_local": "2026-08-24 13:29",
+      "latitude": 36.84502,
+      "longitude": 6.44599,
+      "coordinate_source": "satellite detection centroid (FIRMS), NOT a municipality centre",
+      "satellite": "N20",
+      "instrument": "VIIRS",
+      "frp": 12.67,
+      "confidence": "low",
+      "daynight": "D",
+      "nearest_locality": "دائرة عين قشرة",
+      "wilaya": "سكيكدة",
+      "daira": "دائرة عين قشرة",
+      "n_cells_same_overpass": 2,
+      "terrain": {
+        "elevation_m": 641,
+        "slope_deg": 19.0,
+        "aspect_deg": 132
+      },
+      "reachability": {
+        "nearest_prior_fire_km": 96.062,
+        "nearest_prior_dt_h": 35.02,
+        "min_required_spread_rate_kmh": 2.73,
+        "largest_unburnt_path_gap_km": 92.36
+      },
+      "sentinel2_burn_patch": {
+        "patch_id": null,
+        "patch_area_km2": null,
+        "assignment": "no mapped burn patch >=100 ha at this location"
+      },
+      "lightning_screen": {
+        "nearest_ts": "DAAE 2026-08-23 19:00",
+        "dist_km": 123.7,
+        "dt_h": -18.5,
+        "assessment": "أقرب إبلاغ على بعد 124 كم — غير ذي دلالة لهذا الموقع"
+      },
+      "independent_ignition_probability": "مرتفعة",
+      "notes": "بؤرة معزولة في ولاية سكيكدة على بعد 96 كم من أقرب حريق سابق وبفجوة مسار 92 كم؛ لم تتطور."
+    },
+    {
+      "cluster_id": "O03",
+      "first_detection_utc": "2026-08-24 13:53",
+      "first_detection_local": "2026-08-24 14:53",
+      "latitude": 36.78738,
+      "longitude": 6.11795,
+      "coordinate_source": "satellite detection centroid (FIRMS), NOT a municipality centre",
+      "satellite": "N",
+      "instrument": "VIIRS",
+      "frp": 20.91,
+      "confidence": "high",
+      "daynight": "D",
+      "nearest_locality": "دائرة العنصر",
+      "wilaya": "جيجل",
+      "daira": "دائرة العنصر",
+      "n_cells_same_overpass": 4,
+      "terrain": {
+        "elevation_m": 55,
+        "slope_deg": 10.5,
+        "aspect_deg": 264
+      },
+      "reachability": {
+        "nearest_prior_fire_km": 29.653,
+        "nearest_prior_dt_h": 1.4,
+        "min_required_spread_rate_kmh": 1.82,
+        "largest_unburnt_path_gap_km": 60.68
+      },
+      "sentinel2_burn_patch": {
+        "patch_id": "B00",
+        "patch_area_km2": 399.98,
+        "assignment": "contained"
+      },
+      "lightning_screen": {
+        "nearest_ts": "DAAE 2026-08-23 19:00",
+        "dist_km": 94.0,
+        "dt_h": -19.9,
+        "assessment": "أقرب إبلاغ على بعد 94 كم — غير ذي دلالة لهذا الموقع"
+      },
+      "independent_ignition_probability": "مرتفعة",
+      "notes": "أقدم بؤرة داخل ولاية جيجل. تبعد 29.7 كم عن أقرب حريق سابق وفجوة المسار 60.7 كم؛ يستحيل بلوغها بانتشار سطحي. تقع داخل ندبة الحريق B00 التي شهدت لاحقاً الكارثة البشرية."
+    },
+    {
+      "cluster_id": "O04",
+      "first_detection_utc": "2026-08-25 00:50",
+      "first_detection_local": "2026-08-25 01:50",
+      "latitude": 36.61221,
+      "longitude": 6.28743,
+      "coordinate_source": "satellite detection centroid (FIRMS), NOT a municipality centre",
+      "satellite": "N20",
+      "instrument": "VIIRS",
+      "frp": 7.51,
+      "confidence": "nominal",
+      "daynight": "N",
+      "nearest_locality": "حمالة",
+      "wilaya": "ميلة",
+      "daira": "دائرة القرارم قوقة",
+      "n_cells_same_overpass": 1,
+      "terrain": {
+        "elevation_m": 190,
+        "slope_deg": 13.9,
+        "aspect_deg": 284
+      },
+      "reachability": {
+        "nearest_prior_fire_km": 24.012,
+        "nearest_prior_dt_h": 10.95,
+        "min_required_spread_rate_kmh": 1.58,
+        "largest_unburnt_path_gap_km": 71.63
+      },
+      "sentinel2_burn_patch": {
+        "patch_id": "B05",
+        "patch_area_km2": 11.37,
+        "assignment": "contained"
+      },
+      "lightning_screen": {
+        "nearest_ts": "DAAE 2026-08-23 19:00",
+        "dist_km": 109.4,
+        "dt_h": -30.8,
+        "assessment": "أقرب إبلاغ على بعد 109 كم — غير ذي دلالة لهذا الموقع"
+      },
+      "independent_ignition_probability": "مرتفعة",
+      "notes": "بؤرة ليلية مستقلة في ولاية ميلة؛ 24 كم عن أقرب حريق سابق وفجوة 71.6 كم."
+    },
+    {
+      "cluster_id": "O05",
+      "first_detection_utc": "2026-08-25 11:51",
+      "first_detection_local": "2026-08-25 12:51",
+      "latitude": 36.70906,
+      "longitude": 5.9809,
+      "coordinate_source": "satellite detection centroid (FIRMS), NOT a municipality centre",
+      "satellite": "N",
+      "instrument": "VIIRS",
+      "frp": 28.92,
+      "confidence": "high",
+      "daynight": "D",
+      "nearest_locality": "الشقفة",
+      "wilaya": "جيجل",
+      "daira": "دائرة الشقفة",
+      "n_cells_same_overpass": 1,
+      "terrain": {
+        "elevation_m": 571,
+        "slope_deg": 26.6,
+        "aspect_deg": 223
+      },
+      "reachability": {
+        "nearest_prior_fire_km": 14.255,
+        "nearest_prior_dt_h": 21.97,
+        "min_required_spread_rate_kmh": 0.65,
+        "largest_unburnt_path_gap_km": 9.67
+      },
+      "sentinel2_burn_patch": {
+        "patch_id": "B00",
+        "patch_area_km2": 399.98,
+        "assignment": "contained"
+      },
+      "lightning_screen": {
+        "nearest_ts": "DAAE 2026-08-23 19:00",
+        "dist_km": 81.4,
+        "dt_h": -41.9,
+        "assessment": "أقرب إبلاغ على بعد 81 كم — غير ذي دلالة لهذا الموقع"
+      },
+      "independent_ignition_probability": "مرتفعة",
+      "notes": "بؤرة الشقفة — نواة المجمّع الرئيسي (B00، 400 كم²). تبعد 14.3 كم عن أقرب رصد سابق (بؤرة الجمعة بني حبيبي) التي كانت قد خمدت عن الرصد منذ ~22 ساعة، وفجوة المسار 9.7 كم."
+    },
+    {
+      "cluster_id": "O06",
+      "first_detection_utc": "2026-08-26 00:33",
+      "first_detection_local": "2026-08-26 01:33",
+      "latitude": 36.67139,
+      "longitude": 6.19296,
+      "coordinate_source": "satellite detection centroid (FIRMS), NOT a municipality centre",
+      "satellite": "N20",
+      "instrument": "VIIRS",
+      "frp": 54.31,
+      "confidence": "nominal",
+      "daynight": "N",
+      "nearest_locality": "دائرة الميلية",
+      "wilaya": "جيجل",
+      "daira": "دائرة الميلية",
+      "n_cells_same_overpass": 14,
+      "terrain": {
+        "elevation_m": 911,
+        "slope_deg": 19.5,
+        "aspect_deg": 134
+      },
+      "reachability": {
+        "nearest_prior_fire_km": 10.426,
+        "nearest_prior_dt_h": 22.93,
+        "min_required_spread_rate_kmh": 0.4,
+        "largest_unburnt_path_gap_km": 7.73
+      },
+      "sentinel2_burn_patch": {
+        "patch_id": "B00",
+        "patch_area_km2": 399.98,
+        "assignment": "contained"
+      },
+      "lightning_screen": {
+        "nearest_ts": "DAAE 2026-08-24 21:00",
+        "dist_km": 100.5,
+        "dt_h": -28.6,
+        "assessment": "أقرب إبلاغ على بعد 100 كم — غير ذي دلالة لهذا الموقع"
+      },
+      "independent_ignition_probability": "متوسطة-مرتفعة",
+      "notes": "أولاد يحيى خدروش. 10.4 كم عن أقرب رصد سابق وفجوة 7.7 كم؛ لكن التمريرات الليلية السابقة كانت محدودة التغطية، فلا يُستبعد أنها اشتعلت قبل ذلك دون رصد."
+    },
+    {
+      "cluster_id": "O07",
+      "first_detection_utc": "2026-08-26 11:51",
+      "first_detection_local": "2026-08-26 12:51",
+      "latitude": 36.56478,
+      "longitude": 6.02891,
+      "coordinate_source": "satellite detection centroid (FIRMS), NOT a municipality centre",
+      "satellite": "N20",
+      "instrument": "VIIRS",
+      "frp": 14.94,
+      "confidence": "nominal",
+      "daynight": "D",
+      "nearest_locality": "دائرة ترعي باينان",
+      "wilaya": "ميلة",
+      "daira": "دائرة ترعي باينان",
+      "n_cells_same_overpass": 2,
+      "terrain": {
+        "elevation_m": 1104,
+        "slope_deg": 24.9,
+        "aspect_deg": 294
+      },
+      "reachability": {
+        "nearest_prior_fire_km": 15.665,
+        "nearest_prior_dt_h": 3.17,
+        "min_required_spread_rate_kmh": 0.55,
+        "largest_unburnt_path_gap_km": 20.12
+      },
+      "sentinel2_burn_patch": {
+        "patch_id": "B15",
+        "patch_area_km2": 1.19,
+        "assignment": "contained"
+      },
+      "lightning_screen": {
+        "nearest_ts": "DAAE 2026-08-24 21:00",
+        "dist_km": 87.3,
+        "dt_h": -39.9,
+        "assessment": "أقرب إبلاغ على بعد 87 كم — غير ذي دلالة لهذا الموقع"
+      },
+      "independent_ignition_probability": "متوسطة-مرتفعة",
+      "notes": "بؤرة في ولاية ميلة، 15.7 كم عن أقرب حريق سابق وفجوة 20.1 كم."
+    },
+    {
+      "cluster_id": "O08",
+      "first_detection_utc": "2026-08-26 11:51",
+      "first_detection_local": "2026-08-26 12:51",
+      "latitude": 36.68468,
+      "longitude": 5.76455,
+      "coordinate_source": "satellite detection centroid (FIRMS), NOT a municipality centre",
+      "satellite": "N20",
+      "instrument": "VIIRS",
+      "frp": 181.66,
+      "confidence": "low",
+      "daynight": "D",
+      "nearest_locality": "تاكسنة",
+      "wilaya": "جيجل",
+      "daira": "دائرة تاكسنة",
+      "n_cells_same_overpass": 43,
+      "terrain": {
+        "elevation_m": 593,
+        "slope_deg": 20.8,
+        "aspect_deg": 25
+      },
+      "reachability": {
+        "nearest_prior_fire_km": 19.629,
+        "nearest_prior_dt_h": 11.3,
+        "min_required_spread_rate_kmh": 0.39,
+        "largest_unburnt_path_gap_km": 22.78
+      },
+      "sentinel2_burn_patch": {
+        "patch_id": "B01",
+        "patch_area_km2": 122.27,
+        "assignment": "contained"
+      },
+      "lightning_screen": {
+        "nearest_ts": "DAAE 2026-08-24 21:00",
+        "dist_km": 62.1,
+        "dt_h": -39.9,
+        "assessment": "أقرب إبلاغ على بعد 62 كم — دليل ضعيف وغير محدد"
+      },
+      "independent_ignition_probability": "مرتفعة",
+      "notes": "تاكسنة — جبهة بطول ~7 كم ظهرت دفعة واحدة على بعد 19.6 كم عن أقرب حريق سابق وبفجوة 22.8 كم، وفي اتجاه معاكس للرياح. تشكّل ندبة حريق منفصلة تماماً (B01، 122 كم²) عن المجمّع الرئيسي B00. أقوى مرشّح لاشتعال مستقل داخل الولاية بعد الشقفة."
+    },
+    {
+      "cluster_id": "O09",
+      "first_detection_utc": "2026-08-26 13:14",
+      "first_detection_local": "2026-08-26 14:14",
+      "latitude": 36.56654,
+      "longitude": 5.63401,
+      "coordinate_source": "satellite detection centroid (FIRMS), NOT a municipality centre",
+      "satellite": "N",
+      "instrument": "VIIRS",
+      "frp": 4.95,
+      "confidence": "low",
+      "daynight": "D",
+      "nearest_locality": "إيراقن سويسي",
+      "wilaya": "جيجل",
+      "daira": "دائرة زيامة منصورية",
+      "n_cells_same_overpass": 1,
+      "terrain": {
+        "elevation_m": 875,
+        "slope_deg": 21.9,
+        "aspect_deg": 95
+      },
+      "reachability": {
+        "nearest_prior_fire_km": 12.301,
+        "nearest_prior_dt_h": 1.38,
+        "min_required_spread_rate_kmh": 0.22,
+        "largest_unburnt_path_gap_km": 13.22
+      },
+      "sentinel2_burn_patch": {
+        "patch_id": "B13",
+        "patch_area_km2": 1.81,
+        "assignment": "contained"
+      },
+      "lightning_screen": {
+        "nearest_ts": "DAAE 2026-08-24 21:00",
+        "dist_km": 53.0,
+        "dt_h": -41.2,
+        "assessment": "أقرب إبلاغ على بعد 53 كم — دليل ضعيف وغير محدد"
+      },
+      "independent_ignition_probability": "متوسطة",
+      "notes": "إيراقن سويسي؛ 12.3 كم عن أقرب حريق سابق وفجوة 13.2 كم، لكن ضمن نطاق نشاط حريق بجاية الكبير."
+    },
+    {
+      "cluster_id": "O10",
+      "first_detection_utc": "2026-08-27 09:22",
+      "first_detection_local": "2026-08-27 10:22",
+      "latitude": 36.60825,
+      "longitude": 5.79484,
+      "coordinate_source": "satellite detection centroid (FIRMS), NOT a municipality centre",
+      "satellite": "T",
+      "instrument": "MODIS",
+      "frp": 30.66,
+      "confidence": "nominal",
+      "daynight": "D",
+      "nearest_locality": "دائرة جيملة",
+      "wilaya": "جيجل",
+      "daira": "دائرة جيملة",
+      "n_cells_same_overpass": 1,
+      "terrain": {
+        "elevation_m": 785,
+        "slope_deg": 23.7,
+        "aspect_deg": 57
+      },
+      "reachability": {
+        "nearest_prior_fire_km": 5.575,
+        "nearest_prior_dt_h": 7.8,
+        "min_required_spread_rate_kmh": 0.32,
+        "largest_unburnt_path_gap_km": 26.38
+      },
+      "sentinel2_burn_patch": {
+        "patch_id": "B07",
+        "patch_area_km2": 6.57,
+        "assignment": "contained"
+      },
+      "lightning_screen": {
+        "nearest_ts": "DAAE 2026-08-26 20:00",
+        "dist_km": 65.8,
+        "dt_h": -14.4,
+        "assessment": "أقرب إبلاغ على بعد 66 كم — دليل ضعيف وغير محدد"
+      },
+      "independent_ignition_probability": "متوسطة",
+      "notes": "بودريعة بن ياجيس؛ فجوة مسار 26.4 كم لكن المسافة عن أقرب حريق سابق 5.6 كم فقط، ما يجعل الانتشار أو التطاير احتمالاً قائماً."
+    },
+    {
+      "cluster_id": "O11",
+      "first_detection_utc": "2026-08-27 09:22",
+      "first_detection_local": "2026-08-27 10:22",
+      "latitude": 36.70913,
+      "longitude": 6.58364,
+      "coordinate_source": "satellite detection centroid (FIRMS), NOT a municipality centre",
+      "satellite": "T",
+      "instrument": "MODIS",
+      "frp": 59.63,
+      "confidence": "nominal",
+      "daynight": "D",
+      "nearest_locality": "دائرة أم الطوب",
+      "wilaya": "سكيكدة",
+      "daira": "دائرة أم الطوب",
+      "n_cells_same_overpass": 1,
+      "terrain": {
+        "elevation_m": 245,
+        "slope_deg": 15.5,
+        "aspect_deg": 195
+      },
+      "reachability": {
+        "nearest_prior_fire_km": 19.446,
+        "nearest_prior_dt_h": 68.88,
+        "min_required_spread_rate_kmh": 0.28,
+        "largest_unburnt_path_gap_km": 14.84
+      },
+      "sentinel2_burn_patch": {
+        "patch_id": null,
+        "patch_area_km2": null,
+        "assignment": "outside Sentinel-2 analysis window"
+      },
+      "lightning_screen": {
+        "nearest_ts": "DAAE 2026-08-26 20:00",
+        "dist_km": 135.2,
+        "dt_h": -14.4,
+        "assessment": "أقرب إبلاغ على بعد 135 كم — غير ذي دلالة لهذا الموقع"
+      },
+      "independent_ignition_probability": "متوسطة-مرتفعة",
+      "notes": "ولاية سكيكدة (أم الطوب)؛ خارج نافذة تحليل Sentinel-2، والتغطية الحرارية للمنطقة كانت متقطعة."
+    }
+  ]
+}

@@ -22,7 +22,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## مراحل التنفيذ
 
 - [x] **1. خطة العمل ونظافة المستودع** - إبقاء هذا الملف مرجعاً للاستئناف، واستبعاد بيانات الأدوات المحلية والبيئات والمواد الخام الثقيلة. الالتزام: `chore: establish project roadmap and repository hygiene`
-- [ ] **2. إصلاح أصول التحقيق العربية** - تثبيت بيئة Python، اعتماد خطوط عربية قابلة للنقل، إصلاح تشكيل واتجاه النص، وإعادة توليد الخرائط والرسوم والتقرير مع فحص بصري. الالتزام: `fix: restore Arabic rendering in investigation assets`
+- [x] **2. إصلاح أصول التحقيق العربية** - تثبيت بيئة Python، اعتماد خطوط عربية قابلة للنقل، إصلاح تشكيل واتجاه النص، وإعادة توليد الخرائط والرسوم والتقرير مع فحص بصري. الالتزام: `fix: restore Arabic rendering in investigation assets`
 - [ ] **3. نظام التصميم والهيكل العربي** - تهيئة shadcn، وضبط RTL والخطوط والسمات والتنقل المتجاوب والمكونات الأساسية. الالتزام: `feat: establish the Arabic interface foundation`
 - [ ] **4. خط إعداد المحتوى والبيانات** - التحقق من CSV/JSON/Markdown، وتوليد GeoJSON وبيان التنزيلات والأصول المحسنة وملفات MapLibre. الالتزام: `feat: prepare validated investigation data`
 - [ ] **5. الملخص والتقرير الكامل** - بناء الصفحة الرئيسية وصفحتي التحقيق والتقرير، وربط الادعاءات بدرجات الثقة والمصادر. الالتزام: `feat: publish the investigation narrative`
