@@ -1,12 +1,6 @@
-import { Section } from "@astryxdesign/core/Section";
-import { VStack } from "@astryxdesign/core/Stack";
-import { Heading, Text } from "@astryxdesign/core/Text";
-import { Divider } from "@astryxdesign/core/Divider";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
-/**
- * فاتحة قسم في الملف: تسمية علوية، عنوان، فقرة تمهيدية، ثم ملاحظة عن مصدر
- * المحتوى. تُملأ الأقسام لاحقاً من ملفات التحقيق المتحقّقة.
- */
 export function PlaceholderPage({
   eyebrow,
   title,
@@ -19,24 +13,26 @@ export function PlaceholderPage({
   note?: string;
 }) {
   return (
-    <Section padding={0} width="100%">
-      <VStack gap={8} padding={6} paddingBlockStart={10} maxWidth={880}>
-        <VStack gap={4} className="border-s-2 border-accent ps-6">
-          <Text type="supporting" color="accent" weight="medium">
-            {eyebrow}
-          </Text>
-          <Heading level={1}>{title}</Heading>
-          <Text type="large" color="secondary">
+    <article className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
+      <header className="grid gap-8 md:grid-cols-12">
+        <div className="md:col-span-3">
+          <Badge variant="outline">{eyebrow}</Badge>
+        </div>
+        <div className="md:col-span-8">
+          <h1 className="max-w-4xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+            {title}
+          </h1>
+          <p className="mt-6 max-w-3xl text-lg leading-8 text-muted-foreground">
             {description}
-          </Text>
-        </VStack>
+          </p>
+        </div>
+      </header>
 
-        <Divider />
+      <Separator className="my-10 lg:my-14" />
 
-        <VStack maxWidth={620}>
-          <Text type="supporting">{note}</Text>
-        </VStack>
-      </VStack>
-    </Section>
+      <p className="max-w-2xl text-sm leading-7 text-muted-foreground md:me-auto md:w-8/12">
+        {note}
+      </p>
+    </article>
   );
 }

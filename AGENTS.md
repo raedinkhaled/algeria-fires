@@ -12,22 +12,24 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## قواعد العمل
 
-- ابدأ كل جلسة بقراءة هذه الخطة وفحص `git status` وآخر الالتزامات.
+- ابدأ كل جلسة بقراءة هذه الخطة وفحص `git status` وآخر الالتزامات، ثم افحص دائماً حالة `Fires/` وملفاته الأحدث قبل الاعتماد على أي مخرج منشور؛ يحدّث المالك التحقيق يدوياً من وقت إلى آخر.
 - نفّذ أول مرحلة غير مكتملة فقط، إلا إذا طلب المالك متابعة أكثر من مرحلة.
 - لا تغيّر البيانات الخام أو النتائج العلمية إلا مع توثيق سبب التغيير والتحقق منه.
 - شغّل فحوص المرحلة، ثم غيّر مربعها إلى `[x]` في الالتزام نفسه.
 - راجع الملفات المرحلية قبل كل التزام، ولا تضمّن إعدادات محلية أو أسراراً أو ملفات مؤقتة.
 - اكتب رسائل الالتزام بصياغة قصيرة وطبيعية كما يكتبها مطوّر، مع وصف مباشر للتغيير ومن دون الإشارة إلى طريقة إنجازه.
 - استخدم الأرقام الغربية `0-9` في الواجهة العربية، مع إبقاء الإحداثيات والمعرّفات والاختصارات العلمية باتجاه LTR.
-- استخدم Astryx وحده لنظام الواجهة والمكوّنات؛ لا تضف shadcn ولا تستورد أي مكوّن منه، واتبع كتلة تعليمات Astryx في نهاية هذا الملف.
-- يجب أن يدعم كل سطح ومكوّن الوضعين الفاتح والداكن من خلال سمة Astryx، من دون ألوان ثابتة داخل الصفحات.
+- استخدم shadcn/ui وحده لنظام المكوّنات، وفق `components.json` وملفات المصدر تحت `components/ui/`؛ لا تضف مكتبة مكوّنات موازية.
+- قبل استخدام مكوّن shadcn جديد، شغّل `npx shadcn@latest docs <component>` واقرأ واجهته الحالية، ثم أضفه عبر CLI وراجع الملف المضاف.
+- يجب أن يدعم كل سطح ومكوّن الوضعين الفاتح والداكن عبر الرموز الدلالية في `app/globals.css`، من دون ألوان ثابتة داخل الصفحات.
+- الخط العربي الوحيد للواجهة هو IBM Plex Sans Arabic المحمّل عبر `next/font`.
 - تجنّب الواجهة النمطية المبنية من بطاقات متشابهة؛ أعطِ السرد والبيانات تسلسلاً بصرياً واضحاً واستخدم أضعف حاوية مناسبة للمحتوى.
 
 ## مراحل التنفيذ
 
 - [x] **1. خطة العمل ونظافة المستودع** - إبقاء هذا الملف مرجعاً للاستئناف، واستبعاد بيانات الأدوات المحلية والبيئات والمواد الخام الثقيلة. الالتزام: `chore: establish project roadmap and repository hygiene`
 - [x] **2. إصلاح أصول التحقيق العربية** - تثبيت بيئة Python، اعتماد خطوط عربية قابلة للنقل، إصلاح تشكيل واتجاه النص، وإعادة توليد الخرائط والرسوم والتقرير مع فحص بصري. الالتزام: `fix: restore Arabic rendering in investigation assets`
-- [x] **3. نظام التصميم والهيكل العربي** - اعتماد Astryx، وضبط RTL والخطوط والوضعين الفاتح والداكن والتنقل المتجاوب والمكونات الأساسية. الالتزام: `feat: build the Arabic site shell`
+- [x] **3. نظام التصميم والهيكل العربي** - اعتماد shadcn/ui، وضبط RTL والخطوط والوضعين الفاتح والداكن والتنقل المتجاوب والمكونات الأساسية. الالتزام: `feat: build the Arabic site shell`
 - [ ] **4. خط إعداد المحتوى والبيانات** - التحقق من CSV/JSON/Markdown، وتوليد GeoJSON وبيان التنزيلات والأصول المحسنة وملفات MapLibre. الالتزام: `feat: generate validated site data`
 - [ ] **5. الملخص والتقرير الكامل** - بناء الصفحة الرئيسية وصفحتي التحقيق والتقرير، وربط الادعاءات بدرجات الثقة والمصادر. الالتزام: `feat: publish the investigation story`
 - [ ] **6. الخريطة التفاعلية** - إضافة طبقات الرصد والمنشأ والبلديات وشدة الاحتراق، والمرشح الزمني، ودعم RTL والبديل الثابت. الالتزام: `feat: build the interactive fire map`
@@ -61,48 +63,30 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ### ما استقر في المرحلة 3 (لا تعِد بناءه)
 
-- **السمة**: `themes/jijel.theme.ts` مصدرٌ يمتد `neutralTheme` بلهجة جمرية (accent) وخطّي Noto وأسطح "ورق دافئ/فحم". أعِد البناء بعد أي تعديل: `npx astryx theme build themes/jijel.theme.ts` (ينتج `jijel.css/js/d.ts` المُلتزَمة). لا تحرّر المخرجات يدوياً.
-- **الطبقات**: `app/layers.css` يعلن ترتيب طبقات CSS ويُستورد أولاً في `app/globals.css`، ثم Tailwind (theme/preflight/utilities) + `reset.css` + `astryx.css` + `themes/jijel.css` + جسر `tailwind-theme.css`. الخلفية/النص/الخط مطليّة على `<html>/<body>` لأن `<Theme>` يستخدم `display:contents`.
-- **المزودات**: `components/providers.tsx` = `InternationalizationProvider(ar-DZ, dir=rtl, overrides=lib/astryx-ar.ts)` ← `Theme(jijelTheme, mode)` ← `LinkProvider(next/link)` ← سياق وضع اللون. حالة وضع اللون في `lib/color-mode-store.ts` عبر `useSyncExternalStore` (لا `useEffect`)؛ سكربت مضمّن في `<body>` يضبط `data-theme` قبل الرسم. `<html>` ثابت: `lang="ar-DZ" dir="rtl" data-astryx-theme="jijel"`.
-- **الإطار**: `components/site-chrome.tsx` = `AppShell(height=auto, variant=section, contentPadding=0)` + `TopNav` (شعار `site-mark.tsx` SVG + عناصر من `lib/site-navigation.ts` + `theme-toggle.tsx`). التذييل `components/site-footer.tsx` شقيقٌ للـ`AppShell` داخل `VStack minHeight=100dvh` ليثبت أسفل الصفحة. درج الهاتف يأتي تلقائياً من `startContent` في `TopNav`.
-- **الصفحات**: `app/page.tsx` هي الملخّص (ترويسة + سجل أرقام + فهرس مسارات) — بلا شبكة بطاقات. الأقسام الستة الأخرى تستخدم `components/placeholder-page.tsx` بانتظار مراحلها.
-- **قواعد الأسلوب**: مكوّنات Astryx أولاً؛ لا `<div>` ولا `style={{}}` ولا StyleX مؤلَّف يدوياً (لا مُحوِّل SWC). المخرج الوحيد للتخصيص: أدوات Tailwind المدعومة بالوسوم (`bg-muted`، `border-accent`، `ps-6`…). صنف `.ltr-embed` للإحداثيات والمعرّفات.
-- **الحزم**: حُذف shadcn و`@base-ui/react` و`recharts` و`class-variance-authority` و`clsx` و`tailwind-merge` و`tw-animate-css`. `@astryxdesign/cli` و`theme-neutral` صارا devDependencies. أعِد `recharts` في المرحلة 7.
-- **الفحوص المارّة**: `tsc --noEmit` و`eslint` و`next build` (8 مسارات ثابتة). عاينت 360 و1440 في الوضعين وتبديل السمة. **لم يُعاين بعد**: 768 بكسل، وفتح درج الهاتف فعلياً — تحقق سريعاً في المرحلة 4.
-- خادم `next dev` خارجي يعمل مسبقاً على المنفذ 3000 (PID يتغيّر)؛ لا تشغّل ثانياً، استخدم القائم.
+- **نظام المكوّنات**: `components.json` يثبّت shadcn بنمط `radix-nova` مع RTL وLucide. المكوّنات محلية تحت `components/ui/` وتُضاف أو تُحدّث عبر `npx shadcn@latest` فقط.
+- **السمة**: `app/globals.css` هو المصدر الوحيد للرموز الدلالية. اللوحة ورق دافئ/فحم محايد ولهجة جمرية، وتدعم `:root` و`.dark`. لا تستخدم ألوان Tailwind خاماً أو `dark:` يدوياً داخل الصفحات.
+- **الخط**: IBM Plex Sans Arabic بأوزان 400–700 عبر `next/font/google` ومتغير `--font-ibm-plex-sans-arabic`. لا تعد إلى Noto.
+- **المزودات**: `components/providers.tsx` و`lib/color-mode-store.ts` يديران الوضع عبر `useSyncExternalStore`، ويضبط السكربت السابق للرسم صنف `.dark` و`color-scheme` لمنع الوميض.
+- **الإطار**: `components/site-chrome.tsx` شريط تحريري متجاوب، ودرج الهاتف مركّب من `Sheet` مع عنوان ووصف، والتذييل في `components/site-footer.tsx`.
+- **الصفحات**: `app/page.tsx` ملخص تحريري غير نمطي يوظف خريطة شدة الاحتراق الحقيقية؛ الأقسام الأخرى تستخدم `components/placeholder-page.tsx` حتى مراحلها.
+- **قواعد الأسلوب**: استخدم مكوّن shadcn الموجود قبل بناء بديل، والأنواع الدلالية قبل تخصيص `className`. التخطيط عبر Tailwind و`gap-*`، ولا `space-x/y` ولا ألوان خام ولا قيم عشوائية. صنفا `.ltr-embed` و`.numeric` للإحداثيات والمعرّفات والأرقام.
+- **الحزم**: لا توجد أي حزمة أو سمة أو استيراد لنظام الواجهة السابق. أعد `recharts` عبر مكوّن Chart من shadcn في المرحلة 7.
+- خادم `next dev` قد يعمل مسبقاً على المنفذ 3000؛ افحصه قبل تشغيل نسخة ثانية.
 
 ### للمرحلة 4
 
-- بيانات المصدر في `Fires/` (خط Python). انشر المعالَج فقط تحت `public/generated/` و`public/maplibre/` (كلاهما في `.gitignore` حالياً — راجع ما يجب نشره فعلاً).
-- يجب أن يوقف السكربت البناء إذا اختلفت القيم المرجعية: 9,100 رصد، 4,451 خلية، 12 منشأً، 17 ندبة (هي مثبّتة نصّياً في `app/page.tsx`).
+- `Fires/scripts/36_build_site_data.py` يتحقق من كل CSV/JSON معالج وملفات Markdown الأساسية، ثم يبني `public/generated/` و`public/maplibre/`. لا تعدّل مخرجاتهما يدوياً.
+- شغّل `npm run data:build` بعد كل تحديث يدوي داخل `Fires/` وقبل `next build`؛ `prebuild` يشغّله تلقائياً، ويفشل عند اختلاف 9,100 أو 4,451 أو 12 أو 17.
+- ملفات الندبات المنشورة نقاط مراكز مسماة بوضوح، لا مضلعات مخترعة. صورة dNBR مصدر صورة MapLibre موثّق بحدوده.
+- انشر المعالَج فقط والتقرير المضغوط. تبقى المواد الخام والوسائط الثقيلة المحلية خارج `public/`.
 - عند نجاح المرحلة، غيّر مربعها إلى `[x]`، راجع الملفات، والتزم `feat: generate validated site data`.
 
-<!-- ASTRYX:START -->
-Astryx v0.5.1 · 163 components
-CLI: run every command as `npx astryx <cmd>` (shown below as `astryx ...`).
+## قواعد shadcn/ui
 
-SETUP (once, in your app entry e.g. main.tsx) — without these, components render unstyled:
-  import "@astryxdesign/core/reset.css";
-  import "@astryxdesign/core/astryx.css";
-
-WORKFLOW — discover, don't guess. Before writing UI:
-1. `astryx build "<idea>"` — START HERE: returns a kit (closest [page] + [block]s + [component]s). No args = full playbook.
-2. `astryx template <name> [--skeleton]` — scaffold the [page]/[block]s it named, or study their layout. Templates are reference code.
-3. `astryx component <Name>` — props + examples for every component you use.
-
-RULES:
-- No <div> — components do all layout/spacing, page frame included.
-- Frame first: read `astryx docs layout` before writing any page or screen — page frame, region widths, breakpoint behavior.
-- Dense data = rows (Table, List/Item), never Card-wrapped list items; Card is for standalone widgets. Status = StatusDot/Token; Badge = counts only.
-- Custom styling: component props first; else Tailwind utilities backed by tokens (bg-surface, text-primary, rounded-lg) via tailwind-theme.css. No raw hex/px.
-- Tokens for every value (`astryx docs tokens`). Brand/accent belongs in the theme (`astryx theme list` / `theme add <slug>`, or `astryx theme template` for a custom one) — never override --color-* in :root.
-- SELF-CHECK before you finish: re-read the file and replace any style={{…}}, raw <div>/<span> layout, imported .css/@apply, or hardcoded/arbitrary value (e.g. bg-[#fff], p-[13px]) with the component or a token-backed utility. If unsure a component/prop exists, run `astryx component <Name>` / `astryx search "<thing>"`; don't hand-roll CSS.
-
-MORE CLI:
-  search "<query>"   find any component / hook / doc / template / block
-  component --list   163 components by category
-  template --list    page + block recipes
-  docs <topic>       browser-support, cli-integrations, color, elevation, getting-started, icons, illustrations, internationalization, layout, migration, motion, principles, shape, spacing, styling-libraries, styling, theme, tokens, typography, working-with-ai
-  swizzle <Name>     eject component source for deep customization
-  upgrade --apply    run after any @astryxdesign/core bump
-<!-- ASTRYX:END -->
+- ابدأ بـ `npx shadcn@latest info`، وابحث في السجل قبل كتابة مكوّن مخصص.
+- نفّذ `npx shadcn@latest docs <component>` واقرأ الأمثلة قبل كل استخدام جديد، ثم أضف المكوّن عبر `npx shadcn@latest add <component>`.
+- لا تستبدل ملفات مكوّنات معدّلة عبر `--overwrite`؛ استخدم `--dry-run` و`--diff` ثم ادمج التغيير.
+- استخدم `Button` و`Badge` و`Separator` و`Sheet` وغيرها بدلاً من تقليدها بعلامات مخصصة. كل `Sheet` أو `Dialog` له عنوان ووصف ملائمان.
+- استخدم `asChild` مع Radix للروابط والمشغلات، و`data-icon` للأيقونات داخل الأزرار، ولا تضبط حجم الأيقونة يدوياً داخل مكوّن shadcn.
+- استخدم الرموز الدلالية مثل `bg-background` و`text-muted-foreground` و`border-border`. أي لون منتجي جديد يُعرّف متغيراً في `app/globals.css`.
+- البيانات الكثيفة صفوف وجداول، لا مجموعات بطاقات متطابقة. البطاقة لعنصر مستقل فقط.

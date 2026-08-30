@@ -16,8 +16,6 @@ const eslintConfig = defineConfig([
     // Python investigation pipeline and local scratch — not part of the app.
     "Fires/**",
     "tmp/**",
-    // Generated theme artifacts from `astryx theme build`.
-    "themes/jijel.js",
     "themes/*.d.ts",
   ]),
 ]);

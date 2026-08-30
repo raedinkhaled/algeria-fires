@@ -1,12 +1,3 @@
-/**
- * مخزن وضع اللون خارج React: يقرأ الاختيار من localStorage ويتابع تفضيل
- * النظام، ويُستهلك عبر useSyncExternalStore فلا حاجة إلى useEffect/useState
- * لمزامنة حالة خارجية.
- *
- * السكربت المضمّن في <body> يضبط data-theme قبل أول رسم؛ هنا نُبقيه متوافقاً
- * عند كل تبديل، ونمرّر mode إلى <Theme>.
- */
-
 export type ColorMode = "light" | "dark" | "system";
 export type ResolvedMode = "light" | "dark";
 
@@ -21,7 +12,6 @@ const listeners = new Set<() => void>();
 const serverSnapshot: ColorModeSnapshot = { mode: "system", resolvedMode: "light" };
 
 let currentMode: ColorMode = "system";
-let systemPrefersDark = false;
 let snapshot: ColorModeSnapshot = serverSnapshot;
 
 function darkMediaQuery(): MediaQueryList | null {
@@ -38,12 +28,14 @@ function readStoredMode(): ColorMode {
   }
 }
 
-/** يعيد الحساب ويحدّث اللقطة بمرجع ثابت ما لم تتغيّر القيمة. */
 function refreshSnapshot(): void {
   currentMode = readStoredMode();
-  systemPrefersDark = darkMediaQuery()?.matches ?? false;
   const resolvedMode: ResolvedMode =
-    currentMode === "system" ? (systemPrefersDark ? "dark" : "light") : currentMode;
+    currentMode === "system"
+      ? darkMediaQuery()?.matches
+        ? "dark"
+        : "light"
+      : currentMode;
 
   if (snapshot.mode !== currentMode || snapshot.resolvedMode !== resolvedMode) {
     snapshot = { mode: currentMode, resolvedMode };
@@ -58,7 +50,6 @@ function handleExternalChange(): void {
   refreshSnapshot();
   emit();
 }
-
 export function subscribeColorMode(onChange: () => void): () => void {
   if (listeners.size === 0) {
     refreshSnapshot();
@@ -85,7 +76,6 @@ export function getColorModeServerSnapshot(): ColorModeSnapshot {
   return serverSnapshot;
 }
 
-/** يحفظ الاختيار، ويعكسه فوراً على <html data-theme>، ثم يُخطر المشتركين. */
 export function setColorMode(next: ColorMode): void {
   try {
     if (next === "system") {
@@ -94,17 +84,18 @@ export function setColorMode(next: ColorMode): void {
       window.localStorage.setItem(COLOR_MODE_STORAGE_KEY, next);
     }
   } catch {
-    /* التخزين غير متاح */
+    // يستمر التبديل حتى إن كان التخزين المحلي غير متاح.
   }
 
-  try {
-    const root = document.documentElement;
-    if (next === "system") root.removeAttribute("data-theme");
-    else root.setAttribute("data-theme", next);
-  } catch {
-    /* لا DOM */
-  }
+  const resolved =
+    next === "system"
+      ? darkMediaQuery()?.matches
+        ? "dark"
+        : "light"
+      : next;
 
+  document.documentElement.classList.toggle("dark", resolved === "dark");
+  document.documentElement.style.colorScheme = resolved;
   refreshSnapshot();
   emit();
 }

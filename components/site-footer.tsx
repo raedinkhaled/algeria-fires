@@ -1,8 +1,6 @@
-import { Section } from "@astryxdesign/core/Section";
-import { VStack, HStack } from "@astryxdesign/core/Stack";
-import { Text } from "@astryxdesign/core/Text";
-import { Link } from "@astryxdesign/core/Link";
-import { Divider } from "@astryxdesign/core/Divider";
+import Link from "next/link";
+
+import { Separator } from "@/components/ui/separator";
 
 const colophonLinks = [
   { href: "/methodology", label: "المنهجية" },
@@ -12,41 +10,40 @@ const colophonLinks = [
 
 export function SiteFooter() {
   return (
-    <Section
-      role="contentinfo"
-      variant="muted"
-      padding={0}
-      dividers={["top"]}
-      width="100%"
-    >
-      <VStack gap={5} padding={6} maxWidth={1180}>
-        <VStack gap={2} maxWidth={640}>
-          <Text weight="semibold">حرائق جيجل — إعادة بناء بالبيانات المفتوحة</Text>
-          <Text type="supporting">
-            تحليل توثيقي مستقل يعتمد بيانات مفتوحة. لا يحدّد مسؤولية جنائية ولا
-            يثبت إضراماً متعمداً، ولا يغني عن التحقيق الميداني الرسمي.
-          </Text>
-        </VStack>
+    <footer className="border-t bg-muted/45">
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-12 lg:px-8">
+        <div className="md:col-span-7">
+          <p className="font-semibold">
+            حرائق جيجل — إعادة بناء بالبيانات المفتوحة
+          </p>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground">
+            تحليل توثيقي مستقل. لا يحدّد مسؤولية جنائية ولا يثبت إضراماً
+            متعمداً، ولا يغني عن التحقيق الميداني الرسمي.
+          </p>
+        </div>
 
-        <HStack gap={5} wrap="wrap">
+        <nav
+          aria-label="روابط التذييل"
+          className="flex flex-wrap content-start gap-x-6 gap-y-3 text-sm md:col-span-5 md:justify-end"
+        >
           {colophonLinks.map((link) => (
-            <Link key={link.href} href={link.href} color="secondary">
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+            >
               {link.label}
             </Link>
           ))}
-        </HStack>
+        </nav>
 
-        <Divider />
+        <Separator className="md:col-span-12" />
 
-        <HStack gap={3} wrap="wrap" vAlign="center">
-          <Text type="supporting">
-            الأرقام بالصيغة الغربية 0–9 لتسهيل القراءة والنسخ والمراجعة.
-          </Text>
-          <Text type="supporting" className="ltr-embed">
-            ولاية جيجل · 36.72°N · 5.95°E
-          </Text>
-        </HStack>
-      </VStack>
-    </Section>
+        <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground md:col-span-12 md:justify-between">
+          <p>تُعرض الأرقام بالصيغة الغربية 0–9 لتسهيل المراجعة والنسخ.</p>
+          <p className="ltr-embed">Jijel · 36.72°N · 5.95°E</p>
+        </div>
+      </div>
+    </footer>
   );
 }

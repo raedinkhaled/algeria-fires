@@ -1,19 +1,14 @@
 import type { Metadata } from "next";
-import { Noto_Kufi_Arabic, Noto_Sans_Arabic } from "next/font/google";
+import { IBM_Plex_Sans_Arabic } from "next/font/google";
 
 import { Providers, colorModeScript } from "@/components/providers";
 import { SiteChrome } from "@/components/site-chrome";
 
 import "./globals.css";
 
-const notoSansArabic = Noto_Sans_Arabic({
-  variable: "--font-noto-sans-arabic",
-  subsets: ["arabic", "latin"],
-  display: "swap",
-});
-
-const notoKufiArabic = Noto_Kufi_Arabic({
-  variable: "--font-noto-kufi-arabic",
+const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
+  variable: "--font-ibm-plex-sans-arabic",
+  weight: ["400", "500", "600", "700"],
   subsets: ["arabic", "latin"],
   display: "swap",
 });
@@ -38,8 +33,7 @@ export default function RootLayout({
     <html
       lang="ar-DZ"
       dir="rtl"
-      data-astryx-theme="jijel"
-      className={`${notoSansArabic.variable} ${notoKufiArabic.variable}`}
+      className={ibmPlexSansArabic.variable}
       suppressHydrationWarning
     >
       <body>
