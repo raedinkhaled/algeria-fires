@@ -1,0 +1,6 @@
+/**
+ * ترتيب طبقات CSS — يجب أن يُستورد أولاً وفي ملف مستقل.
+ * حزم البناء (ومنها Next.js/webpack) ترفع محتوى @import فوق أي CSS مضمّن بعده،
+ * لذا يعيش إعلان الترتيب هنا وحده كي يسبق كل استيراد في globals.css.
+ */
+@layer reset, theme, base, astryx-base, astryx-theme, components, utilities;

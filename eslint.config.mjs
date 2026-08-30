@@ -9,9 +9,16 @@ const eslintConfig = defineConfig([
   globalIgnores([
     // Default ignores of eslint-config-next:
     ".next/**",
+    ".venv/**",
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Python investigation pipeline and local scratch — not part of the app.
+    "Fires/**",
+    "tmp/**",
+    // Generated theme artifacts from `astryx theme build`.
+    "themes/jijel.js",
+    "themes/*.d.ts",
   ]),
 ]);
 

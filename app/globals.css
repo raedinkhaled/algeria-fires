@@ -1,26 +1,53 @@
-@import "tailwindcss";
+/**
+ * أنماط عامة للموقع.
+ *
+ * التركيب: Astryx وحده لنظام المكوّنات، مع جسر Tailwind المدعوم بالوسوم
+ * (bg-surface، text-primary، rounded-container…) كمخرج وحيد للتخصيص النادر.
+ * لا ألوان أو أبعاد ثابتة في الصفحات؛ كلها وسوم من سمة jijel.
+ *
+ * ترتيب الاستيراد يتبع دليل هجرة Astryx:
+ *   reset (Astryx) → astryx-base → astryx-theme (سمة jijel) → جسر Tailwind → أدوات Tailwind
+ */
+@import "./layers.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "@astryxdesign/core/reset.css";
+@import "@astryxdesign/core/astryx.css";
+@import "../themes/jijel.css";
+@import "@astryxdesign/core/tailwind-theme.css";
+@import "tailwindcss/utilities.css" layer(utilities);
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  /*
+   * وسم data-astryx-theme="jijel" يُثبَّت على <html> من الخادم، فتُحلّ الوسوم
+   * على الصفحة كلها منذ أول رسم. نطلي الخلفية والنص والخط على <html>/<body>
+   * لأن غلاف <Theme> يستخدم display:contents ولا يطلي خلفية بنفسه.
+   */
+  html {
+    background-color: var(--color-background-body);
+    -webkit-text-size-adjust: 100%;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    min-height: 100dvh;
+    background-color: var(--color-background-body);
+    color: var(--color-text-primary);
+    font-family: var(--font-family-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* الإحداثيات والمعرّفات والاختصارات العلمية تبقى LTR داخل نص عربي. */
+  [dir="rtl"] .ltr-embed {
+    direction: ltr;
+    unicode-bidi: isolate;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
