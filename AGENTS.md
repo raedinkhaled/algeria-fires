@@ -38,7 +38,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - [x] **5. الملخص والتقرير الكامل** - بناء الصفحة الرئيسية وصفحتي التحقيق والتقرير، وربط الادعاءات بدرجات الثقة والمصادر. الالتزام: `feat: publish the investigation story`
 - [x] **6. الخريطة التفاعلية** - إضافة طبقات الرصد والمنشأ والبلديات وشدة الاحتراق، والمرشح الزمني، ودعم RTL والبديل الثابت. الالتزام: `feat: build the interactive fire map`
 - [x] **7. الرسوم ومستكشف البيانات** - إضافة الرسوم التفاعلية والجداول المصفاة والتنزيلات الفردية والمجمعة. الالتزام: `feat: build the data explorer`
-- [ ] **8. المنهجية وسجل المصادر** - نشر المنهجية وكل سجلات DS/OF/MD/ME وحالات المصادر غير المتاحة وروابطها. الالتزام: `feat: publish methodology and sources`
+- [x] **8. المنهجية وسجل المصادر** - نشر المنهجية وكل سجلات DS/OF/MD/ME وحالات المصادر غير المتاحة وروابطها. الالتزام: `feat: publish methodology and sources`
 - [ ] **9. الجودة والنشر** - إضافة metadata وsitemap وrobots والبيانات المنظمة والاختبارات وفحص البناء على Vercel. الالتزام: `chore: ready the site for release`
 
 ## بنية المنتج المقبولة
