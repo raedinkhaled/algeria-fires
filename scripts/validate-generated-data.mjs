@@ -8,6 +8,8 @@ import path from "node:path";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const GENERATED = path.join(ROOT, "public", "generated");
+// نصّ التقرير يعيش خارج public/ عمداً: يُقرأ عند البناء ولا يُخدَم للتنزيل.
+const REPORT = path.join(ROOT, "content", "report_ar.md");
 
 const REFERENCE_COUNTS = {
   hotspots: 9100,
@@ -58,6 +60,46 @@ for (const [key, expected] of Object.entries(REFERENCE_COUNTS)) {
   if (rows !== expected) {
     problems.push(`${COUNTED_CSV[key]}: ${rows} صفاً، المتوقع ${expected}`);
   }
+}
+
+try {
+  const report = readFileSync(REPORT, "utf8");
+  if (!/^#\s+\S/m.test(report)) {
+    problems.push("content/report_ar.md لا يحتوي عنواناً رئيسياً");
+  }
+} catch {
+  problems.push("content/report_ar.md مفقود: تعذّر بناء صفحة التقرير ونسخة الطباعة");
+}
+
+// معرض الأشكال: يتحقق من وجود كل ملف وبصمته، ولا يدخل قائمة التنزيلات.
+try {
+  const figures = JSON.parse(read("data/figures.json").toString("utf8"));
+  const expected = { map: 6, chart: 11, satellite: 5 };
+  for (const group of figures.groups ?? []) {
+    if (group.count !== expected[group.id]) {
+      problems.push(
+        `figures.json: ${group.id} = ${group.count}، المتوقع ${expected[group.id]}`,
+      );
+    }
+  }
+  for (const item of figures.figures ?? []) {
+    const relative = item.path.replace(/^\/generated\//, "");
+    let bytes;
+    try {
+      bytes = read(relative);
+    } catch {
+      problems.push(`figures.json يشير إلى ملف مفقود: ${item.path}`);
+      continue;
+    }
+    if (bytes.length !== item.bytes) {
+      problems.push(`${item.path}: الحجم ${bytes.length}، المُعلن ${item.bytes}`);
+    }
+    if (createHash("sha256").update(bytes).digest("hex") !== item.sha256) {
+      problems.push(`${item.path}: بصمة sha256 لا تطابق figures.json`);
+    }
+  }
+} catch (error) {
+  problems.push(`تعذّرت قراءة figures.json: ${error.message}`);
 }
 
 let downloads;

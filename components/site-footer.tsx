@@ -11,14 +11,15 @@ const dataSources = [
 ];
 
 const documents = [
-  { label: "التقرير الكامل · PDF", href: "/generated/report/report_ar_compact.pdf", download: true },
-  { label: "ملف Markdown", href: "/generated/documentation/report_ar.md", download: true },
+  { label: "التسلسل الزمني", href: "/chronology" },
+  { label: "التقرير الكامل", href: "/report" },
+  { label: "نسخة الطباعة · PDF", href: "/report/print" },
   { label: "البيانات المعالجة", href: "/data" },
   { label: "المنهجية", href: "/methodology" },
 ];
 
 const colophon = [
-  { term: "آخر تحديث", value: "29.08.2026", mono: true },
+  { term: "آخر تحديث", value: "31.08.2026", mono: true },
   { term: "نافذة الرصد", value: "22-29.08.2026", mono: true },
   { term: "المنطقة", value: "36.72°N · 5.95°E", mono: true },
   { term: "اللغة", value: "العربية" },
@@ -73,22 +74,12 @@ export function SiteFooter() {
             <ul className="flex flex-col gap-2">
               {documents.map((doc) => (
                 <li key={doc.label}>
-                  {doc.download ? (
-                    <a
-                      href={doc.href}
-                      download
-                      className="text-xs text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      {doc.label}
-                    </a>
-                  ) : (
-                    <Link
-                      href={doc.href}
-                      className="text-xs text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      {doc.label}
-                    </Link>
-                  )}
+                  <Link
+                    href={doc.href}
+                    className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {doc.label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -110,7 +101,7 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-9 flex flex-col gap-2 border-t pt-5 text-[11px] text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <span>بيانات فضائية مفتوحة · لا تمثل موقفاً رسمياً · استخدام حر مع الإسناد</span>
+          <span>تحليل مستقل بمواد مفتوحة · لا يحل محل التحقيقات الرسمية · يمكن مشاركة المحتوى مع ذكر المصدر</span>
           <span className="ltr-embed">Jijel Wildfire Investigation · 36.72°N · 5.95°E</span>
         </div>
       </div>

@@ -13,6 +13,12 @@ export type SiteSection = {
 
 export const siteSections: readonly SiteSection[] = [
   {
+    href: "/chronology",
+    label: "التسلسل الزمني",
+    title: "ماذا حدث، يوماً بيوم",
+    summary: "مسار الحدث من أول بؤرة إلى الانحسار، مع لحظات البداية المقيسة بدقة ربع ساعة.",
+  },
+  {
     href: "/investigation",
     label: "التحقيق",
     title: "كيف عرفنا أن السبب ليس طبيعياً؟",

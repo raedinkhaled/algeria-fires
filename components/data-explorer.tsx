@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { ArrowDownUpIcon, DownloadIcon } from "lucide-react";
 
 import { OriginScatterChart, PatchBarsChart } from "@/components/data-charts";
@@ -149,11 +149,14 @@ export function DataExplorer({
   origins,
   patches,
   downloads,
+  children,
 }: {
   activity: DailyActivity[];
   origins: OriginRow[];
   patches: PatchRow[];
   downloads: DownloadArtifact[];
+  /** أقسام خادمة تُدرَج بين الجداول المرشَّحة والتنزيلات (جداول قياس التوقيت). */
+  children?: ReactNode;
 }) {
   const [wilaya, setWilaya] = useState("all");
   const [satellite, setSatellite] = useState("all");
@@ -429,9 +432,11 @@ export function DataExplorer({
         </section>
       </Reveal>
 
+      {children}
+
       <Reveal>
         <section id="downloads" className="scroll-mt-20">
-          <SectionLabel index="04">التنزيلات</SectionLabel>
+          <SectionLabel index="07">التنزيلات</SectionLabel>
           <EdgePanel className="mt-4" label="نطاق النشر">
             <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
               التنزيلات تشمل البيانات المعالجة التي استند إليها العرض، لا الملفات الخام الثقيلة. تحمل كل مادة بصمتها في فهرس التنزيلات للتحقق من السلامة.

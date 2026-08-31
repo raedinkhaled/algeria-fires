@@ -21,6 +21,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { HypothesisMatrix } from "@/components/hypothesis-matrix";
+import { figure } from "@/lib/figures";
+import forensicSummary from "@/public/generated/data/forensic-summary.json";
+import ignitionWindows from "@/public/generated/data/msg-ignition-windows.json";
+import simultaneousPairs from "@/public/generated/data/msg-simultaneous-pairs.json";
 
 export const metadata: Metadata = {
   title: "كيف عرفنا أن السبب ليس طبيعياً؟",
@@ -28,9 +33,24 @@ export const metadata: Metadata = {
     "الأدلة خطوة بخطوة: أول إشارة رآها القمر، تعدّد البدايات، استبعاد البرق، دور الطقس، سجلّ الاشتباه، ثم ما يبقى مفتوحاً وحدوده.",
 };
 
+const severity = figure("s2-dnbr-severity");
+
+const measuredOrigins = ignitionWindows.origins.filter(
+  (origin) => origin.quality === "clean",
+).length;
+
+/** الزوجان اللذان قِيس توقيت طرفيهما معاً؛ ما عداهما يقوم على نافذة عمياء. */
+const resolvedPairs = simultaneousPairs.pairs.filter((pair) => pair.resolved);
+
+const windGeometry: Record<string, string> = {
+  upwind: "أعلى الريح — الجمرات تُقذف بعيداً",
+  crosswind: "عرض الريح",
+  downwind: "أسفل الريح",
+};
+
 const fileMeta = [
   { term: "القسم", value: "التحقيق" },
-  { term: "طريقة القراءة", value: "8 محطات قصيرة" },
+  { term: "طريقة القراءة", value: "9 محطات قصيرة" },
   { term: "الفترة", value: "22-29.08.2026", mono: true },
   { term: "المصادر", value: "DS · OF · ME", mono: true },
 ];
@@ -39,11 +59,12 @@ const stations = [
   { id: "first-signal", index: "01", label: "أول إشارة" },
   { id: "multiple-origins", index: "02", label: "تعدّد البدايات" },
   { id: "chekfa-texenna", index: "03", label: "الشقفة وتاكسنة" },
-  { id: "lightning", index: "04", label: "البرق مستبعد" },
-  { id: "weather", index: "05", label: "الطقس والاتساع" },
-  { id: "human", index: "06", label: "إذاً: الفعل البشري" },
-  { id: "suspicion-register", index: "07", label: "سجلّ الاشتباه" },
-  { id: "limits", index: "08", label: "ما لا نعرفه" },
+  { id: "geostationary", index: "04", label: "متى بالضبط؟" },
+  { id: "lightning", index: "05", label: "البرق مستبعد" },
+  { id: "weather", index: "06", label: "الطقس والاتساع" },
+  { id: "human", index: "07", label: "إذاً: الفعل البشري" },
+  { id: "suspicion-register", index: "08", label: "سجلّ الاشتباه" },
+  { id: "limits", index: "09", label: "ما لا نعرفه" },
 ];
 
 const suspicionSignals = [
@@ -56,15 +77,22 @@ const suspicionSignals = [
     body: "أدنى ارتفاع بين كل البؤر (نحو 55 م)، و22 م فقط من طريق ثانوي، وأعلى «درجة مدخنة» في المجموعة. لكن وجود بؤرة واحدة عند هذا المستوى بين اثنتي عشرة هو ما تنتجه الصدفة، والقرب من الطريق يتوافق مع سبب عرضي بقدر التعمّد.",
   },
   {
+    title: "قياس التوقيت من القمر الثابت",
+    body: "تاكسنة وترعي باينان اشتعلتا بفارق 11 إلى 30 دقيقة تحت سماء صافية، والطريق بينهما يستغرق 49 دقيقة. مصدر واحد لا يكفي — لكن مصدرين لا يعنيان فاعلين ولا تنسيقاً. تفصيلها في المحطة 04.",
+  },
+  {
     title: "إشارات التوقيت",
-    body: "حالتا ظهور بؤرتين في تمريرة قمر واحدة، وأربع بؤر أول رصدها ليلاً، ووصف الوزير «الاندلاع المتزامن»، و705 مواقع أعادت الاشتعال وطنياً. لافتة، لكن كلاً منها يحتمل تفسيراً عادياً.",
+    body: "أربع بؤر أول رصدها ليلاً، ووصف الوزير «الاندلاع المتزامن»، و705 مواقع أعادت الاشتعال وطنياً. لافتة، لكن كلاً منها يحتمل تفسيراً عادياً — وثمانٍ من اثنتي عشرة بؤرة رُصدت أول مرة داخل نافذة الطيران النهاري لا خارجها.",
   },
 ];
 
 const counterSignals = [
-  "الاشتعالات تتبّع طقس الحرائق بقوة شديدة؛ احتمال المصادفة ضئيل جداً.",
-  "تعدّد البؤر هو الخلفية الوطنية الدائمة صيفاً: 199 بؤرة مستقلة، من 7 إلى 58 يومياً.",
-  "لا بصمة اختيار تكتيكي للمواقع، ولا دليل إيجابي واحد على التنسيق.",
+  "الاشتعالات تتبّع حقل طقس الحرائق تتبّعاً قوياً جداً (p = 1×10⁻²³)؛ احتمال المصادفة ضئيل. لكن الفاعل الذي يستغلّ ذروة الطقس ينتج النتيجة نفسها.",
+  "تعدّد البؤر هو الخلفية الوطنية الدائمة صيفاً: 199 بؤرة مستقلة عبر الشمال الجزائري، من 7 إلى 58 يومياً، وترتبط أعدادها اليومية بشدّة الطقس (r = 0.778).",
+  "لا بصمة اختيار تكتيكي: خمسة مؤشرات للتموضع قيست في مقابل نموذجين مرجعيين، ولا واحد منها يفارق العشوائية (درجة المدخنة: p = 0.94).",
+  "لا انتقاء لمسالك التخفّي: 10 بؤر من 12 أقرب طريق إليها منخفض الانكشاف، لكن احتمال ذلك في نقطة عشوائية بهذه التضاريس 0.891 أصلاً.",
+  "لا بصمة «خط إضرام متسلسل»: ارتباط دفعة تاكسنة بالطرق مطابق للعشوائية (58٪ ضمن 250 م مقابل 55.6٪).",
+  "لا دليل إيجابي واحد على التنسيق: لا أثر مادي ولا شهادة ولا جهاز إشعال ولا توقيف يخصّ 24-29 أوت.",
 ];
 
 const explanations = [
@@ -157,6 +185,12 @@ export default function InvestigationPage() {
                 بثقة رصد مرتفعة. أما أول إشارة في المنطقة الأوسع فظهرت قبلها بيوم
                 في ولايتَي سطيف وبجاية، خارج جيجل.
               </p>
+              <p>
+                والقمر الثابت رأى ناراً في البكسل نفسه قبل ذلك بثلاث عشرة دقيقة،
+                عند 14:40، بعد أن كان الموقع صافياً بلا نار عند 14:25. فالنافذة
+                التي وقع فيها الاشتعال هنا ربع ساعة لا أكثر — وهي أدقّ ما نعرفه
+                عن بداية أي حريق في هذا الملف. تفصيلها في المحطة 04.
+              </p>
             </div>
             <Alert className="mt-6 max-w-2xl">
               <AlertTitle>هذه ليست نقطة الاشتعال المؤكدة</AlertTitle>
@@ -203,10 +237,10 @@ export default function InvestigationPage() {
               caption="خريطة شدة الاحتراق. الألوان تمثّل شدة الحريق، لا حدوداً إدارية."
             >
               <Image
-                src="/generated/media/burn-severity.png"
+                src={severity.path}
                 alt="خريطة شدة الاحتراق في جيجل محسوبة من صور Sentinel-2، تُظهر ندبات حريق منفصلة"
-                width={4946}
-                height={2700}
+                width={severity.width}
+                height={severity.height}
                 loading="eager"
                 className="h-auto w-full bg-white"
               />
@@ -260,8 +294,109 @@ export default function InvestigationPage() {
 
           {/* ── 04 ── */}
           <Reveal>
+          <section id="geostationary" className="mt-16 scroll-mt-20">
+            <SectionLabel index="04">متى بالضبط؟</SectionLabel>
+            <p className="mt-4 max-w-2xl text-xl font-medium leading-9">
+              قمر يصوّر المنطقة كل 15 دقيقة قلّص الجهل بلحظة البداية من أيام إلى
+              ربع ساعة — فظهر أن حريقين اشتعلا في وقت لا يكفي للانتقال بينهما.
+            </p>
+            <div className="mt-5 flex max-w-2xl flex-col gap-4 leading-8">
+              <p>
+                الأقمار القطبية تمرّ مرّتين إلى أربع في اليوم، فأقصى ما تعطيه هو
+                «اشتعل في مكان ما داخل هذه الساعات». أما{" "}
+                <span className="ltr-embed text-foreground">Meteosat-10</span>{" "}
+                فيصوّر الإقليم كل ربع ساعة دون انقطاع، فصارت بداية{" "}
+                <span className="numeric">{measuredOrigins}</span> بؤر من أصل{" "}
+                <span className="numeric">12</span> معروفة بدقّة دورة رصد واحدة.
+                البؤر الأربع الباقية أضعف من حدّ الكشف، ونوافذها لم تتغيّر.
+              </p>
+              <p>
+                يوم 26 أوت رأى القمر موقع تاكسنة صافياً بلا نار خمس ساعات متصلة،
+                ثم رأى فيه ناراً بقوة 294 ميغاواط. وبعد{" "}
+                <span className="numeric">11</span> إلى{" "}
+                <span className="numeric">30</span> دقيقة اشتعل موقع ثانٍ في ترعي
+                باينان. الطريق بينهما{" "}
+                <span className="numeric">{forensicSummary.msg.road_km}</span> كم
+                ويستغرق{" "}
+                <span className="numeric">
+                  {forensicSummary.msg.transit_minutes}
+                </span>{" "}
+                دقيقة على أفضل تقدير — أي أن مصدراً واحداً لا يكفي.
+              </p>
+              <p>
+                والحجّة لا تقوم على الوقت وحده: الموقعان يقعان في ندبتين منفصلتين
+                في صور{" "}
+                <span className="ltr-embed text-foreground">Sentinel-2</span>،
+                بينهما غطاء نباتي سليم لم يحترق، ولم تشهد أيّ منهما ناراً قبل تلك
+                اللحظة. فالانتشار مستبعد بمعيار مستقل تماماً عن حساب الرياح.
+              </p>
+            </div>
+
+            <div className="mt-6 max-w-2xl border">
+              <Table className="min-w-[36rem] text-sm">
+                <TableHeader className="bg-muted/40">
+                  <TableRow>
+                    <TableHead>الزوج</TableHead>
+                    <TableHead>الفارق</TableHead>
+                    <TableHead>المسافة</TableHead>
+                    <TableHead>هندسة الريح</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {resolvedPairs.map((pair) => (
+                    <TableRow key={`${pair.a_id}-${pair.b_id}`}>
+                      <TableCell className="whitespace-normal">
+                        <span className="ltr-embed font-medium">
+                          {pair.a_id} → {pair.b_id}
+                        </span>
+                        <span className="mt-0.5 block text-[11px] text-muted-foreground">
+                          {pair.a_locality} ← {pair.b_locality}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="numeric">{pair.gap_min}</span> د
+                      </TableCell>
+                      <TableCell>
+                        <span className="numeric">{pair.separation_km}</span> كم
+                      </TableCell>
+                      <TableCell className="whitespace-normal">
+                        {windGeometry[pair.geometry] ?? pair.geometry}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            <p className="mt-3 max-w-2xl text-[11px] leading-5 text-muted-foreground">
+              الزوجان الوحيدان اللذان قِيس توقيت طرفيهما معاً. أربعة أزواج أخرى
+              يقوم أحد طرفيها على نافذة عمياء تمتدّ ساعات أو أياماً، فالفارق
+              المذكور فيها ليس قياساً. وأحدها — بابور ودرقينة — تفصله 9.6 كم
+              فقط ويقع أسفل الريح، فقد يكون امتداداً بالجمرات ولا يصلح دليلاً.
+            </p>
+
+            <Alert className="mt-6 max-w-2xl">
+              <AlertTitle>مصدرا اشتعال، لا فاعلان</AlertTitle>
+              <AlertDescription>
+                «يلزم مصدران» تعني أن النار بدأت في موضعين، ولا تقول شيئاً عن
+                كونهما مرتبطين أو متعمّدين أو منسّقين. حريقان مستقلان تماماً —
+                عقب سيجارة هنا وشرارة آلة هناك — ينتجان القياس نفسه.
+              </AlertDescription>
+            </Alert>
+
+            <ClaimBasis
+              className="max-w-2xl"
+              level={3}
+              confidence="عالية"
+              sources="DS-05b · الفصل 15.6 · الفصل 15.7"
+              sourcesHref="/report"
+            />
+          </section>
+          </Reveal>
+
+          {/* ── 05 ── */}
+          <Reveal>
           <section id="lightning" className="mt-16 scroll-mt-20">
-            <SectionLabel index="04">البرق مستبعد</SectionLabel>
+            <SectionLabel index="05">البرق مستبعد</SectionLabel>
             <p className="mt-4 max-w-2xl text-xl font-medium leading-9">
               لم يُرصد أي نشاط رعدي قريب من البؤر الرئيسية، ولا أي هطول، خلال
               الفترة الحرجة.
@@ -296,10 +431,10 @@ export default function InvestigationPage() {
           </section>
           </Reveal>
 
-          {/* ── 05 ── */}
+          {/* ── 06 ── */}
           <Reveal>
           <section id="weather" className="mt-16 scroll-mt-20">
-            <SectionLabel index="05">الطقس يشرح الاتساع لا البداية</SectionLabel>
+            <SectionLabel index="06">الطقس يشرح الاتساع لا البداية</SectionLabel>
             <p className="mt-4 max-w-2xl text-xl font-medium leading-9">
               مساء 26 أوت اجتمعت حرارة شديدة وهواء جاف ورياح قوية. في الوقت نفسه
               قفز النشاط الحراري.
@@ -330,10 +465,10 @@ export default function InvestigationPage() {
           </section>
           </Reveal>
 
-          {/* ── 06 ── */}
+          {/* ── 07 ── */}
           <Reveal>
           <section id="human" className="mt-16 scroll-mt-20">
-            <SectionLabel index="06">إذاً: الفعل البشري</SectionLabel>
+            <SectionLabel index="07">إذاً: الفعل البشري</SectionLabel>
             <p className="mt-4 max-w-2xl text-xl font-medium leading-9">
               بعد أن أصبح البرق غير مرجّح ولم يبقَ سبب طبيعي معقول، يصبح الفعل
               البشري، بالمعنى العام، التفسير الأرجح.
@@ -389,6 +524,21 @@ export default function InvestigationPage() {
               الجدول يشرح شكل الحدث، لا سبب كل حريق. لم تُنشر نتيجة ميدانية أو
               قضائية تحسم السبب حتى تاريخ التقرير.
             </p>
+
+            <h3 className="mt-8 max-w-2xl text-lg font-semibold leading-8">
+              وأيّ فعل بشري؟ هنا تضعف الأدلة فعلاً
+            </h3>
+            <p className="mt-3 max-w-2xl leading-8">
+              رجّحت مصفوفة الفرضيات ترتيباً بين فروع السبب البشري، لكنه{" "}
+              <strong className="font-semibold">لا يصمد</strong>: يكفي أن تُلطَّف
+              الأدلة إلى النصف حتى يتقارب الفروع ويكاد الترتيب ينقلب. نعرضه لأنه
+              نتيجة التحليل، مع حدّه صريحاً.
+            </p>
+            <HypothesisMatrix
+              className="mt-5 max-w-2xl"
+              rows={forensicSummary.hypotheses.single_cause}
+              caption="ترتيب غير متين: عند التلطيف يصير 41٪ و24.4٪ و24.4٪ و10.2٪، أي أن الأدلة لا تفصل بين فروع السبب البشري. لا تُقرأ هذه النسب حكماً على أي حريق بعينه."
+            />
             <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground">
               لا يتناول هذا التحليل فرضية العطل الكهربائي أو المرفقي: هي خارج نطاق
               التقرير، والبيانات المفتوحة لا تتيح اختبارها لأن شبكة التوزيع
@@ -407,13 +557,13 @@ export default function InvestigationPage() {
           </section>
           </Reveal>
 
-          {/* ── 07 ── */}
+          {/* ── 08 ── */}
           <Reveal>
           <section id="suspicion-register" className="mt-16 scroll-mt-20">
-            <SectionLabel index="07">سجلّ الاشتباه</SectionLabel>
+            <SectionLabel index="08">سجلّ الاشتباه</SectionLabel>
             <p className="mt-4 max-w-2xl text-xl font-medium leading-9">
-              ثلاثة عناصر تشدّ نحو فعل غير عرضي، وثلاثة تشدّ في الاتجاه المضاد.
-              نعرضها معاً.
+              ما يشدّ نحو فعل غير عرضي، وما يشدّ في الاتجاه المضاد. نعرضهما
+              معاً وبالأرقام نفسها.
             </p>
             <div className="mt-5 max-w-2xl divide-y border">
               {suspicionSignals.map((item) => (
@@ -450,10 +600,10 @@ export default function InvestigationPage() {
           </section>
           </Reveal>
 
-          {/* ── 08 ── */}
+          {/* ── 09 ── */}
           <Reveal>
           <section id="limits" className="mt-16 scroll-mt-20">
-            <SectionLabel index="08">ما لا نعرفه، والحدّ</SectionLabel>
+            <SectionLabel index="09">ما لا نعرفه، والحدّ</SectionLabel>
             <EdgePanel className="mt-4 max-w-2xl" label="حدود ما تقوله البيانات">
               <p className="text-lg font-medium leading-8">
                 من المرجّح أن البدايات ارتبطت بنشاط بشري. لكننا لا نستطيع تحديد إن

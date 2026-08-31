@@ -28,8 +28,23 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { HypothesisMatrix } from "@/components/hypothesis-matrix";
+import { figure } from "@/lib/figures";
 import { siteSections } from "@/lib/site-navigation";
 import dailyActivity from "@/public/generated/data/daily_activity.json";
+import forensicSummary from "@/public/generated/data/forensic-summary.json";
+
+const sentinelComparison = figure("map-sentinel-before-after");
+const posteriors = figure("chart-ach-posteriors");
+const powerLimits = figure("chart-power-and-limits");
 
 const fileMeta = [
   { term: "الولاية", value: "جيجل، الجزائر" },
@@ -77,12 +92,12 @@ const timeline = [
   {
     date: "24 أوت",
     title: "أول إشارة داخل جيجل",
-    body: "نقطة ساخنة الساعة 14:53 في الجمعة بني حبيبي بثقة رصد مرتفعة، ثم اختفت من السجل 22 ساعة.",
+    body: "نار في الجمعة بني حبيبي، رآها القمر الثابت الساعة 14:40 بعد أن كان الموقع صافياً عند 14:25، ثم رصدها VIIRS بعد 13 دقيقة. اختفت من السجل 22 ساعة.",
   },
   {
     date: "25 أوت",
     title: "بؤرة الشقفة",
-    body: "نواة المجمّع الرئيسي الذي سيبلغ 446 كم². سطوع مشبع وثقة رصد مرتفعة.",
+    body: "نواة المجمّع الرئيسي، وندبته B00 تبلغ 400 كم² في صور Sentinel-2. سطوع مشبع وثقة رصد مرتفعة.",
   },
   {
     date: "26 أوت",
@@ -108,6 +123,11 @@ const suspicion = [
     tag: "ثقة عالية في الاستقلال المكاني",
   },
   {
+    title: "قياس التوقيت من القمر الثابت",
+    body: "قمر يصوّر الإقليم كل 15 دقيقة قلّص نافذة الجهل بلحظة البداية من أيام إلى ربع ساعة لست بؤر. وظهر أن تاكسنة وترعي باينان اشتعلتا بفارق 11 إلى 30 دقيقة، بينما يستغرق الطريق بينهما 49 دقيقة على أفضل تقدير، وتقعان في ندبتين منفصلتين. مصدر واحد لا يكفي لتفسيرهما.",
+    tag: "ثقة عالية في لزوم مصدرَي اشتعال",
+  },
+  {
     title: "تعدّد بؤر المنشأ",
     body: "12 مرشّحاً، 6 منها بجيجل. كلٌّ يستوفي معاً معيارَي البُعد (≥5 كم عن أقرب حريق سابق) وانقطاع المسار (فجوة غير محترقة ≥4 كم). ويطابق التحليل الفضائي خمساً من ست بلديات وردت بالاسم في بلاغ الحماية المدنية.",
     tag: "مؤكَّد كواقعة؛ لا يدلّ بذاته على التعمّد",
@@ -119,12 +139,12 @@ const suspicion = [
   },
   {
     title: "إشارات التوقيت",
-    body: "حالتا ظهور بؤرتين في تمريرة قمر واحدة، وأربع بؤر أول رصدها ليلاً، والوزير يصف «الاندلاع المتزامن»، و705 مواقع أعادت الاشتعال وطنياً بعد خمود.",
+    body: "أربع بؤر أول رصدها ليلاً، والوزير يصف «الاندلاع المتزامن»، و705 مواقع أعادت الاشتعال وطنياً بعد خمود. أما «التزامن التام» بين بابور ودرقينة فقد سقط: نافذتهما العمياء 24.6 ساعة لكلٍّ منهما، ولا تفصلهما إلا 9.6 كم أسفل الريح، فقد تكون الثانية امتداداً بالجمرات.",
     tag: "لافتة، وغامضة الدلالة",
   },
   {
     title: "اختبارات النفي بلا قوة",
-    body: "اختبار التزامن يكشف عملية محقونة من 45 بؤرة متزامنة في 1.5٪ من الحالات فقط، والتزامن بالدقّة المطلوبة غير قابل للقياس أصلاً من الأقمار القطبية. غياب البصمة ليس تبرئة.",
+    body: "أغلق القمر الثابت فجوة التوقيت لنصف البؤر، لكنه لا يفرّق بين فعلين مستقلين وعمل منسّق. واختبار التزامن نفسه يكشف عملية محقونة من 45 بؤرة في 1.5٪ من الحالات فقط. غياب البصمة ليس تبرئة.",
     tag: "ثقة عالية في ضعف الاختبار",
   },
 ];
@@ -135,7 +155,7 @@ const findings = [
     question: "هل كان حريقاً واحداً؟",
     answer: "على الأرجح لا. البيانات تشير إلى بدايات منفصلة.",
     evidence:
-      "12 بداية محتملة تفصل بينها مسافات وأراضٍ لم تحترق، و17 ندبة كبيرة منفصلة في صور Sentinel-2. الطريقتان مستقلتان وتصلان إلى النتيجة نفسها.",
+      "12 بداية محتملة تفصل بينها مسافات وأراضٍ لم تحترق، و17 ندبة كبيرة منفصلة في صور Sentinel-2، ثم قياس زمني من قمر ثابت يثبت أن بدايتين منها اشتعلتا في وقت لا يكفي للانتقال بينهما. ثلاث طرق مستقلة تصل إلى النتيجة نفسها.",
     limit:
       "لا تعني كل نقطة حريقاً مستقلاً مؤكداً؛ إنها المواقع التي اجتازت شرطين كمّيين معاً.",
     confidence: "عالية",
@@ -253,8 +273,97 @@ export default function Home() {
             </section>
           </Reveal>
 
+          <Reveal className="mt-10">
+            <EdgePanel
+              className="max-w-3xl"
+              label="قراءة ملزمة لحدود النتيجة"
+            >
+              <h2 className="max-w-2xl text-2xl font-semibold leading-snug tracking-tight sm:text-3xl">
+                لم ينفِ التقرير الفعل المنسّق؛ لم يستطع اختباره اختباراً ذا قوة.
+              </h2>
+              <p className="mt-5 max-w-2xl leading-8">
+                احتمال العملية الإجرامية المنسّقة بين{" "}
+                <span className="numeric font-semibold">11٪–26٪</span> بحسب
+                درجة تلطيف الأدلة: غير مرجّح، لكنه ضمن نطاق يستوجب تحقيقاً
+                جدياً، لا مستبعد.
+              </p>
+              <p className="mt-4 max-w-2xl leading-8">
+                بيانات القمر الثابت أثبتت مصدرَي اشتعال على الأقل لزوج{" "}
+                <span className="ltr-embed">O07/O08</span>، لكنها لا تفرّق بين
+                فعلين مستقلين وعمل منسّق. والاختبارات البديلة بلا قوة ضد فاعل
+                محترف؛ عجز أدوات الرصد ليس براءة ثبتت.
+              </p>
+              <ClaimBasis
+                level={3}
+                confidence="عالية في نفي القدرة على الحسم"
+                sources="الفصل 15.6 · الفصل 26 · الفصل 32"
+                sourcesHref="/report#26"
+              />
+            </EdgePanel>
+          </Reveal>
+
           <Reveal className="mt-14">
-            <SectionLabel index="01">النشاط يوماً بيوم</SectionLabel>
+            <SectionLabel index="01">ما تثبته الأدلة وما لا تفصله</SectionLabel>
+            <div className="mt-4 max-w-3xl border">
+              <Table className="min-w-[42rem] text-sm">
+                <TableHeader className="bg-muted/40">
+                  <TableRow>
+                    <TableHead>السؤال</TableHead>
+                    <TableHead>ما تقوله البيانات</TableHead>
+                    <TableHead>درجة الثقة</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell className="whitespace-normal font-medium">
+                      هل انتشرت من حريق واحد؟
+                    </TableCell>
+                    <TableCell className="whitespace-normal leading-7">
+                      لا. عدة بؤر مستقلة مكانياً وزمنياً؛ وأوضحها انفصال تاكسنة
+                      عن الشقفة بصور الانعكاسية والندبات المنفصلة.
+                    </TableCell>
+                    <TableCell className="whitespace-normal">عالية</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="whitespace-normal font-medium">
+                      هل السبب طبيعي؟
+                    </TableCell>
+                    <TableCell className="whitespace-normal leading-7">
+                      غير مرجّح. البرق استُبعد عملياً، ولا بقي سبب طبيعي معقول في
+                      نطاق الأدلة المتاحة.
+                    </TableCell>
+                    <TableCell className="whitespace-normal">
+                      متوسطة إلى عالية
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="whitespace-normal font-medium">
+                      هل السبب بشري؟
+                    </TableCell>
+                    <TableCell className="whitespace-normal leading-7">
+                      يرجّح بالمعنى العام، من دون فصل عرضي أو إهمال أو فعل متعمّد.
+                    </TableCell>
+                    <TableCell className="whitespace-normal">متوسطة</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="whitespace-normal font-medium">
+                      هل كان منسّقاً؟
+                    </TableCell>
+                    <TableCell className="whitespace-normal leading-7">
+                      لا يمكن الحسم. الفعل المتعمّد، بما فيه المنسّق، فرضية حيّة
+                      مفتوحة تتطلب أدلة التحقيق الميداني.
+                    </TableCell>
+                    <TableCell className="whitespace-normal">
+                      عالية في نفي القدرة على الحسم
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
+          </Reveal>
+
+          <Reveal className="mt-14">
+            <SectionLabel index="02">النشاط يوماً بيوم</SectionLabel>
             <DataFigure
               className="mt-4"
               sensor="VIIRS · P1_Chekfa_origin"
@@ -272,7 +381,7 @@ export default function Home() {
           </Reveal>
 
           <Reveal className="mt-14">
-            <SectionLabel index="02">دليل بصري من Sentinel-2</SectionLabel>
+            <SectionLabel index="03">دليل بصري من Sentinel-2</SectionLabel>
             <DataFigure
               className="mt-4 max-w-xl"
               sensor="Sentinel-2 · MSI L2A"
@@ -286,10 +395,10 @@ export default function Home() {
               }
             >
               <Image
-                src="/generated/media/sentinel-comparison.png"
+                src={sentinelComparison.path}
                 alt="ثلاث لوحات من Sentinel-2 لمنطقة جيجل: الغطاء النباتي في 18 أوت قبل الحريق، الوضع في 28 أوت بعده، وخريطة شدة الاحتراق dNBR"
-                width={2073}
-                height={2561}
+                width={sentinelComparison.width}
+                height={sentinelComparison.height}
                 className="h-auto w-full bg-white"
               />
             </DataFigure>
@@ -304,7 +413,7 @@ export default function Home() {
           </Reveal>
 
           <Reveal className="mt-14">
-            <SectionLabel index="03">
+            <SectionLabel index="04">
               التسلسل الزمني · 23-29 أوت 2026
             </SectionLabel>
             <Timeline className="mt-4 max-w-3xl">
@@ -318,10 +427,18 @@ export default function Home() {
                 </TimelineRow>
               ))}
             </Timeline>
+            <p className="mt-3 max-w-3xl text-sm">
+              <Link
+                href="/chronology"
+                className="underline decoration-border underline-offset-4 hover:decoration-foreground"
+              >
+                السرد الكامل يوماً بيوم، مع لحظات البداية المقيسة بدقّة ربع ساعة
+              </Link>
+            </p>
           </Reveal>
 
           <Reveal className="mt-14">
-            <SectionLabel index="04">أقوى اختبار مكاني</SectionLabel>
+            <SectionLabel index="05">أقوى اختبار مكاني</SectionLabel>
             <DataFigure
               className="mt-4"
               sensor="O05 → O08"
@@ -333,9 +450,52 @@ export default function Home() {
           </Reveal>
 
           <Reveal className="mt-14">
-            <SectionLabel index="05">أدلة الاشتباه</SectionLabel>
+            <SectionLabel index="06">احتمال الفرضيات وحدود الاختبار</SectionLabel>
             <p className="mt-4 max-w-2xl leading-8">
-              خمسة عناصر استوقفت التحليل، مرتّبة بحسب قوّتها. لا واحد منها دليل على
+              وزنت مصفوفة الفرضيات المتنافسة كل تفسير ممكن لبنية الحدث بأدلة
+              مؤيدة ومفنّدة. النتيجة أن التفسير الأرجح بفارق كبير هو تراكم
+              اشتعالات مستقلة مختلطة الأسباب تحت موجة حرّ واحدة، وأن الحريق
+              الواحد المنتشر شبه مستبعد.
+            </p>
+            <HypothesisMatrix
+              className="mt-5 max-w-2xl"
+              rows={forensicSummary.hypotheses.structure}
+              caption="«بعد التلطيف» يخفض وزن كل دليل إلى النصف لاختبار متانة الترتيب. الاتجاه يصمد: يلزم احتمال قبلي قدره 0.80 قبل أن تتقدّم فرضية التنسيق."
+            />
+            <DataFigure
+              className="mt-4"
+              sensor="ACH · EUMETSAT MSG/SEVIRI"
+              meta="الفصل 15.6 · الفصل 26"
+              caption="النطاق 11٪–26٪ هو قراءة حساسية لفرضية العملية المنسّقة، لا حكم بالاستبعاد. القياس الجديد يثبت مصدرين على الأقل لزوج O07/O08، لكنه لا يميّز بين سببين مستقلين وتنسيق مقصود."
+            >
+              <Image
+                src={posteriors.path}
+                alt="رسم للاحتمالات اللاحقة لفرضيات بنية الحدث، يضع العملية الإجرامية المنسقة بين 11 و26 بالمئة بحسب تلطيف الأدلة"
+                width={posteriors.width}
+                height={posteriors.height}
+                className="h-auto w-full bg-white"
+              />
+            </DataFigure>
+            <DataFigure
+              className="mt-6"
+              sensor="اختبار القوة · بيانات قطبية"
+              meta="الفصل 25 · الفصل 26"
+              caption="الاختبار السلبي لا ينفي التنسيق: اختبار التزامن على البيانات القطبية يكشف عملية محقونة من 45 بؤرة في 1.5٪ فقط من الحالات."
+            >
+              <Image
+                src={powerLimits.path}
+                alt="رسم يوضح أن اختبارات التزامن والاختبارات البديلة محدودة القوة ولا تصلح لنفي عملية منسقة محترفة"
+                width={powerLimits.width}
+                height={powerLimits.height}
+                className="h-auto w-full bg-white"
+              />
+            </DataFigure>
+          </Reveal>
+
+          <Reveal className="mt-14">
+            <SectionLabel index="07">أدلة الاشتباه</SectionLabel>
+            <p className="mt-4 max-w-2xl leading-8">
+              ستة عناصر استوقفت التحليل، مرتّبة بحسب قوّتها. لا واحد منها دليل على
               فعل متعمّد، لكنها مجتمعة ترسم ما يستحق تحقيقاً ميدانياً.
             </p>
             <div className="mt-5 max-w-3xl divide-y border">
@@ -377,7 +537,7 @@ export default function Home() {
           </EdgePanel>
 
           <Reveal className="mt-14">
-            <SectionLabel index="06">النتيجة في خمسة أسئلة</SectionLabel>
+            <SectionLabel index="08">النتيجة في خمسة أسئلة</SectionLabel>
             <Accordion
               type="single"
               collapsible
@@ -440,7 +600,9 @@ export default function Home() {
             <p className="mt-5 max-w-2xl leading-8">
               هذا تحليل مستقل للبيانات المفتوحة، لا تحقيق رسمي. لا يصف الحرائق
               بأنها «مفتعلة» ولا «هجوم»، ولا ينسب مسؤولية جنائية لأحد. الحدث كارثة
-              بشرية حقيقية، مع أكثر من 70 وفاة في الجمعة بني حبيبي وحدها، وتحقيقات
+              بشرية حقيقية: أفادت مصادر إعلامية معتبرة بحصيلة أولية بلغت 73 وفاة
+              في الجمعة بني حبيبي، من بينهم 21 شخصاً من عائلة واحدة، بينما كانت
+              الحصيلة الرسمية المعلنة يوم 27 أوت 12 وفاة وطنياً و54 جريحاً. وتحقيقات
               الدرك الوطني في الأسباب جارية.
             </p>
             <p className="mt-4 max-w-2xl border-t pt-4 text-sm leading-7 text-muted-foreground">
@@ -460,7 +622,7 @@ export default function Home() {
           </EdgePanel>
 
           <Reveal className="mt-14">
-            <SectionLabel index="07">تابع القراءة</SectionLabel>
+            <SectionLabel index="09">تابع القراءة</SectionLabel>
             <nav
               aria-label="أقسام المنصة"
               className="mt-4 max-w-3xl divide-y border"

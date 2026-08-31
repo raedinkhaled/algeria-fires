@@ -1,5 +1,4 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 /node_modules
 /.pnp
@@ -55,7 +54,6 @@ next-env.d.ts
 # investigation workspace — kept local, not published to this repo.
 # The validated release inputs it produces live under public/generated/ and public/maplibre/.
 /Fires/
-
 # generated website artifacts are validated release inputs and stay versioned
 /test-results/
 /playwright-report/

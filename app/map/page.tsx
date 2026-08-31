@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { FileMeta, SectionLabel } from "@/components/editorial";
 import { FireMap } from "@/components/fire-map";
@@ -49,6 +50,19 @@ export default function MapPage() {
             حرّك شريط الزمن وقارن الرصد الحراري بالبدايات المحتملة وآثار الاحتراق
             يوماً بيوم. الخريطة تعرض ما هو منشور فقط، ولا ترسم هندسات غير موجودة في
             البيانات.
+          </p>
+
+          <p className="mt-4 max-w-2xl leading-8 text-muted-foreground">
+            وموضع البؤرة على الخريطة هو أول ما رآه قمر قطبي، لا لحظة الاشتعال.
+            أما متى بدأت كل بؤرة فعلاً فقد قاسه القمر الثابت لست منها بدقّة ربع
+            ساعة:{" "}
+            <Link
+              href="/chronology#ignitions"
+              className="underline decoration-border underline-offset-4 hover:decoration-foreground"
+            >
+              سجل لحظات البداية
+            </Link>
+            .
           </p>
 
           <Alert className="mt-6 max-w-2xl">

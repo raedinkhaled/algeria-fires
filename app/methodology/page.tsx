@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { DownloadIcon } from "lucide-react";
 
 import {
   ConfidenceMeter,
@@ -64,7 +63,12 @@ const terms = [
   {
     value: "blind-window",
     title: "النافذة العمياء",
-    body: "المدة بين آخر تغطية مقدّرة لم ترصد النار وأول رصد فعلي. تراوحت بين 0.6 و72.8 ساعة، ولذلك لا تقيس الأقمار القطبية التزامن بدقة الساعات.",
+    body: "المدة بين آخر تغطية مقدّرة لم ترصد النار وأول رصد فعلي. على الأقمار القطبية تراوحت بين 0.6 و72.8 ساعة، ووسيطها وطنياً 3.48 ساعة مع 51.4٪ من البؤر فوق ثلاث ساعات — ولهذا لا يقيس المدار القطبي التزامن أصلاً. وأرشيف القمر الثابت MSG/SEVIRI كل 15 دقيقة قلّصها إلى دورة رصد واحدة لست بؤر، وتركها كما هي لأربع بؤر أضعف من حدّ الكشف (نحو 30-50 ميغاواط).",
+  },
+  {
+    value: "ach",
+    title: "مصفوفة الفرضيات المتنافسة",
+    body: "طريقة تزن كل تفسير ممكن بأدلة مؤيدة ومفنّدة معاً، بدل الدفاع عن فرضية واحدة. الأرقام المعروضة على الموقع هي أرقام المصفوفة بعد تحليل القوة وقاعدة التماثل، لا الأرقام الأولية. و«التلطيف» يخفض وزن كل دليل إلى النصف لاختبار متانة الترتيب: ما يصمد متين، وما ينقلب يُعرض بحدّه.",
   },
   {
     value: "origin-candidate",
@@ -96,11 +100,25 @@ const hypothesisTests = [
     limit: "طبقات OSM ناقصة",
   },
   {
+    question: "متى بدأت كل بؤرة بالضبط؟",
+    data: "MSG/SEVIRI كل 15 دقيقة",
+    method: "آخر شريحة صافية بلا نار ← أول رصد للنار",
+    result: "نافذة ربع ساعة لست بؤر من اثنتي عشرة",
+    limit: "لا يرى ما دون 30-50 ميغاواط",
+  },
+  {
+    question: "هل يكفي مصدر واحد لتفسير الأزواج المتقاربة؟",
+    data: "توقيت MSG + شبكة 504,477 عقدة طرق + الرياح",
+    method: "زمن تنقل متحيّز للتسهيل وهندسة الريح والندبات",
+    result: "زوجان بتوقيت محلول يستلزمان مصدرَي اشتعال على الأقل",
+    limit: "مصدران لا يعنيان فاعلين ولا تنسيقاً",
+  },
+  {
     question: "هل التوقيت يثبت التنسيق؟",
-    data: "تمريرات الأقمار + شبكة الطرق",
-    method: "نوافذ عمياء وزمن تنقل متحيّز للتسهيل",
-    result: "لا يمكن قياس التزامن فعلياً",
-    limit: "دقة زمنية 0.6-72.8 ساعة",
+    data: "اختبارات التزامن + اختبار القوة",
+    method: "مقارنة بالخلفية الوطنية وقياس قدرة الاختبار",
+    result: "لا دليل إيجابي؛ قياس MSG لا يفصل منسقاً من متفرقاً",
+    limit: "اختبار الحقن القطبي لا يكشف إلا 1.5٪ من الحالات",
   },
   {
     question: "أي فرضية تفسّر الملف كله؟",
@@ -122,8 +140,9 @@ export default function MethodologyPage() {
           <FileMeta
             heading="بيانات المنهج"
             rows={[
-              { term: "نطاق الرصد", value: "22-29.08.2026", mono: true },
-              { term: "آخر مراجعة", value: "29.08.2026", mono: true },
+              { term: "نطاق التحليل", value: "22-29.08.2026", mono: true },
+              { term: "أرشيف MSG", value: "21-30.08.2026", mono: true },
+              { term: "آخر مراجعة", value: "31.08.2026", mono: true },
               { term: "الدقة الأساسية", value: "375 m", mono: true },
               { term: "تركيبات الحساسية", value: "24", mono: true },
               { term: "المخرجات المرجعية", value: "9,100 / 4,451 / 12 / 17", mono: true },
@@ -164,7 +183,9 @@ export default function MethodologyPage() {
             <AlertTitle>الرصد ليس لحظة الاشتعال</AlertTitle>
             <AlertDescription>
               أهم قيد في الملف: FIRMS يسجّل ما رآه فقط، ولا يسجّل أين نظر القمر
-              ولم يجد ناراً. لذلك كل وقت بداية منشور هو أقدم رصد، لا وقت اشتعال.
+              ولم يجد ناراً. لذلك كل وقت بداية منشور هو أقدم رصد لا وقت اشتعال —
+              إلا في ست بؤر ضيّق فيها أرشيف القمر الثابت النافذة إلى ربع ساعة؛
+              وتبقى أربع بؤر دون حدّ كشفه.
             </AlertDescription>
           </Alert>
 
@@ -210,7 +231,7 @@ export default function MethodologyPage() {
             <section id="pipeline" className="mt-16 scroll-mt-20">
               <SectionLabel>سلسلة المعالجة</SectionLabel>
               <h2 className="mt-5 text-2xl font-semibold tracking-tight">
-                سبعة تحوّلات، ولكل تحوّل حاجز خطأ
+                ثمانية تحوّلات، ولكل تحوّل حاجز خطأ
               </h2>
               <p className="mt-4 max-w-2xl leading-8 text-muted-foreground">
                 الرسم يوضح أين تتغير المادة وما الفحص الذي يمنع الانتقال من
@@ -226,7 +247,7 @@ export default function MethodologyPage() {
             <section id="terms" className="mt-16 scroll-mt-20">
               <SectionLabel>المفاهيم الأساسية</SectionLabel>
               <h2 className="mt-5 text-2xl font-semibold tracking-tight">
-                خمسة مصطلحات تمنع القراءة الخاطئة
+                ستة مصطلحات تمنع القراءة الخاطئة
               </h2>
               <Accordion type="multiple" className="mt-6 max-w-3xl border-y">
                 {terms.map((term) => (
@@ -321,8 +342,9 @@ export default function MethodologyPage() {
               </h2>
               <div className="mt-6 grid max-w-3xl gap-px border bg-border sm:grid-cols-2">
                 {[
-                  ["فجوات المرور", "فجوات بين 0.6 و72.8 ساعة تمنع قياس التزامن الدقيق."],
-                  ["الدقة المكانية", "بصمة VIIRS الاسمية 375 م، وليست نقطة منشأ بأمتار."],
+                  ["فجوات المرور", "على الأقمار القطبية فجوات بين 0.6 و72.8 ساعة؛ القمر الثابت يغلقها لست بؤر فقط."],
+                  ["حدّ كشف القمر الثابت", "لا يرى فوق هذا الإقليم ما دون 30-50 ميغاواط، فـ«سماء صافية بلا رصد» تعني «لا حريق كبير»."],
+                  ["الدقة المكانية", "بصمة VIIRS الاسمية 375 م، وبكسل MSG نحو 3.5 كم؛ لا نقطة منشأ بأمتار."],
                   ["حجب الرصد", "الدخان والسحب والغطاء الشجري قد يخفي النار في أشد لحظاتها."],
                   ["الرياح الجبلية", "النماذج الساعية لا تمثل كل التدفقات المحلية داخل التضاريس."],
                   ["الصواعق", "غياب شبكة مواقع صواعق يجعل استبعاد البرق استدلالاً غير مباشر."],
@@ -353,18 +375,15 @@ export default function MethodologyPage() {
               </h2>
               <p className="mt-4 max-w-2xl leading-8 text-muted-foreground">
                 البيانات الخام الثقيلة غير منشورة. تتوفر الجداول المعالجة،
-                الحزمة المجمعة، سجل المصادر، ونص التقرير الذي يشرح الحسابات
-                والقيود بالتفصيل.
+                والحزمة المجمعة، وخرائط التحقيق وأشكاله البيانية، وسجل المصادر،
+                ونص التقرير الذي يشرح الحسابات والقيود بالتفصيل.
               </p>
               <div className="mt-6 flex min-h-10 flex-wrap items-center gap-1 border-b">
                 <Button asChild variant="ghost" size="sm">
                   <Link href="/data">البيانات والتنزيلات</Link>
                 </Button>
                 <Button asChild variant="ghost" size="sm">
-                  <a href="/generated/documentation/report_ar.md" download>
-                    <DownloadIcon data-icon="inline-start" />
-                    نص التقرير
-                  </a>
+                  <Link href="/report">نص التقرير</Link>
                 </Button>
                 <Button asChild variant="ghost" size="sm">
                   <Link href="/sources">سجل المصادر</Link>

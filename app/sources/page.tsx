@@ -43,6 +43,7 @@ export const metadata: Metadata = {
 
 const sections = [
   { id: "composition", label: "تركيب السجل" },
+  { id: "timing-data", label: "طبقة التوقيت الجديدة" },
   { id: "register", label: "السجل القابل للبحث" },
   { id: "unavailable", label: "مصادر غير متاحة" },
   { id: "quarantine", label: "سجل الحجر" },
@@ -87,6 +88,7 @@ export default async function SourcesPage() {
               { term: "غير المتاح", value: String(unavailable.length), mono: true },
               { term: "المحجور", value: String(quarantined.length), mono: true },
               { term: "تاريخ الاطلاع", value: "29.08.2026", mono: true },
+              { term: "آخر مزامنة موقع", value: "31.08.2026", mono: true },
             ]}
           />
           <nav aria-label="أقسام سجل المصادر" className="mt-8 hidden border-t pt-5 lg:block">
@@ -172,6 +174,30 @@ export default async function SourcesPage() {
                     والمحجورة معروضة منفصلة ولا تدخل هذا العدّ.
                   </figcaption>
                 </figure>
+              </div>
+            </section>
+          </Reveal>
+
+          <Reveal>
+            <section id="timing-data" className="mt-16 scroll-mt-20">
+              <SectionLabel>تحديث البيانات</SectionLabel>
+              <h2 className="mt-5 text-2xl font-semibold tracking-tight">
+                طبقة تقيس الزمن بدل تخمينه من المرور القطبي
+              </h2>
+              <div className="mt-6 max-w-3xl">
+                <EdgePanel label="DS-05b · Meteosat-10 / MSG" className="border-s-info">
+                  <p className="text-lg font-medium leading-8">
+                    أضيفت بيانات <span className="ltr-embed">LSA SAF MSG FRP-PIXEL</span> كل
+                    15 دقيقة فوق جيجل. ضيّقت نافذة الاشتعال إلى دورة رصد واحدة لست
+                    بؤر، وتبقى أربع بؤر أصغر من حدّ كشف المستشعر.
+                  </p>
+                  <p className="mt-4 leading-8 text-muted-foreground">
+                    لا تعني هذه الطبقة أن كل بداية صارت معروفة بدقة ربع ساعة، ولا
+                    تحوّل تقارب التوقيت إلى دليل على التنسيق. يظل مستشعر
+                    <span className="ltr-embed"> MTG FCI </span>
+                    الأدق ضمن المصادر غير المتاحة في السجل.
+                  </p>
+                </EdgePanel>
               </div>
             </section>
           </Reveal>

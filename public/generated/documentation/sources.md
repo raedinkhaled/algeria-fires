@@ -15,6 +15,7 @@
 | DS-03 | FIRMS Active Fire Data — VIIRS NOAA-21 C2 (NRT) | NASA FIRMS / LANCE | VIIRS، 375 م | 22–29 أوت 2026 | https://firms.modaps.eosdis.nasa.gov/data/active_fire/noaa-21-viirs-c2/csv/J2_VIIRS_C2_Europe_7d.csv |
 | DS-04 | FIRMS Active Fire Data — MODIS C6.1 (NRT) | NASA FIRMS / LANCE | MODIS، 1 كم | 22–29 أوت 2026 | https://firms.modaps.eosdis.nasa.gov/data/active_fire/modis-c6.1/csv/MODIS_C6_1_Europe_7d.csv |
 | DS-05 | Sentinel-2 MSI Level-2A (COG) | ESA Copernicus / AWS Open Data (Element84 earth-search) | MSI، 10–20 م | مشاهد 18 و26 و28 أوت 2026 | https://earth-search.aws.element84.com/v1 |
+| DS-05b | LSA SAF **MSG FRP-PIXEL** (List + Quality، HDF5) — Meteosat-10 عند 0° | EUMETSAT LSA SAF عبر خادم IPMA | SEVIRI، ~3.5 كم فوق جيجل، كل 15 دقيقة | 21–30 أوت 2026 | https://datalsasaf.lsasvcs.ipma.pt/PRODUCTS/MSG/FRP-PIXEL/ |
 | DS-06 | Copernicus DEM GLO-30 | ESA / Airbus، عبر AWS Open Data | نموذج ارتفاع رقمي، 30 م | ثابت | https://copernicus-dem-30m.s3.amazonaws.com/ |
 | DS-07 | ASOS/METAR Archive — شبكة `DZ__ASOS` | Iowa Environmental Mesonet, Iowa State University (مستضيفة لأرصاد METAR الرسمية) | أرصاد سطحية | 20–30 أوت 2026 | https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py |
 | DS-08 | Open-Meteo Forecast/Analysis API | Open-Meteo (مبني على نماذج ECMWF/DWD/NCEP) | حقول ساعية شبكية | 21–29 أوت 2026 | https://api.open-meteo.com/v1/forecast |
@@ -109,7 +110,7 @@
 | EFFIS / GWIS (Copernicus) | مساحات محروقة رسمية أوروبية-متوسطية | لم يتيسّر الوصول إلى واجهة تحميل مفتوحة خلال فترة الإعداد؛ استُعيض عنها بحساب dNBR مباشرة من Sentinel-2 |
 | تسجيلات كاميرات المراقبة، محاضر الشرطة والدرك، سجلات أعطال الشبكة الكهربائية | تحديد سبب الاشتعال | غير عامة بطبيعتها |
 | **NASA FIRMS Archive API (متعدّد السنوات)** | **بناء خطّ أساس موسمي لمعدّل بؤر الاشتعال المستقلة** | **يتطلّب مفتاح MAP_KEY بالتسجيل؛ الأرشيف العلني المفتوح سبعة أيام فقط. وهذا يحدّ من حجّة البساطة في الفصل 26.3** |
-| **EUMETSAT Meteosat SEVIRI / FCI** (تردد 5–15 دقيقة) | **قياس التزامن فعلياً بدل الاستدلال عليه** | **يتطلّب حساب Data Store. وهو المصدر الوحيد القادر على رفع الحدّ الرصدي الجوهري في الفصل 25.3** |
+| EUMETSAT MTG FCI L2 Fire / FRP | قياس التزامن بدقّة أعلى (10 دقائق، بكسل ~1–2 كم) | لم يُجلب منتج FCI لأنه يتطلّب حساب EUMETSAT Data Store. استُوفيت حاجة التوقيت جزئياً بمنتج EUMETSAT LSA SAF MSG FRP-PIXEL المنشور في DS-05b: 15 دقيقة وبكسل ~3.5 كم، لا 10 دقائق ولا 1–2 كم. |
 
 ---
 

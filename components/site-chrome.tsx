@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { MenuIcon } from "lucide-react";
 
 import { ReadingProgress } from "@/components/motion";
+import { CondolenceDialog } from "@/components/condolence-dialog";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteMark } from "@/components/site-mark";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -34,6 +35,7 @@ export function SiteChrome({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col">
       <ReadingProgress />
+      <CondolenceDialog />
       <header className="sticky top-0 z-40 border-b bg-background">
         <div className="mx-auto flex h-12 max-w-7xl items-stretch px-4 sm:px-6 lg:px-8">
           <Link

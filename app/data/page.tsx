@@ -3,11 +3,23 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { DataExplorer, type OriginRow, type PatchRow } from "@/components/data-explorer";
-import { FileMeta } from "@/components/editorial";
+import { FileMeta, SectionLabel } from "@/components/editorial";
+import { FigureGallery } from "@/components/figure-gallery";
+import { Reveal } from "@/components/motion";
 import { StoryBreadcrumb } from "@/components/story-breadcrumb";
+import {
+  IgnitionWindowTable,
+  QualityLegend,
+  SimultaneousPairsTable,
+  type IgnitionWindow,
+  type SimultaneousPair,
+} from "@/components/timing-tables";
 import { dataSections } from "@/lib/data-sections";
+import { figures } from "@/lib/figures";
 import activity from "@/public/generated/data/daily_activity.json";
 import downloads from "@/public/generated/downloads.json";
+import ignitionWindows from "@/public/generated/data/msg-ignition-windows.json";
+import simultaneousPairs from "@/public/generated/data/msg-simultaneous-pairs.json";
 
 export const metadata: Metadata = {
   title: "مستكشف بيانات حرائق جيجل",
@@ -65,6 +77,8 @@ const fileMeta = [
   { term: "الرصدات", value: "9,100", mono: true },
   { term: "الخلايا", value: "4,451", mono: true },
   { term: "المنشأ", value: "12 مرشحاً" },
+  { term: "قياس التوقيت", value: "MSG · 15 د", mono: true },
+  { term: "الأشكال", value: `${figures.length} خريطة ورسماً` },
   { term: "التنسيقات", value: "CSV · JSON · ZIP", mono: true },
 ];
 
@@ -119,7 +133,64 @@ export default async function DataPage() {
             origins={origins}
             patches={patches}
             downloads={downloads.artifacts}
-          />
+          >
+            <Reveal>
+            <section id="ignition-windows" className="scroll-mt-20">
+              <SectionLabel index="04">نوافذ الاشتعال</SectionLabel>
+              <p className="mt-4 max-w-2xl leading-8">
+                نافذة الاشتعال تمتدّ من آخر لحظة رأى فيها القمر الموقع خالياً من
+                النار إلى أول لحظة رأى فيها ناراً. القمر الثابت{" "}
+                <span className="ltr-embed">Meteosat-10</span> يصوّر كل 15 دقيقة،
+                فقلّص هذه النافذة من أيام إلى دورة رصد واحدة في ست حالات.
+              </p>
+              <div className="mt-5">
+                <IgnitionWindowTable rows={ignitionWindows.origins as IgnitionWindow[]} />
+                <QualityLegend />
+              </div>
+              <p className="mt-3 text-[11px] leading-5 text-muted-foreground">
+                {ignitionWindows.note}
+              </p>
+            </section>
+            </Reveal>
+
+            <Reveal>
+            <section id="pairs" className="scroll-mt-20">
+              <SectionLabel index="05">الأزواج المتقاربة</SectionLabel>
+              <p className="mt-4 max-w-2xl leading-8">
+                كل زوج من بؤر المنشأ بدأ خلال ثلاث ساعات من الآخر، إلى جانب
+                المعطيات التي تحسم إمكان انتقال النار بينهما: المسافة، واتجاه
+                الأول نحو الثاني، واتجاه الريح في تلك اللحظة. النار لا تنتقل إلا
+                مع الريح، فما وقع أعلى الريح أو عرضها أو أبعد من مدى الجمرات
+                يلزمه مصدر ثانٍ.
+              </p>
+              <div className="mt-5">
+                <SimultaneousPairsTable
+                  rows={simultaneousPairs.pairs as SimultaneousPair[]}
+                />
+              </div>
+              <p className="mt-3 max-w-3xl text-[11px] leading-5 text-muted-foreground">
+                {simultaneousPairs.note}
+              </p>
+            </section>
+            </Reveal>
+
+            <Reveal>
+            <section id="figures" className="scroll-mt-20">
+              <SectionLabel index="06">الخرائط والأشكال</SectionLabel>
+              <p className="mt-4 max-w-2xl leading-8">
+                كل خرائط التحقيق وأشكاله البيانية ومنتجات Sentinel-2، بترتيب
+                ملحقَي التقرير ووصفهما. الأصول مرسومة يدوياً بالعربية في مساحة
+                التحقيق، وتُنشر هنا بنسخ محسّنة للعرض.
+              </p>
+              <FigureGallery />
+              <p className="mt-6 text-[11px] leading-5 text-muted-foreground">
+                {figures.length} شكلاً. جميع الخرائط بمرجع WGS84 مع سهم شمال
+                ومقياس رسم ومفتاح وأختام زمنية، والإظلال التلّي من Copernicus DEM
+                GLO-30.
+              </p>
+            </section>
+            </Reveal>
+          </DataExplorer>
         </div>
       </div>
     </article>

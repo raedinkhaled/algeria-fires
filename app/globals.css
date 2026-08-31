@@ -378,3 +378,89 @@
     animation-iteration-count: 1 !important;
   }
 }
+
+/* ── الطباعة ──
+   يبني المتصفح نسخة PDF من محتوى /report/print نفسه، فلا يُشحن ملف PDF جاهز.
+   القاعدة هنا تُخرج الوثيقة على ورق أبيض مهما كان وضع القراءة على الشاشة،
+   وتمنع قطع الجداول والعناوين بين الصفحات. */
+@media print {
+  :root,
+  .dark {
+    color-scheme: light;
+    --background: white;
+    --foreground: oklch(0.171 0.006 75);
+    --card: white;
+    --card-foreground: oklch(0.171 0.006 75);
+    --popover: white;
+    --popover-foreground: oklch(0.171 0.006 75);
+    --primary: oklch(0.171 0.006 75);
+    --primary-foreground: white;
+    --secondary: oklch(0.962 0.002 95);
+    --secondary-foreground: oklch(0.171 0.006 75);
+    --muted: oklch(0.962 0.002 95);
+    --muted-foreground: oklch(0.4 0.01 74);
+    --accent: oklch(0.962 0.002 95);
+    --accent-foreground: oklch(0.171 0.006 75);
+    --border: oklch(0.78 0.005 92);
+    --input: oklch(0.78 0.005 92);
+    --ring: oklch(0.171 0.006 75);
+  }
+
+  html,
+  body {
+    background: white;
+  }
+
+  header,
+  footer,
+  [data-print-hide] {
+    display: none !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 18mm 15mm;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    break-after: avoid-page;
+  }
+
+  figure,
+  blockquote,
+  pre,
+  img,
+  tr {
+    break-inside: avoid;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  /* الجداول العريضة تُقلَّص لتدخل في عرض الورقة بدل أن تُقصّ عند حافة التمرير. */
+  [data-slot="table-container"] {
+    overflow: visible !important;
+    contain: none !important;
+  }
+
+  [data-slot="table"] {
+    min-width: 0 !important;
+    font-size: 8.5pt;
+    line-height: 1.55;
+  }
+
+  [data-slot="table"] th,
+  [data-slot="table"] td {
+    min-width: 0 !important;
+    padding-block: 0.35rem;
+  }
+}
