@@ -124,8 +124,8 @@ export default async function DataPage() {
             افحص البيانات المعالجة بنفسك
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-9">
-            هذه الرسوم والجداول تعيد عرض مجموعة التحليل المنشورة، مع مرشحي المنشأ
-            والندبات الكبرى. كل نقطة حرارية رصد قمري وليست نقطة اشتعال مؤكدة.
+            هذه الرسوم والجداول تعيد عرض مجموعة التحليل المنشورة للندبات الكبرى
+            وبؤر المنشأ المستقلة. كل نقطة حرارية هي رصد قمري يوثق بدقة موقع البؤر المنفصلة وتعددها.
           </p>
 
           <DataExplorer
@@ -135,60 +135,61 @@ export default async function DataPage() {
             downloads={downloads.artifacts}
           >
             <Reveal>
-            <section id="ignition-windows" className="scroll-mt-20">
-              <SectionLabel index="04">نوافذ الاشتعال</SectionLabel>
-              <p className="mt-4 max-w-2xl leading-8">
-                نافذة الاشتعال تمتدّ من آخر لحظة رأى فيها القمر الموقع خالياً من
-                النار إلى أول لحظة رأى فيها ناراً. القمر الثابت{" "}
-                <span className="ltr-embed">Meteosat-10</span> يصوّر كل 15 دقيقة،
-                فقلّص هذه النافذة من أيام إلى دورة رصد واحدة في ست حالات.
-              </p>
-              <div className="mt-5">
-                <IgnitionWindowTable rows={ignitionWindows.origins as IgnitionWindow[]} />
-                <QualityLegend />
-              </div>
-              <p className="mt-3 text-[11px] leading-5 text-muted-foreground">
-                {ignitionWindows.note}
-              </p>
-            </section>
+              <section id="ignition-windows" className="scroll-mt-20">
+                <SectionLabel index="04">نوافذ الاشتعال</SectionLabel>
+                <p className="mt-4 max-w-2xl leading-8">
+                  نافذة الاشتعال تمتدّ من آخر لحظة رأى فيها القمر الموقع خالياً من
+                  النار إلى أول لحظة رأى فيها ناراً. القمر الثابت{" "}
+                  <span className="ltr-embed">Meteosat-10</span> يصوّر كل 15 دقيقة،
+                  فقلّص هذه النافذة إلى ربع ساعة فقط في ست حالات، ما كشف عن تقارب
+                  زمني شديد لبدايات متباعدة جغرافياً، وضيّق الخناق على فرضيات الانتشار العشوائي.
+                </p>
+                <div className="mt-5">
+                  <IgnitionWindowTable rows={ignitionWindows.origins as IgnitionWindow[]} />
+                  <QualityLegend />
+                </div>
+                <p className="mt-3 text-[11px] leading-5 text-muted-foreground">
+                  {ignitionWindows.note}
+                </p>
+              </section>
             </Reveal>
 
             <Reveal>
-            <section id="pairs" className="scroll-mt-20">
-              <SectionLabel index="05">الأزواج المتقاربة</SectionLabel>
-              <p className="mt-4 max-w-2xl leading-8">
-                كل زوج من بؤر المنشأ بدأ خلال ثلاث ساعات من الآخر، إلى جانب
-                المعطيات التي تحسم إمكان انتقال النار بينهما: المسافة، واتجاه
-                الأول نحو الثاني، واتجاه الريح في تلك اللحظة. النار لا تنتقل إلا
-                مع الريح، فما وقع أعلى الريح أو عرضها أو أبعد من مدى الجمرات
-                يلزمه مصدر ثانٍ.
-              </p>
-              <div className="mt-5">
-                <SimultaneousPairsTable
-                  rows={simultaneousPairs.pairs as SimultaneousPair[]}
-                />
-              </div>
-              <p className="mt-3 max-w-3xl text-[11px] leading-5 text-muted-foreground">
-                {simultaneousPairs.note}
-              </p>
-            </section>
+              <section id="pairs" className="scroll-mt-20">
+                <SectionLabel index="05">الأزواج المتقاربة</SectionLabel>
+                <p className="mt-4 max-w-2xl leading-8">
+                  كل زوج من بؤر المنشأ بدأ خلال ثلاث ساعات من الآخر، مصحوباً بالمعطيات
+                  التي تحسم فيزيائياً إمكانية انتقال النار بينهما: المسافة، والاتجاه،
+                  وهندسة الرياح في تلك اللحظة. النار لا تنتقل عكس الريح أو خارج مدى جمراتها؛
+                  لذا فإن الاستحالة الفيزيائية لانتقالها تُثبت وجود مصادر إشعال مستقلة تماماً،
+                  مما يجعل التزامن الزمني بينها مؤشراً قوياً يستدعي التدقيق الأمني.
+                </p>
+                <div className="mt-5">
+                  <SimultaneousPairsTable
+                    rows={simultaneousPairs.pairs as SimultaneousPair[]}
+                  />
+                </div>
+                <p className="mt-3 max-w-3xl text-[11px] leading-5 text-muted-foreground">
+                  {simultaneousPairs.note}
+                </p>
+              </section>
             </Reveal>
 
             <Reveal>
-            <section id="figures" className="scroll-mt-20">
-              <SectionLabel index="06">الخرائط والأشكال</SectionLabel>
-              <p className="mt-4 max-w-2xl leading-8">
-                كل خرائط التحقيق وأشكاله البيانية ومنتجات Sentinel-2، بترتيب
-                ملحقَي التقرير ووصفهما. الأصول مرسومة يدوياً بالعربية في مساحة
-                التحقيق، وتُنشر هنا بنسخ محسّنة للعرض.
-              </p>
-              <FigureGallery />
-              <p className="mt-6 text-[11px] leading-5 text-muted-foreground">
-                {figures.length} شكلاً. جميع الخرائط بمرجع WGS84 مع سهم شمال
-                ومقياس رسم ومفتاح وأختام زمنية، والإظلال التلّي من Copernicus DEM
-                GLO-30.
-              </p>
-            </section>
+              <section id="figures" className="scroll-mt-20">
+                <SectionLabel index="06">الخرائط والأشكال</SectionLabel>
+                <p className="mt-4 max-w-2xl leading-8">
+                  كل خرائط التحقيق وأشكاله البيانية ومنتجات Sentinel-2، بترتيب
+                  ملحقَي التقرير ووصفهما. الأصول مرسومة يدوياً بالعربية في مساحة
+                  التحقيق، وتُنشر هنا بنسخ محسّنة للعرض.
+                </p>
+                <FigureGallery />
+                <p className="mt-6 text-[11px] leading-5 text-muted-foreground">
+                  {figures.length} شكلاً. جميع الخرائط بمرجع WGS84 مع سهم شمال
+                  ومقياس رسم ومفتاح وأختام زمنية، والإظلال التلّي من Copernicus DEM
+                  GLO-30.
+                </p>
+              </section>
             </Reveal>
           </DataExplorer>
         </div>
