@@ -20,7 +20,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 export const metadata: Metadata = {
   title: "التقرير العربي الكامل",
   description:
-    "النسخة العربية الكاملة من إعادة البناء الجنائي-الجغرافي لحرائق ولاية جيجل: البيانات والحسابات والجداول ودرجات الثقة.",
+    "التقرير الكامل عن حرائق جيجل: ما حدث، وما تقوله البيانات، وما لا نعرفه بعد.",
 };
 
 export default async function ReportPage() {
@@ -34,7 +34,7 @@ export default async function ReportPage() {
   }));
 
   const fileMeta = [
-    { term: "الوثيقة", value: "إعادة بناء جنائي-جغرافي" },
+    { term: "الوثيقة", value: "تحليل مستقل للحرائق" },
     { term: "الأقسام", value: `${chapters.length}`, mono: true },
     { term: "الفترة", value: "22-29.08.2026", mono: true },
     { term: "آخر تحديث", value: "31.08.2026", mono: true },
@@ -86,16 +86,16 @@ export default async function ReportPage() {
             {document.title}
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-9 text-muted-foreground">
-            كل التفاصيل في مكان واحد: البيانات، الحسابات، الجداول، درجات الثقة،
-            وما نحتاج إليه للإجابة عن الأسئلة التي ما زالت مفتوحة.
+            يشرح هذا التقرير ما حدث، وما الذي تدعمه البيانات، وما الذي ما زلنا لا
+            نعرفه. الأرقام والجداول موجودة لمن يريد التحقق من كل نتيجة.
           </p>
 
           <Alert className="mt-8 max-w-3xl border-s-[3px] border-s-info">
             <AlertTitle>نسخة محدّثة حتى 31.08.2026</AlertTitle>
             <AlertDescription>
-              يضم التقرير أرشيف القمر الثابت <span className="ltr-embed">MSG/SEVIRI</span>
-              كل 15 دقيقة في الفصلين 15.6 و15.7. يقيس هذا الأرشيف نوافذ
-              الاشتعال لست بؤر، لكنه لا يحوّل تقارب التوقيت إلى إثبات للتنسيق.
+              يضم التقرير صور القمر الثابت <span className="ltr-embed">MSG/SEVIRI</span>
+              كل 15 دقيقة في الفصلين 15.6 و15.7. ساعدت هذه الصور في تحديد وقت
+              بداية ست بؤر، لكنها لا تثبت أن البدايات القريبة كانت عملاً منسقاً.
             </AlertDescription>
           </Alert>
 
@@ -133,7 +133,7 @@ export default async function ReportPage() {
           </Accordion>
 
           <div className="mt-4 max-w-3xl">
-            <SectionLabel as="p">نصّ التقرير</SectionLabel>
+            <SectionLabel as="p">التقرير</SectionLabel>
             <div className="mt-2">
               <ReportMarkdown source={source} />
             </div>

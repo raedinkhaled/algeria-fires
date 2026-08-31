@@ -32,12 +32,12 @@ const QUALITY: Record<
   { label: string; note: string; dot: string }
 > = {
   clean: {
-    label: "وقت البداية محدد",
+    label: "نعرف وقت البداية",
     note: "رأى القمر الموقع بلا نار، ثم رآه يحترق في الصورة التالية",
     dot: "bg-ok",
   },
   dim: {
-    label: "ظهرت قبل الرصد الآخر",
+    label: "رآها القمر أولاً",
     note: "رآها القمر الثابت قبل القمر القطبي، لكن لا نستطيع تحديد وقت بدايتها",
     dot: "bg-warn",
   },
@@ -70,10 +70,10 @@ export function IgnitionWindowTable({ rows }: { rows: IgnitionWindow[] }) {
       <Table className="min-w-[46rem] text-sm">
         <TableHeader className="bg-muted/40">
           <TableRow>
-            <TableHead className="w-[5rem]">البؤرة</TableHead>
+            <TableHead className="w-[5rem]">نقطة البداية</TableHead>
             <TableHead>الموقع</TableHead>
-            <TableHead>آخر رصد صافٍ</TableHead>
-            <TableHead>أول نار</TableHead>
+            <TableHead>آخر صورة بلا نار</TableHead>
+            <TableHead>أول صورة للنار</TableHead>
             <TableHead>الفترة غير المعروفة</TableHead>
             <TableHead>ما نعرفه عن البداية</TableHead>
           </TableRow>
@@ -183,13 +183,13 @@ export function SimultaneousPairsTable({ rows }: { rows: SimultaneousPair[] }) {
       <Table className="min-w-[52rem] text-sm">
         <TableHeader className="bg-muted/40">
           <TableRow>
-            <TableHead className="w-[9rem]">الزوج</TableHead>
-            <TableHead>الفارق</TableHead>
-            <TableHead>دقّة التوقيت</TableHead>
+            <TableHead className="w-[9rem]">النقطتان</TableHead>
+            <TableHead>فرق الوقت</TableHead>
+            <TableHead>هل نعرف الوقت؟</TableHead>
             <TableHead>المسافة</TableHead>
             <TableHead>الريح</TableHead>
-            <TableHead>الهندسة</TableHead>
-            <TableHead>الحكم</TableHead>
+            <TableHead>موقعهما بالنسبة للريح</TableHead>
+            <TableHead>ما تعنيه المقارنة</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -234,7 +234,9 @@ export function SimultaneousPairsTable({ rows }: { rows: SimultaneousPair[] }) {
                 </span>
               </TableCell>
               <TableCell className="whitespace-normal">
-                {row.two_sources ? "مصدران على الأقل" : "التطاير وارد"}
+                {row.two_sources
+                  ? "مصدران على الأقل"
+                  : "قد تكون النار انتقلت بالجمر"}
               </TableCell>
             </TableRow>
           ))}

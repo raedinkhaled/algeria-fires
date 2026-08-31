@@ -63,7 +63,7 @@ function dayTick(value: number) {
 }
 
 const chartConfig = {
-  frp: { label: "مجموع القدرة الإشعاعية" },
+  frp: { label: "قوة النار التي رآها القمر" },
 } satisfies ChartConfig;
 
 function CurveTooltip({
@@ -82,11 +82,11 @@ function CurveTooltip({
     >
       <p className="numeric font-medium">{point.label}</p>
       <dl className="mt-1.5 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-muted-foreground">
-        <dt>القدرة الإشعاعية</dt>
+        <dt>قوة النار في الصورة</dt>
         <dd className="text-end text-foreground">
           <span className="numeric">{point.frp.toLocaleString("en")} MW</span>
         </dd>
-        <dt>بكسلات النار</dt>
+        <dt>نقاط النار في الصورة</dt>
         <dd className="text-end text-foreground">
           <span className="numeric">{point.n}</span>
         </dd>
@@ -132,7 +132,7 @@ export function EventCurve({
   return (
     <div dir="rtl">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b px-3 py-2.5 text-[11px] text-muted-foreground">
-        <span>مجموع القدرة الإشعاعية فوق صندوق الحدث، كل 15 دقيقة</span>
+        <span>قوة النار التي رآها القمر في المنطقة، كل 15 دقيقة</span>
         <span className="ms-auto">
           العلامات الرأسية: بدايات حُدّد وقتها
         </span>
@@ -202,9 +202,10 @@ export function EventCurve({
       </ChartContainer>
 
       <p className="border-t px-3 py-2 text-[11px] leading-5 text-muted-foreground">
-        القمر الثابت لا يرى فوق هذا الإقليم إلا الحرائق التي تتجاوز نحو 30–50
-        ميغاواط، فالخط عند الصفر يعني «لا حريق كبير» لا «لا حريق». القيم من
-        مستشعر آخر بدقة مكانية أخشن، فلا تُقارن عددياً بمجاميع الأقمار القطبية.
+        لا يرى القمر الثابت هنا إلا الحرائق التي تتجاوز نحو 30–50 ميغاواط. لذلك
+        لا يعني الخط عند الصفر أنه لا توجد نار، بل أنه لا توجد نار كبيرة. وهذه
+        الأرقام تأتي من قمر مختلف عن الأقمار الأخرى في الموقع، فلا نقارنها
+        ببعضها مباشرة.
       </p>
     </div>
   );
