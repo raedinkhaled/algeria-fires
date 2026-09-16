@@ -9,7 +9,7 @@ import "./globals.css";
 
 const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
   variable: "--font-ibm-plex-sans-arabic",
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
   subsets: ["arabic", "latin"],
   display: "swap",
 });

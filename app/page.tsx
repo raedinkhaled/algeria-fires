@@ -1,26 +1,33 @@
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeftIcon } from "lucide-react";
 
 import { ChekfaTexennaDiagram } from "@/components/evidence-diagrams";
 import {
   ClaimBasis,
   ConfidenceDot,
+  ConfidenceMeter,
   confidenceTone,
+  ContinueLinks,
   DataFigure,
+  Dossier,
   EdgePanel,
-  FileMeta,
+  Kicker,
+  MetaLedger,
   SectionLabel,
   StatStrip,
-  Timeline,
-  TimelineRow,
 } from "@/components/editorial";
+import { EvidencePlates } from "@/components/evidence-plates";
+import { HypothesisMatrix } from "@/components/hypothesis-matrix";
 import {
   type DailyActivity,
   DailyActivityChart,
 } from "@/components/investigation-charts";
 import { Reveal } from "@/components/motion";
+import { SatelliteComparison } from "@/components/satellite-comparison";
 import { StoryBreadcrumb } from "@/components/story-breadcrumb";
+import { StoryStage, type StoryOrigin, type StoryStep } from "@/components/story-stage";
+import { ThermalLegend, ThermalRecord } from "@/components/thermal-record";
 import {
   Accordion,
   AccordionContent,
@@ -36,12 +43,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { HypothesisMatrix } from "@/components/hypothesis-matrix";
 import { figure } from "@/lib/figures";
-import { siteSections } from "@/lib/site-navigation";
+import { readCsvRows } from "@/lib/published-csv";
+import { framePosition, insideAnalysisWindow } from "@/lib/sentinel-frame";
+import { sectionIndex, siteSections } from "@/lib/site-navigation";
+import { slotLocalMs, type FrpSlot } from "@/lib/thermal";
 import dailyActivity from "@/public/generated/data/daily_activity.json";
 import forensicSummary from "@/public/generated/data/forensic-summary.json";
+import frpSeries from "@/public/generated/data/msg-frp-series.json";
+import ignitionWindows from "@/public/generated/data/msg-ignition-windows.json";
 
+const preSatellite = figure("s2-pre-truecolor");
+const openingSatellite = figure("s2-post-truecolor");
+const severityRaster = figure("s2-dnbr-severity");
 const sentinelComparison = figure("map-sentinel-before-after");
 const posteriors = figure("chart-ach-posteriors");
 const powerLimits = figure("chart-power-and-limits");
@@ -211,248 +225,420 @@ const findings = [
   },
 ];
 
-export default function Home() {
+const homeChapters = [
+  { id: "chapter-04", index: "01", label: "التسلسل الزمني · 23-29 أوت 2026" },
+  { id: "chapter-02", index: "02", label: "النشاط يوماً بيوم" },
+  { id: "chapter-03", index: "03", label: "دليل بصري من Sentinel-2" },
+  { id: "chapter-05", index: "04", label: "استحالة الانتشار الطبيعي (تاكسنة/الشقفة)" },
+  { id: "chapter-01", index: "05", label: "ما تثبته الأدلة وما لا تفصله" },
+  { id: "chapter-06", index: "06", label: "احتمال الفرضيات وحدود الاختبار" },
+  { id: "chapter-07", index: "07", label: "أدلة ومؤشرات الاشتباه الجنائي" },
+  { id: "chapter-08", index: "08", label: "النتيجة في خمسة أسئلة" },
+  { id: "chapter-09", index: "09", label: "تابع القراءة" },
+];
+
+/* البدايات التي قاس القمر الثابت وقتها: آخر صورة صافية ← أول صورة للنار */
+const measuredStarts = ignitionWindows.origins
+  .filter((origin) => origin.quality === "clean")
+  .map((origin) => ({
+    origin_id: origin.origin_id,
+    from: origin.last_clear_local ?? "",
+    to: origin.first_detection_local ?? "",
+  }));
+
+const peakLocal = new Date(slotLocalMs(frpSeries.peak.t));
+const peakLabel = `${peakLocal.getUTCDate()} أوت، ${String(peakLocal.getUTCHours()).padStart(2, "0")}:${String(peakLocal.getUTCMinutes()).padStart(2, "0")}`;
+
+/*
+ * كل صفّ من التسلسل الزمني أعلاه يصير خطوة على المسرح: أيامه، والبدايات التي
+ * يسمّيها نصّه، والمشهد الذي يناسبه زمنياً (قبل الحريق حتى 26 أوت، ثم بعده،
+ * ثم شدّة الاحتراق عند الانحسار).
+ */
+const storyPlan: Record<string, Pick<StoryStep, "days" | "focus" | "layer" | "emphasis">> = {
+  "23 أوت": { days: [23], focus: ["O00", "O01"], layer: "pre" },
+  "24 أوت": { days: [24], focus: ["O03"], layer: "pre" },
+  "25 أوت": { days: [25], focus: ["O05"], layer: "pre" },
+  "26 أوت": { days: [26], focus: ["O08"], layer: "pre", emphasis: true },
+  "27 أوت": { days: [27], focus: [], layer: "post", emphasis: true },
+  "28-29 أوت": { days: [28, 29], focus: [], layer: "severity" },
+};
+
+const storySteps: StoryStep[] = timeline.map((event) => ({
+  key: event.date,
+  date: event.date,
+  title: event.title,
+  body: event.body,
+  ...storyPlan[event.date],
+}));
+
+const detectionsByDay = Object.fromEntries(
+  dailyActivity.days.map((day) => [Number(day.date.slice(-2)), day.detections]),
+);
+
+type OriginCsvRow = {
+  origin_id: string;
+  first_local: string;
+  lat: string;
+  lon: string;
+  daira: string;
+  locality: string;
+  elevation_m: string;
+};
+
+function pad(value: number) {
+  return String(value).padStart(2, "0");
+}
+
+export default async function Home() {
+  const originRows = await readCsvRows<OriginCsvRow>("independent_origins.csv");
+  const storyOrigins = originRows.map((row) => {
+    const lat = Number(row.lat);
+    const lon = Number(row.lon);
+    const [date, time] = row.first_local.split(" ");
+    return {
+      inside: insideAnalysisWindow(lat, lon),
+      origin: {
+        id: row.origin_id,
+        ...framePosition(lat, lon),
+        day: Number(date.slice(-2)),
+        place: row.locality || row.daira,
+        time: `${date.slice(-2)}.08 · ${time}`,
+      } satisfies StoryOrigin,
+    };
+  });
+
   return (
-    <article className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-      <StoryBreadcrumb current="الملخص التنفيذي" />
+    <article className="publication pb-16">
+      {/* ── الغلاف: السؤال والجواب المختصر، ولوحة الحدث بأرقامه ونبضه ── */}
+      <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between gap-4 border-b border-rule pb-3">
+          <StoryBreadcrumb current="الملخص التنفيذي" />
+          <p className="numeric hidden text-[11px] text-muted-foreground sm:block">
+            36.72°N · 5.95°E
+          </p>
+        </div>
 
-      <div className="mt-10 grid gap-x-8 gap-y-10 lg:grid-cols-[190px_minmax(0,45rem)] lg:justify-center lg:gap-x-16">
-        <aside className="order-2 border-t pt-6 lg:sticky lg:top-16 lg:order-1 lg:self-start lg:border-t-0 lg:border-e lg:pe-8 lg:pt-0">
-          <FileMeta heading="بيانات الملف" rows={fileMeta} />
-          <div className="mt-8 hidden border-t pt-5 lg:block">
-            <p className="mb-2 text-[11px] text-muted-foreground">التصنيف</p>
-            <span className="inline-flex items-center gap-1.5 border px-2 py-1 text-[11px] text-muted-foreground">
-              <span aria-hidden="true" className="size-1.5 bg-foreground" />
-              مفتوح · بيانات عامة
-            </span>
-          </div>
-        </aside>
-
-        <div className="order-1 min-w-0 lg:order-2">
-          <Reveal>
-            <p className="text-[11px] font-medium text-muted-foreground">
-              تحقيق مستقل بالبيانات المفتوحة
-            </p>
-            <h1 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
-              كيف بدأت حرائق جيجل، وكيف انتشرت؟
+        <div className="grid gap-x-12 gap-y-12 pt-10 sm:pt-14 lg:grid-cols-12 lg:pt-16">
+          <Reveal className="lg:col-span-7 lg:self-center">
+            <Kicker>تحقيق مستقل بالبيانات المفتوحة</Kicker>
+            <h1 className="mt-6 text-[clamp(2.6rem,6vw,5.5rem)] font-bold leading-[1.12]">
+              كيف بدأت حرائق جيجل،{" "}
+              <span className="block text-signal-ink">وكيف انتشرت؟</span>
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-9">
+            <p className="mt-8 max-w-2xl text-[18px] leading-[1.95] text-muted-foreground">
               جمعنا صور الأقمار وبيانات الطقس ورتّبنا ما حدث يوماً بيوم. الأرقام
               تثبت أن البداية لم تكن طبيعية، وأن وراءها تدخلاً بشرياً في نقاط منفصلة
               ومستقلة فيزيائياً. تحديد ما إذا كان هذا التعدد استغلالاً متعمداً أو عملاً
               منسقاً يمثل أولوية تستوجب تدخلاً استخباراتياً وأمنياً حاسماً.
             </p>
-            <StatStrip className="mt-8" items={headlineStats} />
-          </Reveal>
-
-          <Reveal className="mt-14">
-            <section>
-              <SectionLabel>الخلاصة على ثلاث درجات</SectionLabel>
-              <ol className="mt-4 max-w-3xl divide-y border border-s-[3px] border-s-foreground">
-                {conclusionLevels.map((item, index) => (
-                  <li key={item.heading} className="px-5 py-5">
-                    <div className="flex items-baseline gap-3">
-                      <span className="numeric text-xs text-muted-foreground">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                      <div className="min-w-0">
-                        <h3 className="text-base font-semibold leading-6">
-                          {item.heading}
-                        </h3>
-                        <p className="mt-2 leading-8">{item.body}</p>
-                        <p
-                          className={`mt-3 flex items-center gap-1.5 text-xs font-medium ${confidenceTone(item.level).text}`}
-                        >
-                          <ConfidenceDot level={item.level} />
-                          {item.confidence}
-                        </p>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            </section>
-          </Reveal>
-
-          <Reveal className="mt-10">
-            <EdgePanel
-              className="max-w-3xl"
-              label="ما الذي لا تستطيع البيانات إثباته؟"
-            >
-              <h2 className="max-w-2xl text-2xl font-semibold leading-snug tracking-tight sm:text-3xl">
-                محدودية الأقمار الاصطناعية لا تعني غياب التنسيق، بل تحيل الحسم للتحقيقات الأمنية.
-              </h2>
-              <p className="mt-5 max-w-2xl leading-8">
-                احتمال العمل المنسّق يفرض نفسه بقوة (بين{" "}
-                <span className="numeric font-semibold">11٪–26٪</span> إحصائياً).
-                غياب قدرة الكاميرات الفضائية على التقاط أدوات الإشعال المباشرة لا ينفي الفرضية، بل يجعل التحقيق الجنائي والأمني أمراً حتمياً لكشف الشبكات أو الأفراد المتورطين.
-              </p>
-              <p className="mt-4 max-w-2xl leading-8">
-                بيانات القمر الثابت أثبتت الاستحالة الفيزيائية للتمدد وتعدد مصادر الاشتعال للزوج{" "}
-                <span className="ltr-embed">O07/O08</span>. عدم قدرة الرصد الفضائي المفتوح على التفرقة بين فعلين منفصلين وعمل منسق هو قيد تكنولوجي؛ عدم ظهور دليل فضائي صريح ليس دليلاً على البراءة.
-              </p>
-              <ClaimBasis
-                level={3}
-                confidence="عالية في نفي القدرة على الحسم"
-                sources="الفصل 15.6 · الفصل 26 · الفصل 32"
-                sourcesHref="/report#26"
-              />
-            </EdgePanel>
-          </Reveal>
-
-          <Reveal className="mt-14">
-            <SectionLabel index="01">ما تثبته الأدلة وما لا تفصله</SectionLabel>
-            <div className="mt-4 max-w-3xl border">
-              <Table className="min-w-[42rem] text-sm">
-                <TableHeader className="bg-muted/40">
-                  <TableRow>
-                    <TableHead>السؤال</TableHead>
-                    <TableHead>ما تقوله البيانات</TableHead>
-                    <TableHead>درجة الثقة</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell className="whitespace-normal font-medium">
-                      هل انتشرت من حريق واحد؟
-                    </TableCell>
-                    <TableCell className="whitespace-normal leading-7">
-                      قطعاً لا. الاستحالة الفيزيائية للانتقال تُثبت تعدد البدايات المستقلة والمتباعدة زمانياً ومكانياً.
-                    </TableCell>
-                    <TableCell className="whitespace-normal">عالية</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="whitespace-normal font-medium">
-                      هل السبب طبيعي؟
-                    </TableCell>
-                    <TableCell className="whitespace-normal leading-7">
-                      مستبعد عملياً. انتفاء البرق والمبررات البيئية يحصر الأسباب في التدخل الخارجي.
-                    </TableCell>
-                    <TableCell className="whitespace-normal">
-                      متوسطة إلى عالية
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="whitespace-normal font-medium">
-                      هل السبب بشري؟
-                    </TableCell>
-                    <TableCell className="whitespace-normal leading-7">
-                      حتمي. التدخل البشري هو التفسير العلمي الوحيد لتعدد نقاط الإشعال المستقلة وتزامنها.
-                    </TableCell>
-                    <TableCell className="whitespace-normal">متوسطة</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="whitespace-normal font-medium">
-                      هل كان منسّقاً؟
-                    </TableCell>
-                    <TableCell className="whitespace-normal leading-7">
-                      البيانات المفتوحة ترصد النتيجة الحرارية ولا تلتقط الفاعل. التزامن المدروس يستوجب حسمه عبر التحقيق الأمني والاستخباراتي الميداني.
-                    </TableCell>
-                    <TableCell className="whitespace-normal">
-                      عالية في نفي القدرة على الحسم
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </div>
-          </Reveal>
-
-          <Reveal className="mt-14">
-            <SectionLabel index="02">النشاط يوماً بيوم</SectionLabel>
-            <DataFigure
-              className="mt-4"
-              sensor="VIIRS · P1_Chekfa_origin"
-              meta="23-29.08.2026 · توقيت محلي"
-              caption={
-                <>
-                  تزامن القفزة الحاسمة يومَي 26 و27 أوت مع ذروة الطقس يعكس استغلالاً مريباً للظروف. بيانات الطقس في تبويب «الطقس» هي تقدير ساعي عند بداية حريق الشقفة.
-                </>
-              }
-            >
-              <DailyActivityChart days={dailyActivity.days as DailyActivity[]} />
-            </DataFigure>
-          </Reveal>
-
-          <Reveal className="mt-14">
-            <SectionLabel index="03">دليل بصري من Sentinel-2</SectionLabel>
-            <DataFigure
-              className="mt-4 max-w-xl"
-              sensor="Sentinel-2 · MSI L2A"
-              meta="18 → 28.08.2026 · dNBR"
-              caption={
-                <>
-                  ثلاث لوحات من <span className="ltr-embed">Sentinel-2</span>:
-                  الغطاء قبل الحريق (18 أوت)، بعده (28 أوت)، وخريطة شدة الاحتراق.
-                  الأحمر مساحات احترقت بشدة، والرمادي غطاء لم يحترق يثبت التعدد البؤري.
-                </>
-              }
-            >
-              <Image
-                src={sentinelComparison.path}
-                alt="ثلاث لوحات من Sentinel-2 لمنطقة جيجل: الغطاء النباتي في 18 أوت قبل الحريق، الوضع في 28 أوت بعده، وخريطة شدة الاحتراق dNBR"
-                width={sentinelComparison.width}
-                height={sentinelComparison.height}
-                className="h-auto w-full bg-white"
-              />
-            </DataFigure>
-
-            <Alert className="mt-6 max-w-2xl">
-              <AlertTitle>تنبيه زمني جوهري</AlertTitle>
-              <AlertDescription>
-                أول رصد فضائي ليس لحظة الاشتعال. النار قد تُضرم وتنتشر لساعات (حتى 10 ساعات فوق القطاع الغربي يوم 26 أوت) قبل أن يمر القمر لتصويرها، مما يمنح نافذة زمنية واسعة للاستغلال.
-              </AlertDescription>
-            </Alert>
-          </Reveal>
-
-          <Reveal className="mt-14">
-            <SectionLabel index="04">
-              التسلسل الزمني · 23-29 أوت 2026
-            </SectionLabel>
-            <Timeline className="mt-4 max-w-3xl">
-              {timeline.map((event) => (
-                <TimelineRow
-                  key={event.title}
-                  date={event.date}
-                  title={event.title}
-                >
-                  {event.body}
-                </TimelineRow>
-              ))}
-            </Timeline>
-            <p className="mt-3 max-w-3xl text-sm">
-              <Link
-                href="/chronology"
-                className="underline decoration-border underline-offset-4 hover:decoration-foreground"
+            <nav aria-label="مداخل القراءة" className="mt-10 flex flex-wrap gap-3">
+              <a
+                href="#verdict"
+                className="inline-flex h-11 items-center gap-2 bg-foreground px-5 text-[14px] font-medium text-background transition-colors hover:bg-signal-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
-                السرد الكامل يوماً بيوم، مع أوقات بداية حُدّدت بدقة 15 دقيقة
-              </Link>
+                الخلاصة على ثلاث درجات
+                <ArrowLeftIcon aria-hidden="true" className="size-4" />
+              </a>
+              <a
+                href="#chapter-04"
+                className="inline-flex h-11 items-center gap-2 border border-foreground px-5 text-[14px] font-medium transition-colors hover:bg-foreground hover:text-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              >
+                التسلسل الزمني · 23-29 أوت 2026
+              </a>
+            </nav>
+          </Reveal>
+
+          <section
+            aria-labelledby="event-pulse"
+            className="dark flex flex-col border border-border bg-background text-foreground lg:col-span-5"
+          >
+            <div className="flex items-center justify-between gap-4 border-b border-border px-5 py-3 text-[11px] text-muted-foreground">
+              <p className="flex items-center gap-2 font-medium text-foreground">
+                <span aria-hidden="true" className="size-1.5 bg-signal" />
+                جيجل، الجزائر
+              </p>
+              <p className="numeric">22-29.08.2026</p>
+            </div>
+            <StatStrip className="border-t-0 sm:grid-cols-2" items={headlineStats} />
+            <div className="mt-auto border-t border-border px-5 pb-5 pt-4">
+              <h2 id="event-pulse" className="text-[13px] font-semibold">
+                نبض الحدث كما رآه القمر الثابت
+              </h2>
+              <ThermalRecord
+                className="mt-3"
+                trackClassName="h-20"
+                slots={frpSeries.slots as FrpSlot[]}
+                label={`قوة النار كل 15 دقيقة من القمر الثابت بين 21 و30 أوت 2026؛ الذروة ${frpSeries.peak.frp.toLocaleString("en")} ميغاواط يوم ${peakLabel}.`}
+              />
+              <p className="mt-3 text-[12px] leading-6 text-muted-foreground">
+                كل عمود ربع ساعة من صور{" "}
+                <span className="ltr-embed">Meteosat-10</span> بالتوقيت المحلي، من 21
+                إلى 30 أوت؛ ارتفاعه ولونه يتبعان قوة النار في المنطقة. الذروة{" "}
+                <span className="numeric text-foreground">
+                  {frpSeries.peak.frp.toLocaleString("en")} MW
+                </span>{" "}
+                يوم {peakLabel}.
+              </p>
+              <ThermalLegend className="mt-3" withMarks={false} />
+            </div>
+          </section>
+        </div>
+
+        <MetaLedger
+          className="mt-14"
+          label="بيانات الملف"
+          rows={[...fileMeta, { term: "التصنيف", value: "مفتوح · بيانات عامة" }]}
+        />
+
+        {/* ── الخلاصة أولاً: ثلاث درجات بثقتها ── */}
+        <Reveal className="mt-24 lg:mt-32">
+          <section id="verdict">
+            <SectionLabel>الخلاصة على ثلاث درجات</SectionLabel>
+            <ol className="mt-12 grid gap-12 lg:grid-cols-3 lg:gap-0">
+              {conclusionLevels.map((item, index) => (
+                <li
+                  key={item.heading}
+                  className="relative flex flex-col lg:border-s lg:border-border lg:px-8 lg:first:border-s-0 lg:first:ps-0 lg:last:pe-0"
+                >
+                  <div className="flex items-end justify-between gap-4">
+                    <span className="figure-num text-[clamp(4rem,7vw,6.5rem)] font-extralight leading-[0.9] text-foreground/90">
+                      {index + 1}
+                    </span>
+                    {index < conclusionLevels.length - 1 ? (
+                      <ArrowLeftIcon
+                        aria-hidden="true"
+                        className="mb-3 hidden size-6 text-signal lg:block"
+                      />
+                    ) : null}
+                  </div>
+                  <div className="mt-6">
+                    <ConfidenceMeter level={item.level} label={item.confidence} />
+                  </div>
+                  <h3 className="mt-6 text-[clamp(1.25rem,2vw,1.5rem)] font-semibold leading-[1.55]">
+                    {item.heading}
+                  </h3>
+                  <p className="mt-3 text-[15.5px] leading-8 text-muted-foreground">
+                    {item.body}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          </section>
+        </Reveal>
+
+        <Reveal className="mt-16">
+          <EdgePanel
+            className="max-w-3xl"
+            tone="signal"
+            label="ما الذي لا تستطيع البيانات إثباته؟"
+          >
+            <h2 className="max-w-2xl text-2xl font-semibold leading-[1.55] sm:text-[28px]">
+              محدودية الأقمار الاصطناعية لا تعني غياب التنسيق، بل تحيل الحسم للتحقيقات الأمنية.
+            </h2>
+            <p className="mt-5 max-w-2xl leading-8">
+              احتمال العمل المنسّق يفرض نفسه بقوة (بين{" "}
+              <span className="numeric font-semibold">11٪–26٪</span> إحصائياً).
+              غياب قدرة الكاميرات الفضائية على التقاط أدوات الإشعال المباشرة لا ينفي الفرضية، بل يجعل التحقيق الجنائي والأمني أمراً حتمياً لكشف الشبكات أو الأفراد المتورطين.
             </p>
-          </Reveal>
-
-          <Reveal className="mt-14">
-            <SectionLabel index="05">استحالة الانتشار الطبيعي (تاكسنة/الشقفة)</SectionLabel>
-            <DataFigure
-              className="mt-4"
-              sensor="O05 → O08"
-              meta="25-26.08.2026 · 24 h"
-              caption="الاتجاه غرباً مع رياح تعاكس مسار النار نحو الشمال الشرقي. الفجوة الخضراء والندبتان المنفصلتان تثبتان فيزيائياً تعدد الإشعال واستحالة زحف نار الشقفة إلى تاكسنة بشكل طبيعي."
-            >
-              <ChekfaTexennaDiagram />
-            </DataFigure>
-          </Reveal>
-
-          <Reveal className="mt-14">
-            <SectionLabel index="06">احتمال الفرضيات وحدود الاختبار</SectionLabel>
             <p className="mt-4 max-w-2xl leading-8">
-              البيانات تُسقط نهائياً فرضية الحريق الواحد العشوائي لصالح التعدد المقصود في ذروة موجة الحر، مما يطرح التزامن المتعمد كأولوية قصوى.
+              بيانات القمر الثابت أثبتت الاستحالة الفيزيائية للتمدد وتعدد مصادر الاشتعال للزوج{" "}
+              <span className="ltr-embed">O07/O08</span>. عدم قدرة الرصد الفضائي المفتوح على التفرقة بين فعلين منفصلين وعمل منسق هو قيد تكنولوجي؛ عدم ظهور دليل فضائي صريح ليس دليلاً على البراءة.
             </p>
-            <HypothesisMatrix
-              className="mt-5 max-w-2xl"
-              rows={forensicSummary.hypotheses.structure}
-              caption="حتى مع تخفيف وزن الأدلة إحصائياً، تبرز الحاجة لمعطيات أمنية وتقاطعات استخباراتية لحسم طبيعة التنسيق (بافتراض احتمالية مسبقة تبلغ 0.80)."
+            <ClaimBasis
+              level={3}
+              confidence="عالية في نفي القدرة على الحسم"
+              sources="الفصل 15.6 · الفصل 26 · الفصل 32"
+              sourcesHref="/report#26"
             />
+          </EdgePanel>
+        </Reveal>
+
+      </div>
+
+      {/* ── القصة على المشهد: يوماً بيوم فوق صورة Sentinel-2 ── */}
+      <div className="mx-auto mt-28 max-w-7xl px-4 sm:px-6 lg:mt-36 lg:px-8">
+        <div className="grid gap-x-12 gap-y-6 lg:grid-cols-12">
+          <SectionLabel id="chapter-04" index="01" className="lg:col-span-8">
+            التسلسل الزمني · 23-29 أوت 2026
+          </SectionLabel>
+          <p className="self-end text-[15px] leading-8 text-muted-foreground lg:col-span-4">
+            <Link
+              href="/chronology"
+              className="inline-flex items-center gap-2 font-medium text-foreground underline decoration-border underline-offset-[6px] hover:decoration-foreground"
+            >
+              السرد الكامل يوماً بيوم، مع أوقات بداية حُدّدت بدقة 15 دقيقة
+              <ArrowLeftIcon aria-hidden="true" className="size-4 shrink-0" />
+            </Link>
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-10">
+        <StoryStage
+          steps={storySteps}
+          origins={storyOrigins.filter((entry) => entry.inside).map((entry) => entry.origin)}
+          outside={storyOrigins.filter((entry) => !entry.inside).map((entry) => entry.origin)}
+          pre={{ src: preSatellite.path, width: preSatellite.width, height: preSatellite.height, alt: `${preSatellite.title}: ${preSatellite.caption}` }}
+          post={{ src: openingSatellite.path, width: openingSatellite.width, height: openingSatellite.height, alt: `${openingSatellite.title}: ${openingSatellite.caption}` }}
+          severity={{ src: severityRaster.path, width: severityRaster.width, height: severityRaster.height, alt: `${severityRaster.title}: ${severityRaster.caption}` }}
+          detectionsByDay={detectionsByDay}
+          record={
+            <ThermalRecord
+              trackClassName="h-10 sm:h-12"
+              slots={frpSeries.slots as FrpSlot[]}
+              marks={measuredStarts}
+              label="قوة النار كل 15 دقيقة من القمر الثابت بين 21 و30 أوت 2026."
+            />
+          }
+        />
+      </div>
+
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <Dossier index={homeChapters} indexHeading="أقسام الملخص">
+        <Reveal>
+          <SectionLabel id="chapter-02" index="02">
+            النشاط يوماً بيوم
+          </SectionLabel>
+          <DataFigure
+            className="mt-8"
+            sensor="VIIRS · P1_Chekfa_origin"
+            meta="23-29.08.2026 · توقيت محلي"
+            caption={
+              <>
+                تزامن القفزة الحاسمة يومَي 26 و27 أوت مع ذروة الطقس يعكس استغلالاً مريباً للظروف. بيانات الطقس في تبويب «الطقس» هي تقدير ساعي عند بداية حريق الشقفة.
+              </>
+            }
+          >
+            <DailyActivityChart days={dailyActivity.days as DailyActivity[]} />
+          </DataFigure>
+        </Reveal>
+
+        <Reveal className="mt-24">
+          <SectionLabel id="chapter-03" index="03">
+            دليل بصري من Sentinel-2
+          </SectionLabel>
+          <SatelliteComparison
+            className="mt-8"
+            before={figure("s2-pre-truecolor")}
+            after={openingSatellite}
+          />
+          <DataFigure
+            className="mt-10"
+            sensor="Sentinel-2 · MSI L2A"
+            meta="18 → 28.08.2026 · dNBR"
+            caption={
+              <>
+                ثلاث لوحات من <span className="ltr-embed">Sentinel-2</span>:
+                الغطاء قبل الحريق (18 أوت)، بعده (28 أوت)، وخريطة شدة الاحتراق.
+                الأحمر مساحات احترقت بشدة، والرمادي غطاء لم يحترق يثبت التعدد البؤري.
+              </>
+            }
+          >
+            <Image
+              src={sentinelComparison.path}
+              alt="ثلاث لوحات من Sentinel-2 لمنطقة جيجل: الغطاء النباتي في 18 أوت قبل الحريق، الوضع في 28 أوت بعده، وخريطة شدة الاحتراق dNBR"
+              width={sentinelComparison.width}
+              height={sentinelComparison.height}
+              sizes="(min-width: 1024px) 60rem, 100vw"
+              className="h-auto w-full bg-white"
+            />
+          </DataFigure>
+
+          <Alert className="mt-8 max-w-2xl">
+            <AlertTitle>تنبيه زمني جوهري</AlertTitle>
+            <AlertDescription>
+              أول رصد فضائي ليس لحظة الاشتعال. النار قد تُضرم وتنتشر لساعات (حتى 10 ساعات فوق القطاع الغربي يوم 26 أوت) قبل أن يمر القمر لتصويرها، مما يمنح نافذة زمنية واسعة للاستغلال.
+            </AlertDescription>
+          </Alert>
+        </Reveal>
+
+        <Reveal className="mt-24">
+          <SectionLabel id="chapter-05" index="04">
+            استحالة الانتشار الطبيعي (تاكسنة/الشقفة)
+          </SectionLabel>
+          <DataFigure
+            className="mt-8"
+            sensor="O05 → O08"
+            meta="25-26.08.2026 · 24 h"
+            caption="الاتجاه غرباً مع رياح تعاكس مسار النار نحو الشمال الشرقي. الفجوة الخضراء والندبتان المنفصلتان تثبتان فيزيائياً تعدد الإشعال واستحالة زحف نار الشقفة إلى تاكسنة بشكل طبيعي."
+          >
+            <ChekfaTexennaDiagram />
+          </DataFigure>
+        </Reveal>
+
+        <Reveal className="mt-24">
+          <SectionLabel id="chapter-01" index="05">
+            ما تثبته الأدلة وما لا تفصله
+          </SectionLabel>
+          <div className="mt-8 max-w-4xl">
+            <Table className="min-w-[42rem] text-sm">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>السؤال</TableHead>
+                  <TableHead>ما تقوله البيانات</TableHead>
+                  <TableHead>درجة الثقة</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell className="whitespace-normal align-top font-medium">
+                    هل انتشرت من حريق واحد؟
+                  </TableCell>
+                  <TableCell className="whitespace-normal align-top leading-7">
+                    قطعاً لا. الاستحالة الفيزيائية للانتقال تُثبت تعدد البدايات المستقلة والمتباعدة زمانياً ومكانياً.
+                  </TableCell>
+                  <TableCell className="whitespace-normal align-top">عالية</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="whitespace-normal align-top font-medium">
+                    هل السبب طبيعي؟
+                  </TableCell>
+                  <TableCell className="whitespace-normal align-top leading-7">
+                    مستبعد عملياً. انتفاء البرق والمبررات البيئية يحصر الأسباب في التدخل الخارجي.
+                  </TableCell>
+                  <TableCell className="whitespace-normal align-top">
+                    متوسطة إلى عالية
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="whitespace-normal align-top font-medium">
+                    هل السبب بشري؟
+                  </TableCell>
+                  <TableCell className="whitespace-normal align-top leading-7">
+                    حتمي. التدخل البشري هو التفسير العلمي الوحيد لتعدد نقاط الإشعال المستقلة وتزامنها.
+                  </TableCell>
+                  <TableCell className="whitespace-normal align-top">متوسطة</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="whitespace-normal align-top font-medium">
+                    هل كان منسّقاً؟
+                  </TableCell>
+                  <TableCell className="whitespace-normal align-top leading-7">
+                    البيانات المفتوحة ترصد النتيجة الحرارية ولا تلتقط الفاعل. التزامن المدروس يستوجب حسمه عبر التحقيق الأمني والاستخباراتي الميداني.
+                  </TableCell>
+                  <TableCell className="whitespace-normal align-top">
+                    عالية في نفي القدرة على الحسم
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
+        </Reveal>
+
+        <Reveal className="mt-24">
+          <SectionLabel id="chapter-06" index="06">
+            احتمال الفرضيات وحدود الاختبار
+          </SectionLabel>
+          <p className="mt-6 max-w-2xl text-[17px] leading-9">
+            البيانات تُسقط نهائياً فرضية الحريق الواحد العشوائي لصالح التعدد المقصود في ذروة موجة الحر، مما يطرح التزامن المتعمد كأولوية قصوى.
+          </p>
+          <HypothesisMatrix
+            className="mt-8 max-w-3xl"
+            rows={forensicSummary.hypotheses.structure}
+            caption="حتى مع تخفيف وزن الأدلة إحصائياً، تبرز الحاجة لمعطيات أمنية وتقاطعات استخباراتية لحسم طبيعة التنسيق (بافتراض احتمالية مسبقة تبلغ 0.80)."
+          />
+          <div className="mt-12 grid gap-10 xl:grid-cols-2">
             <DataFigure
-              className="mt-4"
               sensor="ACH · EUMETSAT MSG/SEVIRI"
               meta="الفصل 15.6 · الفصل 26"
               caption="النسبة 11٪–26٪ تعكس محدودية الإحصاء الفضائي المفتوح وليس استبعاداً للعمل المنسق. تعدد مصادر الإشعال حقيقة فيزيائية (كالزوج O07/O08)، وفك شيفرة التنسيق متروك للتحقيق الأمني."
@@ -462,11 +648,11 @@ export default function Home() {
                 alt="رسم يبيّن احتمال العمل المنسق بين 11 و26 بالمئة عند تغيير افتراضات الحساب"
                 width={posteriors.width}
                 height={posteriors.height}
+                sizes="(min-width: 1280px) 30rem, (min-width: 1024px) 60rem, 100vw"
                 className="h-auto w-full bg-white"
               />
             </DataFigure>
             <DataFigure
-              className="mt-6"
               sensor="اختبار القوة · بيانات قطبية"
               meta="الفصل 25 · الفصل 26"
               caption="قصور الأقمار لا يمحو الجريمة: اختبار التزامن الفضائي قاصر لدرجة أنه يعجز عن رصد سيناريو بـ 45 بداية متعمدة في 98.5٪ من الحالات."
@@ -476,36 +662,36 @@ export default function Home() {
                 alt="رسم يوضح أن اختبارات البدايات المتقاربة لا تكفي لنفي وجود عمل منسق"
                 width={powerLimits.width}
                 height={powerLimits.height}
+                sizes="(min-width: 1280px) 30rem, (min-width: 1024px) 60rem, 100vw"
                 className="h-auto w-full bg-white"
               />
             </DataFigure>
-          </Reveal>
+          </div>
+        </Reveal>
 
-          <Reveal className="mt-14">
-            <SectionLabel index="07">أدلة ومؤشرات الاشتباه الجنائي</SectionLabel>
-            <p className="mt-4 max-w-2xl leading-8">
-              الملاحظات الفضائية التالية تمثل خيوطاً قوية تستوجب فحصاً استخباراتياً وميدانياً عاجلاً للوقوف على الأيادي الخفية المحتملة.
-            </p>
-            <div className="mt-5 max-w-3xl divide-y border">
-              {suspicion.map((item) => (
-                <div key={item.title} className="px-4 py-5">
-                  <h3 className="text-sm font-semibold leading-6">
-                    {item.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-7">{item.body}</p>
-                  <p className="mt-3 text-[11px] font-medium text-muted-foreground">
-                    {item.tag}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </Reveal>
+        <Reveal className="mt-24">
+          <SectionLabel id="chapter-07" index="07">
+            أدلة ومؤشرات الاشتباه الجنائي
+          </SectionLabel>
+          <p className="mt-6 max-w-2xl text-[17px] leading-9">
+            الملاحظات الفضائية التالية تمثل خيوطاً قوية تستوجب فحصاً استخباراتياً وميدانياً عاجلاً للوقوف على الأيادي الخفية المحتملة.
+          </p>
+          <div className="mt-10" />
+          <EvidencePlates
+            items={suspicion}
+            elevations={originRows.map((row) => ({
+              id: row.origin_id,
+              elevation: Number(row.elevation_m),
+            }))}
+          />
+        </Reveal>
 
-          <EdgePanel className="mt-14 max-w-3xl" label="ظروف معقدة أم استغلال محكم؟">
+        <Reveal className="mt-12">
+          <EdgePanel className="max-w-3xl" label="ظروف معقدة أم استغلال محكم؟">
             <p className="leading-8">
               عوامل الطقس لا تنفي الجريمة بل قد تمثل سلاحاً لها:
             </p>
-            <ul className="mt-3 flex list-disc flex-col gap-2 pe-5 leading-8 marker:text-border">
+            <ul className="mt-3 flex list-disc flex-col gap-2 pe-5 leading-8 marker:text-signal">
               <li>
                 اشتعال الحرائق في توقيت يطابق ذروة الطقس الشديد بقوة (<span className="ltr-embed">p = 1×10⁻²³</span>) يشير إلى استغلال متعمد ومحسوب للظروف البيئية العنيفة أكثر من كونه مصادفة.
               </li>
@@ -516,114 +702,106 @@ export default function Home() {
                 غياب الأنماط الهندسية الفاضحة من الأقمار هو ما تستخدمه التكتيكات المتعمدة للتخفي في المشهد المألوف.
               </li>
             </ul>
-            <p className="mt-4 border-t pt-4 text-sm leading-7">
+            <p className="mt-5 border-t border-border pt-4 text-sm leading-7">
               هذه المعطيات تُحكم القبضة حول فرضية الاستغلال البشري المتعمد وتجعل التفسير الطبيعي أو العشوائي ضرباً من المستحيل.
             </p>
           </EdgePanel>
+        </Reveal>
 
-          <Reveal className="mt-14">
-            <SectionLabel index="08">النتيجة في خمسة أسئلة</SectionLabel>
-            <Accordion
-              type="single"
-              collapsible
-              defaultValue="origins"
-              className="mt-4 max-w-3xl border"
-            >
-              {findings.map((finding, index) => (
-                <AccordionItem
-                  key={finding.value}
-                  value={finding.value}
-                  className="px-4"
-                >
-                  <AccordionTrigger className="py-4 text-base hover:no-underline">
-                    <span className="flex flex-1 items-center gap-3 pe-3 sm:gap-4">
-                      <span className="numeric text-xs text-muted-foreground">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                      <span className="text-start">{finding.question}</span>
-                      <span
-                        className={`ms-auto flex shrink-0 items-center gap-1.5 text-xs font-medium ${confidenceTone(finding.level).text}`}
-                      >
-                        <ConfidenceDot level={finding.level} />
-                        <span className="hidden sm:inline">
-                          {finding.confidence}
-                        </span>
+        <Reveal className="mt-24">
+          <SectionLabel id="chapter-08" index="08">
+            النتيجة في خمسة أسئلة
+          </SectionLabel>
+          <Accordion
+            type="single"
+            collapsible
+            defaultValue="origins"
+            className="mt-8 max-w-3xl border-t border-rule"
+          >
+            {findings.map((finding, index) => (
+              <AccordionItem
+                key={finding.value}
+                value={finding.value}
+                className="border-b border-border"
+              >
+                <AccordionTrigger className="rounded-none py-5 text-[17px] hover:no-underline">
+                  <span className="flex flex-1 items-center gap-4 pe-3">
+                    <span className="numeric text-xs text-muted-foreground">
+                      {pad(index + 1)}
+                    </span>
+                    <span className="text-start font-semibold">{finding.question}</span>
+                    <span
+                      className={`ms-auto flex shrink-0 items-center gap-1.5 text-xs font-medium ${confidenceTone(finding.level).text}`}
+                    >
+                      <ConfidenceDot level={finding.level} />
+                      <span className="hidden sm:inline">
+                        {finding.confidence}
                       </span>
                     </span>
-                  </AccordionTrigger>
-                  <AccordionContent className="pb-6">
-                    <p className="text-base font-medium leading-7">
-                      {finding.answer}
-                    </p>
-                    <p className="mt-4 leading-7">
-                      <span className="font-medium">الدليل: </span>
-                      {finding.evidence}
-                    </p>
-                    <p className="mt-3 leading-7 text-muted-foreground">
-                      <span className="font-medium text-foreground">
-                        الحد:{" "}
-                      </span>
-                      {finding.limit}
-                    </p>
-                    <ClaimBasis
-                      level={finding.level}
-                      confidence={finding.confidence}
-                      sources={finding.sources}
-                      sourcesHref="/report"
-                    />
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </Reveal>
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="pb-7 sm:ps-8">
+                  <p className="text-[17px] font-medium leading-8">
+                    {finding.answer}
+                  </p>
+                  <p className="mt-4 leading-8">
+                    <span className="font-medium">الدليل: </span>
+                    {finding.evidence}
+                  </p>
+                  <p className="mt-3 leading-8 text-muted-foreground">
+                    <span className="font-medium text-foreground">
+                      الحد:{" "}
+                    </span>
+                    {finding.limit}
+                  </p>
+                  <ClaimBasis
+                    level={finding.level}
+                    confidence={finding.confidence}
+                    sources={finding.sources}
+                    sourcesHref="/report"
+                  />
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </Reveal>
 
-          <EdgePanel className="mt-14 max-w-3xl" label="الكلمة الفصل للتحقيق الأمني">
-            <h2 className="max-w-2xl text-2xl font-semibold leading-snug tracking-tight sm:text-3xl">
+        <Reveal className="mt-12">
+          <EdgePanel className="max-w-3xl" label="الكلمة الفصل للتحقيق الأمني">
+            <h2 className="max-w-2xl text-2xl font-semibold leading-[1.55] sm:text-[28px]">
               البيانات تثبت التدخل البشري وتعدد نقاط الإشعال. تحديد القصد الجنائي والشبكات المنفذة مسار أمني حتمي.
             </h2>
             <p className="mt-5 max-w-2xl leading-8">
               هذا تحليل مستقل بالبيانات المكانية المفتوحة، لا يصدر أحكاماً قضائية بل يضيء المسارات للتحقيق الجنائي. الكارثة الإنسانية (وفاة 73 شخصاً في الجمعة بني حبيبي، بينهم 21 من عائلة واحدة بحسب تقارير إعلامية، مقارنة بـ 12 وفاة وطنياً بحسب الحصيلة الرسمية الأولى) تتطلب كشف الحقائق كاملة، وهو مسار تتولاه بقوة مصالح الدرك الوطني.
             </p>
-            <p className="mt-4 max-w-2xl border-t pt-4 text-sm leading-7 text-muted-foreground">
+            <p className="mt-4 max-w-2xl border-t border-border pt-4 text-sm leading-7 text-muted-foreground">
               التحليل ركز على استبعاد العوامل الطبيعية وتأكيد التعدد المكاني المشبوه. الأعطال الكهربائية واردة كاحتمال غير موثق فضائياً لغياب بيانات الشبكة المتوسطة، لكن استبعادها التلقائي يرفع بقوة أرجحية العمل المفتعل ضمن منظومة الأسباب العرضية الأخرى المتبقية.
             </p>
-            <Alert className="mt-6 max-w-2xl">
+            <Alert className="mt-6 max-w-2xl bg-background">
               <AlertTitle>الخلاصة الجوهرية</AlertTitle>
               <AlertDescription>
                 البصمة البشرية وتعدد نقاط الإشعال المستقلة ثابتان علمياً. أما تحديد ما إذا كانت هذه الانتهاكات البيئية فردية أم عملاً منظماً فهو صميم عمل التحقيقات الاستخباراتية والأمنية الجارية.
               </AlertDescription>
             </Alert>
           </EdgePanel>
+        </Reveal>
 
-          <Reveal className="mt-14">
-            <SectionLabel index="09">تابع القراءة</SectionLabel>
-            <nav
-              aria-label="أقسام المنصة"
-              className="mt-4 max-w-3xl divide-y border"
-            >
-              {siteSections.map((section) => (
-                <Link
-                  key={section.href}
-                  href={section.href}
-                  className="group flex items-center justify-between gap-4 px-4 py-4 transition-colors hover:bg-muted/50"
-                >
-                  <span>
-                    <span className="block text-sm font-medium">
-                      {section.title}
-                    </span>
-                    <span className="mt-0.5 block text-xs leading-6 text-muted-foreground">
-                      {section.summary}
-                    </span>
-                  </span>
-                  <ArrowLeftIcon
-                    aria-hidden="true"
-                    className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-x-0.5"
-                  />
-                </Link>
-              ))}
-            </nav>
-          </Reveal>
-        </div>
+        <Reveal className="mt-24">
+          <SectionLabel id="chapter-09" index="09">
+            تابع القراءة
+          </SectionLabel>
+          <ContinueLinks
+            className="mt-8 max-w-4xl"
+            label="أقسام المنصة"
+            links={siteSections.map((section) => ({
+              href: section.href,
+              title: section.title,
+              summary: section.summary,
+              index: sectionIndex(section.href),
+            }))}
+          />
+        </Reveal>
+        </Dossier>
       </div>
     </article>
   );

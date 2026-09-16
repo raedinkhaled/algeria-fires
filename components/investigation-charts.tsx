@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/chart";
 import {
   Tabs,
+  TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
@@ -56,7 +57,7 @@ export function DailyActivityChart({ days }: { days: DailyActivity[] }) {
   const [metric, setMetric] = useState<Metric>("activity");
 
   return (
-    <div>
+    <Tabs value={metric} onValueChange={(value) => setMetric(value as Metric)} className="gap-0">
       <div className="flex flex-col gap-3 border-b px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-xs font-medium">النشاط اليومي المرصود</p>
@@ -64,19 +65,16 @@ export function DailyActivityChart({ days }: { days: DailyActivity[] }) {
             القيم مجمّعة حسب التوقيت المحلي في الجزائر
           </p>
         </div>
-        <Tabs
-          value={metric}
-          onValueChange={(value) => setMetric(value as Metric)}
-          className="w-full sm:w-auto"
-        >
+        <div className="w-full sm:w-auto">
           <TabsList variant="line" className="w-full border-b sm:w-auto">
             <TabsTrigger value="activity">الرصد</TabsTrigger>
             <TabsTrigger value="energy">الطاقة</TabsTrigger>
             <TabsTrigger value="weather">الطقس</TabsTrigger>
           </TabsList>
-        </Tabs>
+        </div>
       </div>
 
+      <TabsContent value={metric} className="min-w-0">
       <ChartContainer
         config={chartConfig}
         dir="ltr"
@@ -206,6 +204,7 @@ export function DailyActivityChart({ days }: { days: DailyActivity[] }) {
           ) : null}
         </ComposedChart>
       </ChartContainer>
+      </TabsContent>
 
       <div className="grid gap-px border-t bg-border sm:grid-cols-3">
         <p className="bg-card px-3 py-2 text-[11px] leading-5 text-muted-foreground">
@@ -218,6 +217,6 @@ export function DailyActivityChart({ days }: { days: DailyActivity[] }) {
           الخط المتقطع: أدنى رطوبة عند الشقفة
         </p>
       </div>
-    </div>
+    </Tabs>
   );
 }

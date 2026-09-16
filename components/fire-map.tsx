@@ -226,7 +226,7 @@ function MapLegend({
 
   return (
     <div className="absolute start-3 top-3 z-10 max-w-[min(15rem,calc(100%-1.5rem))]">
-      <div className="border bg-background/95 shadow-sm backdrop-blur-sm">
+      <div className="border border-border border-t-foreground bg-background/95 backdrop-blur-sm">
         <button
           type="button"
           onClick={() => setOpen((value) => !value)}
@@ -565,7 +565,7 @@ export function FireMap({
     return (
       <section
         aria-label="خريطة تفاعلية لحرائق جيجل"
-        className={cn("border bg-card p-4 sm:p-6", className)}
+        className={cn("border-t border-rule bg-card p-4 sm:p-6", className)}
       >
         <Alert className="max-w-3xl">
           <AlertTitle>تعذّر تشغيل الخريطة التفاعلية</AlertTitle>
@@ -580,7 +580,7 @@ export function FireMap({
             alt="خريطة ثابتة لشدة الاحتراق في جيجل من Sentinel-2"
             width={4946}
             height={2700}
-            className="h-auto w-full border"
+            className="h-auto w-full border border-border"
           />
           <figcaption className="mt-2 text-xs leading-5 text-muted-foreground">
             بديل ثابت من Sentinel-2 (dNBR بين 18 و28 أوت): الأحمر شدة احتراق
@@ -594,15 +594,15 @@ export function FireMap({
   return (
     <section
       aria-label="خريطة تفاعلية لحرائق جيجل"
-      className={cn("border bg-card", className)}
+      className={cn("border-t border-rule", className)}
     >
       {/* شريط الطبقات مطابق لبنية سطح الخريطة المرجعي، مع تمرير أفقي عند الضيق */}
       <div
         role="group"
         aria-label="طبقات الخريطة"
-        className="flex h-10 items-stretch overflow-x-auto border-b bg-background text-[11px]"
+        className="flex h-11 items-stretch overflow-x-auto border-x border-b border-border bg-background text-[12px]"
       >
-        <span className="flex shrink-0 items-center gap-1.5 border-e px-3 font-medium text-muted-foreground sm:px-4">
+        <span className="flex shrink-0 items-center gap-1.5 border-e border-border pe-3 ps-3 font-medium sm:pe-4 sm:ps-4">
           <LayersIcon aria-hidden />
           الطبقات
         </span>
@@ -616,15 +616,15 @@ export function FireMap({
               title={layer.note}
               onClick={() => toggleLayer(layer.id)}
               className={cn(
-                "flex shrink-0 items-center gap-1.5 border-e px-3 whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring sm:px-3.5",
+                "flex shrink-0 items-center gap-2 border-e border-border px-3 whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring sm:px-4",
                 on
-                  ? "bg-muted text-foreground"
-                  : "text-muted-foreground hover:text-foreground",
+                  ? "bg-foreground text-background"
+                  : "text-muted-foreground hover:bg-card hover:text-foreground",
               )}
             >
               <span
                 aria-hidden
-                className="size-2 shrink-0 rounded-full"
+                className="size-2 shrink-0 ring-1 ring-background/40"
                 style={{
                   background: on
                     ? layer.id === "severity"
@@ -642,7 +642,7 @@ export function FireMap({
           );
         })}
         {view ? (
-          <span className="ms-auto hidden shrink-0 items-center border-s px-3 text-[10px] text-muted-foreground md:flex">
+          <span className="ms-auto hidden shrink-0 items-center border-s border-border px-4 text-[10.5px] text-muted-foreground md:flex">
             <span className="ltr-embed">
               {view.lat.toFixed(2)}°N · {view.lng.toFixed(2)}°E · z
               {view.zoom.toFixed(1)}
@@ -652,14 +652,14 @@ export function FireMap({
       </div>
 
       {/* الخريطة والطبقات فوقها */}
-      <div className="relative">
+      <div className="relative border-x border-border">
         <div
           ref={containerRef}
           dir="ltr"
           role="application"
           aria-label="خريطة قابلة للتحريك والتكبير"
           className={cn(
-            "fire-map-canvas h-[min(64dvh,30rem)] min-h-[25rem] w-full sm:h-[min(64dvh,32rem)] lg:h-[min(68dvh,36rem)]",
+            "fire-map-canvas h-[min(70dvh,32rem)] min-h-[26rem] w-full sm:h-[min(72dvh,38rem)] lg:h-[min(76dvh,46rem)]",
             status !== "ready" && "invisible",
           )}
         />
@@ -708,7 +708,7 @@ export function FireMap({
                   <ChevronRightIcon aria-hidden />
                 </button>
               </div>
-              <span className="text-white/55">
+              <span className="text-white/70">
                 <span className="numeric text-white/80">
                   {activity[day]?.detections.toLocaleString("en-US") ?? 0}
                 </span>{" "}
@@ -752,8 +752,8 @@ export function FireMap({
                     <span
                       aria-hidden
                       className={cn(
-                        "numeric text-[8px] leading-none",
-                        active ? "text-white" : "text-white/40",
+                        "numeric text-[9px] leading-none",
+                        active ? "text-white" : "text-white/75",
                       )}
                     >
                       <span className="sm:hidden">{DAYS[index]?.key}</span>
@@ -767,7 +767,7 @@ export function FireMap({
         </div>
       </div>
 
-      <p className="border-t px-4 py-2.5 text-xs leading-6 text-muted-foreground">
+      <p className="border-x border-b border-border px-4 py-3 text-xs leading-6 text-muted-foreground">
         كل نقطة رصد هي أقدم لحظة رآها القمر، لا لحظة الاشتعال، بدقة مكانية تقارب
         375 م. انقر أي نقطة لعرض تفاصيلها.
       </p>

@@ -11,14 +11,14 @@ import {
 
 export function StoryBreadcrumb({ current }: { current: string }) {
   return (
-    <Breadcrumb>
-      <BreadcrumbList className="text-[11px]">
+    <Breadcrumb aria-label="مسار الصفحة">
+      <BreadcrumbList className="text-[11.5px]">
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
             <Link href="/">حرائق جيجل</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
-        <BreadcrumbSeparator className="text-border">/</BreadcrumbSeparator>
+        <BreadcrumbSeparator className="text-muted-foreground">/</BreadcrumbSeparator>
         <BreadcrumbItem>
           <BreadcrumbPage>{current}</BreadcrumbPage>
         </BreadcrumbItem>

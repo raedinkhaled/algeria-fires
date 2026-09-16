@@ -42,7 +42,7 @@ export function PrintControls() {
   return (
     <div
       data-print-hide
-      className="sticky top-12 z-30 -mx-4 mb-8 flex flex-wrap items-center gap-x-4 gap-y-2 border-b bg-background px-4 py-3 sm:-mx-6 sm:px-6"
+      className="sticky top-16 z-30 -mx-4 mb-8 flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-border bg-background px-4 py-3 sm:-mx-6 sm:px-6"
     >
       <Button size="sm" variant="outline" onClick={() => window.print()}>
         <PrinterIcon data-icon="inline-start" />

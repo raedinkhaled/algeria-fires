@@ -10,12 +10,12 @@ import {
 
 /*
  * رسوم مستكشف البيانات: نقاط مرشّحي المنشأ عبر الزمن، وترتيب الندبات بالمساحة.
- * الانضباط أحادي اللون نفسه — الرمادي للعلامات، والشكل (مفرّغ/ممتلئ) يحمل
- * فرق النهار والليل بدل لون إضافي. لا حركة على القيم العلمية.
+ * اللون يميز المواقع داخل جيجل وخارجها؛ الشكل المفرّغ أو الممتلئ يميز الليل والنهار.
+ * لا حركة على القيم العلمية.
  */
 
-const INK = "var(--foreground)"; // للمواقع داخل جيجل
-const GREY = "var(--muted-foreground)"; // رمادي، للمواقع خارج جيجل
+const INK = "var(--chart-1)"; // للمواقع داخل جيجل
+const GREY = "var(--chart-2)"; // للمواقع خارج جيجل
 
 function parseDayValue(firstLocal: string): number | null {
   const match = firstLocal.match(/2026-08-(\d\d)[ T](\d\d):(\d\d)/);
@@ -93,7 +93,7 @@ function OriginTooltip({
   return (
     <div
       dir="rtl"
-      className="min-w-44 rounded-lg border border-border/50 bg-background px-2.5 py-2 text-xs shadow-xl"
+      className="min-w-44 border border-border border-t-foreground bg-background px-3 py-2.5 text-xs shadow-lg"
     >
       <p className="font-medium">
         <span className="ltr-embed">{point.origin_id}</span>
@@ -249,7 +249,7 @@ function PatchTooltip({
   return (
     <div
       dir="rtl"
-      className="min-w-44 rounded-lg border border-border/50 bg-background px-2.5 py-2 text-xs shadow-xl"
+      className="min-w-44 border border-border border-t-foreground bg-background px-3 py-2.5 text-xs shadow-lg"
     >
       <p className="font-medium">
         <span className="ltr-embed">{patch.patch_id}</span>
@@ -298,14 +298,16 @@ export function PatchBarsChart({ patches }: { patches: PatchPoint[] }) {
         <span className="flex items-center gap-1.5">
           <span
             aria-hidden="true"
-            className="inline-block h-2.5 w-3 bg-foreground"
+            className="inline-block h-2.5 w-3"
+            style={{ background: INK }}
           />
           داخل جيجل
         </span>
         <span className="flex items-center gap-1.5">
           <span
             aria-hidden="true"
-            className="inline-block h-2.5 w-3 bg-muted-foreground"
+            className="inline-block h-2.5 w-3"
+            style={{ background: GREY }}
           />
           خارج جيجل
         </span>
@@ -353,7 +355,7 @@ export function PatchBarsChart({ patches }: { patches: PatchPoint[] }) {
             {rows.map((row) => (
               <Cell
                 key={row.patch_id}
-                fill={row.inJijel ? "var(--foreground)" : "var(--muted-foreground)"}
+                fill={row.inJijel ? INK : GREY}
               />
             ))}
           </Bar>

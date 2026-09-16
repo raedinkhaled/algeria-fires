@@ -52,96 +52,118 @@
   --color-warn: var(--warn);
   --color-info: var(--info);
   --color-support: var(--support);
+  --color-signal: var(--signal);
+  --color-signal-ink: var(--signal-ink);
+  --color-orbit: var(--orbit);
+  --color-rule: var(--rule);
+  --color-heat-1: var(--heat-1);
+  --color-heat-2: var(--heat-2);
+  --color-heat-3: var(--heat-3);
+  --color-heat-4: var(--heat-4);
+  --color-heat-5: var(--heat-5);
 }
 
 /*
- * لوحة محايدة أحادية اللون بلمسة دافئة، على هيئة سلّم ارتفاع واحد:
- *   فاتح  → الخلفية بيضاء، والأسطح (بطاقة، منبثق) تنزوي بدرجة دافئة خفيفة،
- *           ثم الحشوات (muted) تنزوي درجةً أخرى.
- *   داكن  → تُقلب العلاقة: خلفية شبه سوداء دافئة، والأسطح ترتفع بدرجة،
- *           والحشوات ترتفع أكثر. الفارق الإدراكي بين الطبقات نفسه في الوضعين.
- * كل الدرجات على تدرّج رمادي دافئ واحد (لون ~75–95، إشباع ضئيل). الحدّ شعرة
- * مرئية، والارتفاع يُقرأ من الفرق في الإضاءة ومن الحدّ لا من الظل.
- * اللون الدلالي (خرائط الأقمار، شدة الاحتراق، درجات الثقة) داخل المادة نفسها
- * لا في رموز الواجهة، ويبلغ AA (~4.5:1 فأعلى) على الخلفية والبطاقة في الوضعين.
+ * هوية «سجلّ حراري»: ورق أبيض خالص وحبر فحمي، ولونان إشاريان فقط.
+ * الجمري (--signal) لما هو نار وحرارة، والمداري (--orbit) لما هو قياس ورصد.
+ * سلّم --heat-* خاص بقوة الإشعاع الحراري: يزداد عتمةً على الورق ويزداد توهّجاً
+ * في الوضع الداكن، فيبقى «أشدّ» مقروءاً في الحالتين.
  */
 :root {
-  --background: oklch(0.9955 0.0009 95); /* أبيض بلمسة دافئة */
-  --foreground: oklch(0.171 0.006 75); /* حبر شبه أسود دافئ */
-  --card: oklch(0.9775 0.0018 95); /* سطح منزوٍ بدرجة */
-  --card-foreground: oklch(0.171 0.006 75);
-  --popover: oklch(0.9775 0.0018 95);
-  --popover-foreground: oklch(0.171 0.006 75);
-  --primary: oklch(0.171 0.006 75);
-  --primary-foreground: oklch(0.9955 0.0009 95);
-  --secondary: oklch(0.9555 0.003 95);
-  --secondary-foreground: oklch(0.171 0.006 75);
-  --muted: oklch(0.9555 0.003 95); /* حشوة وحالة تمرير، أعمق من البطاقة */
-  --muted-foreground: oklch(0.462 0.01 74); /* ~7:1 على الخلفية والبطاقة */
-  --accent: oklch(0.9555 0.003 95);
-  --accent-foreground: oklch(0.171 0.006 75);
-  --border: oklch(0.865 0.005 92); /* شعرة مرئية على الخلفية والبطاقة */
-  --input: oklch(0.865 0.005 92);
-  --ring: oklch(0.171 0.006 75);
-  /* ألوان دلالية للمادة العلمية فقط، لا في chrome الواجهة. */
-  --destructive: oklch(0.495 0.19 27.5); /* أحمر */
-  --ok: oklch(0.49 0.14 150); /* أخضر، ثقة عالية / مصدر أساسي */
-  --warn: oklch(0.505 0.105 72); /* كهرماني غامق، ثقة متوسطة / تنبيه */
-  --info: oklch(0.49 0.2 262); /* أزرق، تحقّق متقاطع */
-  --support: oklch(0.515 0.155 47); /* برتقالي غامق، مصدر داعم */
-  --chart-1: oklch(0.171 0.006 75);
-  --chart-2: oklch(0.42 0.006 75);
-  --chart-3: oklch(0.56 0.006 78);
-  --chart-4: oklch(0.7 0.005 82);
-  --chart-5: oklch(0.83 0.004 88);
-  --radius: 0.1875rem; /* 3px */
-  --sidebar: oklch(0.9955 0.0009 95);
-  --sidebar-foreground: oklch(0.171 0.006 75);
-  --sidebar-primary: oklch(0.171 0.006 75);
-  --sidebar-primary-foreground: oklch(0.9955 0.0009 95);
-  --sidebar-accent: oklch(0.9555 0.003 95);
-  --sidebar-accent-foreground: oklch(0.171 0.006 75);
-  --sidebar-border: oklch(0.865 0.005 92);
-  --sidebar-ring: oklch(0.171 0.006 75);
+  --background: #ffffff;
+  --foreground: #0b0e17;
+  --card: #f4f5f7;
+  --card-foreground: #0b0e17;
+  --popover: #ffffff;
+  --popover-foreground: #0b0e17;
+  --primary: #0b0e17;
+  --primary-foreground: #ffffff;
+  --secondary: #eceef2;
+  --secondary-foreground: #0b0e17;
+  --muted: #eceef2;
+  --muted-foreground: #5d6170;
+  --accent: #eceef2;
+  --accent-foreground: #0b0e17;
+  --border: #e1e3e8;
+  --input: #8a8f9e;
+  --ring: #ff4f12;
+  --destructive: #b42318;
+  --ok: #177245;
+  --warn: #8f5b06;
+  --info: #2f45e8;
+  --support: #c2410c;
+  --signal: #ff4f12;
+  --signal-ink: #c8360a;
+  --orbit: #2f45e8;
+  --rule: #0b0e17;
+  --chart-1: #ff4f12;
+  --chart-2: #7d8294;
+  --chart-3: #2f45e8;
+  --chart-4: #d99100;
+  --chart-5: #7440c2;
+  --heat-1: #ffe0bf;
+  --heat-2: #ffa25c;
+  --heat-3: #ff5a1f;
+  --heat-4: #c9230c;
+  --heat-5: #5a0f08;
+  --radius: 0.25rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0b0e17;
+  --sidebar-primary: #0b0e17;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eceef2;
+  --sidebar-accent-foreground: #0b0e17;
+  --sidebar-border: #e1e3e8;
+  --sidebar-ring: #ff4f12;
 }
 
+/* الوضع الداكن، و«جزر الليل»: أسطح بيانات داكنة داخل الصفحة البيضاء (لوحة الحدث
+   ومسرح الأقمار). الصنف .dark على الجزيرة يعيد تعريف الرموز محلياً. */
 .dark {
-  --background: oklch(0.158 0.004 75); /* شبه أسود دافئ */
-  --foreground: oklch(0.953 0.003 92);
-  --card: oklch(0.205 0.0045 75); /* سطح مرتفع بدرجة */
-  --card-foreground: oklch(0.953 0.003 92);
-  --popover: oklch(0.205 0.0045 75);
-  --popover-foreground: oklch(0.953 0.003 92);
-  --primary: oklch(0.953 0.003 92);
-  --primary-foreground: oklch(0.158 0.004 75);
-  --secondary: oklch(0.246 0.005 75);
-  --secondary-foreground: oklch(0.953 0.003 92);
-  --muted: oklch(0.246 0.005 75); /* حشوة وحالة تمرير، أرفع من البطاقة */
-  --muted-foreground: oklch(0.722 0.008 80); /* ~7.9:1 على الخلفية */
-  --accent: oklch(0.246 0.005 75);
-  --accent-foreground: oklch(0.953 0.003 92);
-  --border: oklch(0.318 0.006 75); /* شعرة مرئية */
-  --input: oklch(0.318 0.006 75);
-  --ring: oklch(0.953 0.003 92);
-  /* ألوان دلالية، نسخة أفتح لتقرأ على خلفية شبه سوداء */
-  --destructive: oklch(0.637 0.208 25.3);
-  --ok: oklch(0.8 0.182 151.7);
-  --warn: oklch(0.795 0.162 86);
-  --info: oklch(0.714 0.143 254.6);
-  --support: oklch(0.758 0.159 55.9);
-  --chart-1: oklch(0.953 0.003 92);
-  --chart-2: oklch(0.74 0.006 78);
-  --chart-3: oklch(0.58 0.006 75);
-  --chart-4: oklch(0.44 0.006 72);
-  --chart-5: oklch(0.34 0.005 72);
-  --sidebar: oklch(0.205 0.0045 75);
-  --sidebar-foreground: oklch(0.953 0.003 92);
-  --sidebar-primary: oklch(0.953 0.003 92);
-  --sidebar-primary-foreground: oklch(0.158 0.004 75);
-  --sidebar-accent: oklch(0.246 0.005 75);
-  --sidebar-accent-foreground: oklch(0.953 0.003 92);
-  --sidebar-border: oklch(0.318 0.006 75);
-  --sidebar-ring: oklch(0.953 0.003 92);
+  --background: #07090f;
+  --foreground: #eef0f5;
+  --card: #0e111a;
+  --card-foreground: #eef0f5;
+  --popover: #131722;
+  --popover-foreground: #eef0f5;
+  --primary: #eef0f5;
+  --primary-foreground: #07090f;
+  --secondary: #161a26;
+  --secondary-foreground: #eef0f5;
+  --muted: #161a26;
+  --muted-foreground: #9aa0b3;
+  --accent: #1a1f2d;
+  --accent-foreground: #eef0f5;
+  --border: #232838;
+  --input: #6b7080;
+  --ring: #ff6a3a;
+  --destructive: #ff6f63;
+  --ok: #5ccf8f;
+  --warn: #e9b54a;
+  --info: #8b9dff;
+  --support: #ff8a4c;
+  --signal: #ff6a3a;
+  --signal-ink: #ff7a4d;
+  --orbit: #8b9dff;
+  --rule: #eef0f5;
+  --chart-1: #ff6a3a;
+  --chart-2: #8d93a6;
+  --chart-3: #8b9dff;
+  --chart-4: #e9b54a;
+  --chart-5: #b794f6;
+  --heat-1: #3d1407;
+  --heat-2: #80260a;
+  --heat-3: #d8480f;
+  --heat-4: #ff8a3d;
+  --heat-5: #ffe6b0;
+  --sidebar: #0e111a;
+  --sidebar-foreground: #eef0f5;
+  --sidebar-primary: #eef0f5;
+  --sidebar-primary-foreground: #07090f;
+  --sidebar-accent: #1a1f2d;
+  --sidebar-accent-foreground: #eef0f5;
+  --sidebar-border: #232838;
+  --sidebar-ring: #ff6a3a;
 }
 
 @layer base {
@@ -163,7 +185,17 @@
   /* إيقاع قراءة عربي مريح؛ تتجاوزه أدوات leading-* حين تُضبط صراحةً */
   p,
   li {
-    line-height: 1.8;
+    line-height: 1.85;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
   }
 
   button:not(:disabled),
@@ -171,8 +203,13 @@
     cursor: pointer;
   }
 
+  a:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+
   ::selection {
-    background: color-mix(in oklch, var(--foreground) 18%, transparent);
+    background: color-mix(in oklch, var(--signal) 24%, transparent);
   }
 
   /* المعرّفات والإحداثيات والاختصارات العلمية: LTR + خط أحادي المسافة */
@@ -193,17 +230,28 @@
     unicode-bidi: isolate;
   }
 
+  /* أرقام العرض الكبيرة: خط النص نفسه بأرقام جدولية، معزولة LTR */
+  .figure-num {
+    direction: ltr;
+    unicode-bidi: isolate;
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums lining-nums;
+    letter-spacing: -0.02em;
+  }
+
   /* هذه اللبنات تحمل تسلسلاً LTR داخل النص، لكن حين تكون هي نفسها خلية أو
      سطراً مستقلاً في تخطيط RTL يجب أن يلتصق صندوقها بحافة البدء (اليمين)،
      لا اليسار الذي يفرضه `direction: ltr`. لا أثر لها على الاستخدام السطري،
      والقاعدة الثانية تُعيد الضبط داخل جزر LTR كأسطح الرسوم. */
   [dir="rtl"] .numeric,
-  [dir="rtl"] .ltr-embed {
+  [dir="rtl"] .ltr-embed,
+  [dir="rtl"] .figure-num {
     text-align: right;
   }
 
   [dir="ltr"] .numeric,
-  [dir="ltr"] .ltr-embed {
+  [dir="ltr"] .ltr-embed,
+  [dir="ltr"] .figure-num {
     text-align: left;
   }
 
@@ -232,11 +280,64 @@
   }
 }
 
+@layer components {
+  .skip-link {
+    position: fixed;
+    z-index: 60;
+    inset-block-start: 0.75rem;
+    inset-inline-start: 0.75rem;
+    padding: 0.625rem 1rem;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-size: 0.875rem;
+    transform: translateY(-200%);
+  }
+
+  .skip-link:focus {
+    transform: none;
+  }
+
+  #main-content:focus {
+    outline: none;
+  }
+
+  /* ترقيم الأشكال آلياً داخل كل صفحة: «شكل 01، 02…» بترتيب الظهور */
+  .publication {
+    counter-reset: figure;
+  }
+
+  .data-figure {
+    counter-increment: figure;
+  }
+
+  .figure-index::before {
+    content: counter(figure, decimal-leading-zero);
+  }
+
+  /* محتوى الأقسام يتوقف تحت الترويسة اللاصقة عند القفز إليه؛ وعلى الشاشات
+     الضيقة تحت شريط القسم الحالي أيضاً */
+  .publication [id] {
+    scroll-margin-top: 8.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    .publication [id] {
+      scroll-margin-top: 6.5rem;
+    }
+  }
+
+  /* خط المقارنة في منزلق Sentinel-2 */
+  .comparison-divider {
+    width: 2px;
+    background: #ffffff;
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.35);
+  }
+}
+
 /* ── MapLibre: توليف الضوابط والنوافذ مع نظام الألوان الدلالي في الوضعين ──
-   كله أحادي اللون (chrome)؛ اللون يبقى داخل مادة الخريطة وحدها. الانتقاء عبر
-   .fire-map-canvas يرفع الأولوية فوق css الافتراضي غير المطبَّق في طبقة. */
+   الانتقاء عبر .fire-map-canvas يرفع الأولوية فوق css الافتراضي غير المطبَّق في طبقة. */
 .fire-map-canvas .maplibregl-ctrl-group {
-  background: var(--card);
+  background: var(--background);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: none;
@@ -256,8 +357,8 @@
 
 .fire-map-canvas .maplibregl-ctrl-scale {
   background: color-mix(in oklch, var(--background) 80%, transparent);
-  border-color: var(--border);
-  color: var(--muted-foreground);
+  border-color: var(--foreground);
+  color: var(--foreground);
   font-family: var(--font-mono);
 }
 
@@ -283,8 +384,8 @@
 }
 
 .fire-map-canvas .maplibregl-cooperative-gesture-screen {
-  background: color-mix(in oklch, var(--foreground) 55%, transparent);
-  color: var(--background);
+  background: color-mix(in oklch, #000 62%, transparent);
+  color: #fff;
   font-family: var(--font-sans);
   font-size: 0.875rem;
 }
@@ -293,8 +394,9 @@
   background: var(--popover);
   color: var(--popover-foreground);
   border: 1px solid var(--border);
+  border-top: 2px solid var(--foreground);
   border-radius: var(--radius);
-  box-shadow: 0 6px 24px -8px color-mix(in oklch, var(--foreground) 22%, transparent);
+  box-shadow: 0 12px 32px -12px rgb(0 0 0 / 0.35);
   padding: 0;
   font-family: var(--font-sans);
 }
@@ -316,7 +418,7 @@
 .fire-map-canvas .maplibregl-popup-anchor-top .maplibregl-popup-tip,
 .fire-map-canvas .maplibregl-popup-anchor-top-left .maplibregl-popup-tip,
 .fire-map-canvas .maplibregl-popup-anchor-top-right .maplibregl-popup-tip {
-  border-bottom-color: var(--popover);
+  border-bottom-color: var(--foreground);
 }
 
 .fire-map-canvas .maplibregl-popup-anchor-bottom .maplibregl-popup-tip,
@@ -335,8 +437,8 @@
 
 .fire-popup {
   direction: rtl;
-  min-width: 11.5rem;
-  padding: 0.5rem 0.75rem 0.625rem;
+  min-width: 12rem;
+  padding: 0.625rem 0.875rem 0.75rem;
 }
 
 .fire-popup__title {
@@ -356,6 +458,10 @@
   line-height: 1.5;
 }
 
+.fire-popup__row + .fire-popup__row {
+  border-top: 1px solid var(--border);
+}
+
 .fire-popup__key {
   color: var(--muted-foreground);
 }
@@ -369,6 +475,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .reveal-block {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
   *,
   *::before,
   *::after {
@@ -388,22 +499,23 @@
   .dark {
     color-scheme: light;
     --background: white;
-    --foreground: oklch(0.171 0.006 75);
+    --foreground: #0b0e17;
     --card: white;
-    --card-foreground: oklch(0.171 0.006 75);
+    --card-foreground: #0b0e17;
     --popover: white;
-    --popover-foreground: oklch(0.171 0.006 75);
-    --primary: oklch(0.171 0.006 75);
+    --popover-foreground: #0b0e17;
+    --primary: #0b0e17;
     --primary-foreground: white;
-    --secondary: oklch(0.962 0.002 95);
-    --secondary-foreground: oklch(0.171 0.006 75);
-    --muted: oklch(0.962 0.002 95);
-    --muted-foreground: oklch(0.4 0.01 74);
-    --accent: oklch(0.962 0.002 95);
-    --accent-foreground: oklch(0.171 0.006 75);
-    --border: oklch(0.78 0.005 92);
-    --input: oklch(0.78 0.005 92);
-    --ring: oklch(0.171 0.006 75);
+    --secondary: #f2f2f0;
+    --secondary-foreground: #0b0e17;
+    --muted: #f2f2f0;
+    --muted-foreground: #55555c;
+    --accent: #f2f2f0;
+    --accent-foreground: #0b0e17;
+    --border: #c9c9c6;
+    --input: #c9c9c6;
+    --ring: #0b0e17;
+    --rule: #0b0e17;
   }
 
   html,
@@ -411,8 +523,9 @@
     background: white;
   }
 
-  header,
-  footer,
+  .site-header,
+  .site-footer,
+  .skip-link,
   [data-print-hide] {
     display: none !important;
   }

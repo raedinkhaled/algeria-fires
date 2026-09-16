@@ -34,7 +34,7 @@ const QUALITY: Record<
   clean: {
     label: "نعرف وقت البداية",
     note: "رأى القمر الموقع بلا نار، ثم رآه يحترق في الصورة التالية",
-    dot: "bg-ok",
+    dot: "bg-orbit",
   },
   dim: {
     label: "رآها القمر أولاً",
@@ -66,9 +66,9 @@ function windowLabel(row: IgnitionWindow) {
 
 export function IgnitionWindowTable({ rows }: { rows: IgnitionWindow[] }) {
   return (
-    <div className="border">
+    <div>
       <Table className="min-w-[46rem] text-sm">
-        <TableHeader className="bg-muted/40">
+        <TableHeader>
           <TableRow>
             <TableHead className="w-[5rem]">نقطة البداية</TableHead>
             <TableHead>الموقع</TableHead>
@@ -109,7 +109,7 @@ export function IgnitionWindowTable({ rows }: { rows: IgnitionWindow[] }) {
                     <span
                       aria-hidden="true"
                       className={cn(
-                        "inline-block size-1.5 shrink-0 rounded-full",
+                        "inline-block size-2 shrink-0",
                         quality.dot,
                       )}
                     />
@@ -127,13 +127,13 @@ export function IgnitionWindowTable({ rows }: { rows: IgnitionWindow[] }) {
 
 export function QualityLegend() {
   return (
-    <dl className="mt-3 grid gap-px border bg-border sm:grid-cols-3">
+    <dl className="mt-4 grid gap-x-6 sm:grid-cols-3">
       {Object.values(QUALITY).map((quality) => (
-        <div key={quality.label} className="bg-card px-3 py-2.5">
+        <div key={quality.label} className="border-t border-border py-3">
           <dt className="flex items-center gap-1.5 text-[11px] font-medium">
             <span
               aria-hidden="true"
-              className={cn("inline-block size-1.5 rounded-full", quality.dot)}
+              className={cn("inline-block size-2", quality.dot)}
             />
             {quality.label}
           </dt>
@@ -179,9 +179,9 @@ export function windGeometryLabel(geometry: string) {
 
 export function SimultaneousPairsTable({ rows }: { rows: SimultaneousPair[] }) {
   return (
-    <div className="border">
+    <div>
       <Table className="min-w-[52rem] text-sm">
-        <TableHeader className="bg-muted/40">
+        <TableHeader>
           <TableRow>
             <TableHead className="w-[9rem]">النقطتان</TableHead>
             <TableHead>فرق الوقت</TableHead>
@@ -211,8 +211,8 @@ export function SimultaneousPairsTable({ rows }: { rows: SimultaneousPair[] }) {
                   <span
                     aria-hidden="true"
                     className={cn(
-                      "inline-block size-1.5 shrink-0 rounded-full",
-                      row.resolved ? "bg-ok" : "bg-muted-foreground",
+                      "inline-block size-2 shrink-0",
+                      row.resolved ? "bg-orbit" : "bg-muted-foreground",
                     )}
                   />
                   {row.resolved

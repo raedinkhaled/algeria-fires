@@ -20,10 +20,10 @@ import {
  * منحنى القدرة الإشعاعية كل 15 دقيقة من القمر الثابت MSG/SEVIRI.
  * القمر القطبي يمرّ مرّتين إلى أربع في اليوم، فمنحناه سلسلة نقاط متباعدة؛
  * هذا المنحنى متصل، وهو ما يجعل شكل الحدث نفسه مقروءاً.
- * الانضباط أحادي اللون: الحبر للمنحنى، والرمادي للبدايات التي حُدّد وقتها.
+ * لون النشاط للمنحنى، وخطوط مستقلة للبدايات التي حُدّد وقتها.
  */
 
-const INK = "var(--foreground)";
+const INK = "var(--chart-1)";
 
 export type FrpSlot = { t: string; n: number; frp: number };
 
@@ -78,7 +78,7 @@ function CurveTooltip({
   return (
     <div
       dir="rtl"
-      className="min-w-48 rounded-lg border border-border/50 bg-background px-2.5 py-2 text-xs shadow-xl"
+      className="min-w-48 border border-border border-t-foreground bg-background px-3 py-2.5 text-xs shadow-lg"
     >
       <p className="numeric font-medium">{point.label}</p>
       <dl className="mt-1.5 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-muted-foreground">

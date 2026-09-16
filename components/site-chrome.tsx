@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MenuIcon } from "lucide-react";
 
+import { ChapterTracking } from "@/components/chapter-tracking";
 import { ReadingProgress } from "@/components/motion";
 import { CondolenceDialog } from "@/components/condolence-dialog";
 import { SiteFooter } from "@/components/site-footer";
@@ -20,7 +21,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { homeSection, siteSections } from "@/lib/site-navigation";
+import { homeSection, sectionIndex, siteSections } from "@/lib/site-navigation";
 import { cn } from "@/lib/utils";
 
 function isActive(pathname: string | null, href: string): boolean {
@@ -34,33 +35,31 @@ export function SiteChrome({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-dvh flex-col">
+      <a href="#main-content" className="skip-link">
+        انتقل إلى المحتوى
+      </a>
       <ReadingProgress />
+      <ChapterTracking />
       <CondolenceDialog />
-      <header className="sticky top-0 z-40 border-b bg-background">
-        <div className="mx-auto flex h-12 max-w-7xl items-stretch px-4 sm:px-6 lg:px-8">
+      <header className="site-header sticky top-0 z-40 border-b border-border bg-background">
+        <div className="mx-auto flex h-16 max-w-7xl items-stretch px-4 sm:px-6 lg:px-8">
           <Link
             href={homeSection.href}
-            className="flex shrink-0 items-center gap-2.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+            aria-current={isActive(pathname, homeSection.href) ? "page" : undefined}
+            className="flex shrink-0 items-center gap-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
           >
-            <SiteMark size={20} />
-            <span className="flex flex-col leading-tight">
-              <span className="text-[13px] font-semibold tracking-tight">
-                حرائق جيجل
-              </span>
-              <span className="hidden text-[10px] text-muted-foreground sm:block">
+            <SiteMark size={28} />
+            <span className="flex flex-col">
+              <span className="text-[16px] font-semibold leading-6">حرائق جيجل</span>
+              <span className="hidden text-[10.5px] leading-4 text-muted-foreground sm:block">
                 تحقيق حرائق أوت 2026
               </span>
             </span>
           </Link>
 
-          <div
-            aria-hidden="true"
-            className="mx-5 hidden h-5 w-px shrink-0 self-center bg-border lg:block"
-          />
-
           <nav
             aria-label="التنقل الرئيسي"
-            className="me-auto hidden items-stretch lg:flex"
+            className="ms-8 hidden items-stretch lg:flex xl:ms-12"
           >
             {siteSections.map((section) => {
               const active = isActive(pathname, section.href);
@@ -70,17 +69,24 @@ export function SiteChrome({ children }: { children: ReactNode }) {
                   href={section.href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "inline-flex items-center border-b-[1.5px] border-transparent px-3.5 text-[12.5px] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
-                    active && "border-foreground text-foreground",
+                    "relative inline-flex items-center gap-1.5 px-2.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring xl:px-3.5",
+                    "after:absolute after:inset-x-2.5 after:-bottom-px after:h-0.5 after:bg-signal after:opacity-0 after:transition-opacity xl:after:inset-x-3.5",
+                    active && "text-foreground after:opacity-100",
                   )}
                 >
+                  <span className="numeric hidden text-[10px] text-muted-foreground xl:inline">
+                    {sectionIndex(section.href)}
+                  </span>
                   {section.label}
                 </Link>
               );
             })}
           </nav>
 
-          <div className="ms-auto flex items-center gap-0.5 lg:ms-0">
+          <div className="ms-auto flex items-center gap-1">
+            <span className="numeric me-3 hidden text-[10.5px] text-muted-foreground 2xl:inline">
+              36.72°N · 5.95°E
+            </span>
             <ThemeToggle />
 
             <Sheet>
@@ -94,18 +100,16 @@ export function SiteChrome({ children }: { children: ReactNode }) {
                   <MenuIcon />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-full sm:max-w-sm">
-                <SheetHeader className="border-b">
-                  <SheetTitle className="flex items-center gap-2.5">
-                    <SiteMark size={20} />
+              <SheetContent side="right" className="w-full gap-0 sm:max-w-sm">
+                <SheetHeader className="border-b border-rule">
+                  <SheetTitle className="flex items-center gap-3 text-lg">
+                    <SiteMark size={28} />
                     حرائق جيجل
                   </SheetTitle>
-                  <SheetDescription>
-                    تحقيق مستقل بالبيانات المفتوحة
-                  </SheetDescription>
+                  <SheetDescription>تحقيق مستقل بالبيانات المفتوحة</SheetDescription>
                 </SheetHeader>
 
-                <nav aria-label="تنقل الهاتف" className="flex flex-col px-4">
+                <nav aria-label="تنقل الهاتف" className="flex flex-col overflow-y-auto px-4">
                   {[homeSection, ...siteSections].map((section, index) => {
                     const active = isActive(pathname, section.href);
                     return (
@@ -114,14 +118,17 @@ export function SiteChrome({ children }: { children: ReactNode }) {
                           href={section.href}
                           aria-current={active ? "page" : undefined}
                           className={cn(
-                            "flex items-center gap-4 border-b py-4 text-base text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring",
+                            "flex items-center gap-4 border-b border-border py-4 text-[17px] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring",
                             active && "font-medium text-foreground",
                           )}
                         >
-                          <span className="numeric text-xs text-muted-foreground">
+                          <span className="numeric w-6 text-xs text-muted-foreground">
                             {String(index).padStart(2, "0")}
                           </span>
                           <span>{section.label}</span>
+                          {active ? (
+                            <span aria-hidden="true" className="ms-auto size-1.5 bg-signal" />
+                          ) : null}
                         </Link>
                       </SheetClose>
                     );
@@ -133,7 +140,9 @@ export function SiteChrome({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main className="flex-1">{children}</main>
+      <main id="main-content" tabIndex={-1} className="flex-1">
+        {children}
+      </main>
       <SiteFooter />
     </div>
   );

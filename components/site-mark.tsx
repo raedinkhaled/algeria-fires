@@ -1,3 +1,7 @@
+/**
+ * العلامة: إطار بكسل قمري بزوايا تسجيل، وفي داخله خلية رصد حراري واحدة.
+ * الإطار بلون الحبر، والخلية بالجمري في الوضعين.
+ */
 export function SiteMark({
   size = 20,
   title,
@@ -20,20 +24,12 @@ export function SiteMark({
     >
       {title ? <title>{title}</title> : null}
       <path
-        d="M4 18c3.2-1.6 4.7-4.2 5.6-7.2C10.5 7.9 12.5 5.6 15.6 4c-.2 4 2.4 5.6 3.8 8 1.7 2.9 1.2 5.3-.5 7"
+        d="M2.75 8V2.75H8M16 2.75h5.25V8M21.25 16v5.25H16M8 21.25H2.75V16"
         stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="square"
-        strokeLinejoin="miter"
+        strokeWidth="1.5"
       />
-      <path
-        d="M7.5 18c2.7-1.2 4.1-3.3 4.8-5.5.7-2.1 1.8-3.4 3.7-4.6 0 2.8 1.6 4.1 2.3 6 .6 1.6.5 2.8 0 4.1"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="square"
-        strokeLinejoin="miter"
-      />
-      <path d="M4 20h16M12 16v4M10 18h4" stroke="currentColor" strokeWidth="1.35" />
+      <path d="M8.5 12h-3M18.5 12h-3M12 8.5v-3M12 18.5v-3" stroke="currentColor" strokeWidth="1" />
+      <rect x="9.5" y="9.5" width="5" height="5" fill="var(--signal)" />
     </svg>
   );
 }

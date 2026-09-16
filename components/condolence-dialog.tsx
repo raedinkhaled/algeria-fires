@@ -34,14 +34,17 @@ export function CondolenceDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         aria-describedby="condolence-description"
-        className="flex max-h-[calc(100dvh-2rem)] flex-col gap-0 overflow-hidden p-0"
+        className="flex max-h-[calc(100dvh-2rem)] flex-col gap-0 overflow-hidden border-t-2 border-t-rule p-0 sm:max-w-xl"
       >
-        <DialogHeader className="shrink-0 px-5 pt-5 sm:px-6 sm:pt-6">
-          <p className="text-[11px] font-medium tracking-wide text-muted-foreground">
+        <DialogHeader className="shrink-0 gap-2 px-5 pb-5 pt-6 sm:px-8 sm:pt-8">
+          <p className="flex items-center gap-2.5 text-[12px] font-medium text-muted-foreground">
+            <span aria-hidden="true" className="size-1.5 bg-foreground" />
             كلمة إلى الأهالي
           </p>
-          <DialogTitle>خالص التعازي للضحايا والمتضررين</DialogTitle>
-          <DialogDescription id="condolence-description">
+          <DialogTitle className="text-[26px] font-semibold leading-[1.45]">
+            خالص التعازي للضحايا والمتضررين
+          </DialogTitle>
+          <DialogDescription id="condolence-description" className="text-[15px] leading-8">
             إلى عائلات الضحايا، وكل من فقد بيتاً أو أرضاً أو مورداً للعيش:
             نتقدم إليكم بأصدق التعازي وأعمق المواساة.
           </DialogDescription>
@@ -49,8 +52,8 @@ export function CondolenceDialog() {
 
         <Separator />
 
-        <div className="min-h-0 overflow-y-auto px-5 py-4 sm:px-6">
-          <div className="flex flex-col gap-4 text-sm leading-7">
+        <div className="min-h-0 overflow-y-auto px-5 py-5 sm:px-8">
+          <div className="flex flex-col gap-4 text-[14px] leading-8">
             <p>
               أعدّ هذا العمل مهندس برمجيات، يحمل درجة مكتملة في هندسة البيانات
               ودراسات سابقة في الذكاء الاصطناعي في الخارج. دفعته هذه
@@ -68,7 +71,7 @@ export function CondolenceDialog() {
               المختصة عند الحاجة وبما يخدم التحقيق أو الاستجابة للكارثة.
             </p>
 
-            <dl className="grid divide-y border-y text-sm">
+            <dl className="grid divide-y border-y border-rule text-[13px]">
               {workDetails.map((detail) => (
                 <div
                   key={detail.term}
@@ -84,9 +87,9 @@ export function CondolenceDialog() {
 
         <Separator />
 
-        <DialogFooter className="shrink-0 px-5 py-4 sm:px-6">
+        <DialogFooter className="shrink-0 px-5 py-4 sm:px-8">
           <DialogClose asChild>
-            <Button type="button" variant="outline">
+            <Button type="button" size="lg" className="px-5">
               تصفح الموقع
             </Button>
           </DialogClose>

@@ -79,8 +79,8 @@ export function SourceRegister({ records }: { records: SourceRecord[] }) {
   }, [family, query, records, status]);
 
   return (
-    <div className="border bg-card">
-      <div className="grid gap-3 border-b p-3 md:grid-cols-[minmax(0,1fr)_12rem_12rem]">
+    <div className="source-register border-t border-rule">
+      <div className="grid gap-4 border-b border-border bg-card p-4 md:grid-cols-[minmax(0,1fr)_12rem_12rem]">
         <Field>
           <FieldLabel htmlFor="source-search">ابحث في السجل</FieldLabel>
           <div className="relative">
@@ -94,7 +94,7 @@ export function SourceRegister({ records }: { records: SourceRecord[] }) {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="المعرّف أو الناشر أو موضوع المصدر"
-              className="ps-9"
+              className="h-10 bg-background ps-9"
             />
           </div>
         </Field>
@@ -105,7 +105,7 @@ export function SourceRegister({ records }: { records: SourceRecord[] }) {
             value={family}
             onValueChange={(value) => setFamily(value as FamilyFilter)}
           >
-            <SelectTrigger id="source-family" className="w-full">
+            <SelectTrigger id="source-family" className="w-full bg-background data-[size=default]:h-10">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -127,7 +127,7 @@ export function SourceRegister({ records }: { records: SourceRecord[] }) {
             value={status}
             onValueChange={(value) => setStatus(value as StatusFilter)}
           >
-            <SelectTrigger id="source-status" className="w-full">
+            <SelectTrigger id="source-status" className="w-full bg-background data-[size=default]:h-10">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -146,14 +146,14 @@ export function SourceRegister({ records }: { records: SourceRecord[] }) {
 
       <div
         aria-live="polite"
-        className="flex h-9 items-center justify-between border-b px-3 text-[11px] text-muted-foreground"
+        className="flex h-10 items-center justify-between border-b border-border px-1 text-[11.5px] text-muted-foreground"
       >
         <span>السجلات المطابقة</span>
         <span className="numeric">{filtered.length} / {records.length}</span>
       </div>
 
       {filtered.length ? (
-        <Table className="min-w-[880px] table-fixed">
+        <Table className="source-register-table min-w-[880px] table-fixed">
           <TableHeader>
             <TableRow>
               <TableHead className="w-24">المعرّف</TableHead>

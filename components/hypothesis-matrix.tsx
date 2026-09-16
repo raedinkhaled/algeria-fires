@@ -3,7 +3,8 @@ import { cn } from "@/lib/utils";
 /**
  * احتمالات مصفوفة الفرضيات المتنافسة. القيم من `data/forensic-summary.json`،
  * وهي أرقام المصفوفة بعد تحليل القوة وقاعدة التماثل (الفصل 26.4).
- * الشريط أحادي اللون: هذه احتمالات لا درجات ثقة.
+ * الشريط بالحبر للوزن الكامل، والعلامة الرفيعة لما بعد التلطيف:
+ * هذه احتمالات لا درجات ثقة، فلا لون دلالي.
  */
 
 export type HypothesisRow = {
@@ -27,33 +28,38 @@ export function HypothesisMatrix({
   className?: string;
 }) {
   return (
-    <div className={cn("border", className)}>
-      <div className="grid grid-cols-[1fr_auto_auto] gap-x-4 border-b bg-muted/40 px-4 py-2 text-[11px] text-muted-foreground sm:gap-x-6">
+    <div className={cn("border-t border-rule", className)}>
+      <div className="grid grid-cols-[1fr_4.5rem_4.5rem] gap-x-4 border-b border-border py-2.5 text-[11px] text-muted-foreground sm:grid-cols-[1fr_6rem_6rem]">
         <span>الفرضية</span>
-        <span className="w-14 text-start">الاحتمال</span>
-        <span className="w-14 text-start">بعد التلطيف</span>
+        <span>الاحتمال</span>
+        <span>بعد التلطيف</span>
       </div>
 
-      <ol className="divide-y">
+      <ol>
         {rows.map((row) => (
-          <li key={row.id} className="px-4 py-3.5">
-            <div className="grid grid-cols-[1fr_auto_auto] items-baseline gap-x-4 sm:gap-x-6">
-              <span className="text-sm leading-6">{row.label}</span>
-              <span className="numeric w-14 text-sm font-semibold">
+          <li key={row.id} className="border-b border-border py-4">
+            <div className="grid grid-cols-[1fr_4.5rem_4.5rem] items-baseline gap-x-4 sm:grid-cols-[1fr_6rem_6rem]">
+              <span className="text-[15px] leading-7">{row.label}</span>
+              <span className="figure-num text-[22px] font-light leading-none sm:text-[26px]">
                 {percent(row.full_weight)}
               </span>
-              <span className="numeric w-14 text-sm text-muted-foreground">
+              <span className="figure-num text-[15px] leading-none text-muted-foreground">
                 {percent(row.softened_weight)}
               </span>
             </div>
             <div
               aria-hidden="true"
-              className="mt-2 h-1 bg-border"
+              dir="ltr"
+              className="relative mt-3 h-1.5 bg-muted"
               title={percent(row.full_weight)}
             >
               <div
                 className="h-full bg-foreground"
                 style={{ width: `${Math.max(row.full_weight, 0.6)}%` }}
+              />
+              <span
+                className="absolute -top-1 h-3.5 w-0.5 bg-signal"
+                style={{ left: `${row.softened_weight}%` }}
               />
             </div>
           </li>
@@ -61,10 +67,20 @@ export function HypothesisMatrix({
       </ol>
 
       {caption ? (
-        <p className="border-t px-4 py-2.5 text-[11px] leading-5 text-muted-foreground">
+        <p className="pt-3 text-[12.5px] leading-7 text-muted-foreground">
           {caption}
         </p>
       ) : null}
+      <p className="flex flex-wrap items-center gap-x-5 gap-y-1 pt-2 text-[11px] text-muted-foreground">
+        <span className="flex items-center gap-1.5">
+          <span aria-hidden="true" className="h-1.5 w-4 bg-foreground" />
+          الاحتمال
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span aria-hidden="true" className="h-3 w-0.5 bg-signal" />
+          بعد التلطيف
+        </span>
+      </p>
     </div>
   );
 }

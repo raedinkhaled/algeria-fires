@@ -8,14 +8,14 @@ type MethodStage = {
   tone: "info" | "ok" | "warn" | "support";
 };
 
-const toneClasses: Record<MethodStage["tone"], string> = {
-  info: "border-s-info text-info",
-  ok: "border-s-ok text-ok",
-  warn: "border-s-warn text-warn",
-  support: "border-s-support text-support",
+export const toneClasses: Record<MethodStage["tone"], string> = {
+  info: "border-info text-info",
+  ok: "border-ok text-ok",
+  warn: "border-warn text-warn",
+  support: "border-support text-support",
 };
 
-const stages: MethodStage[] = [
+export const methodStages: MethodStage[] = [
   {
     title: "تجميع الرصد",
     input: "FIRMS، Sentinel-2، METAR، Open-Meteo، DEM، OSM",
@@ -76,37 +76,55 @@ const stages: MethodStage[] = [
 
 export function MethodologyDiagram() {
   return (
-    <figure className="border bg-card">
-      <div className="grid border-b bg-muted/40 px-4 py-2 text-[11px] text-muted-foreground md:grid-cols-[minmax(0,10rem)_minmax(0,1fr)_minmax(0,1fr)] md:gap-5">
+    <figure className="data-figure">
+      <div className="hidden border-y border-rule py-2.5 text-[11px] text-muted-foreground md:grid md:grid-cols-[3rem_minmax(0,11rem)_minmax(0,1fr)_minmax(0,14rem)] md:gap-6">
+        <span aria-hidden="true" />
         <span>التحويل</span>
-        <span className="hidden md:block">المدخل ← المخرج</span>
-        <span className="hidden md:block">حاجز الخطأ</span>
+        <span>المدخل ← المخرج</span>
+        <span>حاجز الخطأ</span>
       </div>
-      <ol className="divide-y">
-        {stages.map((stage) => (
+      <ol className="border-t border-rule md:border-t-0">
+        {methodStages.map((stage, index) => (
           <li
             key={stage.title}
-            className={cn(
-              "grid gap-3 border-s-[3px] px-4 py-4 md:grid-cols-[minmax(0,10rem)_minmax(0,1fr)_minmax(0,1fr)] md:gap-5",
-              toneClasses[stage.tone],
-            )}
+            className="relative grid grid-cols-[3rem_minmax(0,1fr)] gap-x-4 gap-y-2 border-b border-border py-6 md:grid-cols-[3rem_minmax(0,11rem)_minmax(0,1fr)_minmax(0,14rem)] md:gap-x-6"
           >
-            <h3 className="text-sm font-semibold text-foreground">
+            <span
+              aria-hidden="true"
+              className={cn(
+                "numeric row-span-3 flex size-9 items-center justify-center border-[1.5px] bg-background text-[12px] font-medium md:row-span-1",
+                toneClasses[stage.tone],
+              )}
+            >
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            {index < methodStages.length - 1 ? (
+              <span
+                aria-hidden="true"
+                className="absolute start-[1.125rem] top-[3.75rem] -bottom-6 w-px bg-border"
+              />
+            ) : null}
+            <h3 className="text-[16px] font-semibold leading-7 text-foreground">
               {stage.title}
             </h3>
-            <div className="text-sm leading-7 text-foreground">
+            <div className="text-[14.5px] leading-7 text-foreground">
               <p>{stage.input}</p>
               <p className="mt-1 text-muted-foreground">← {stage.output}</p>
             </div>
-            <p className="text-xs leading-6 text-muted-foreground">
+            <p className="border-s-2 border-border ps-3 text-xs leading-6 text-muted-foreground md:border-s-0 md:ps-0">
               {stage.control}
             </p>
           </li>
         ))}
       </ol>
-      <figcaption className="border-t px-4 py-3 text-xs leading-6 text-muted-foreground">
-        كل انتقال ينتج مادة جديدة قابلة للفحص. لا تتحول «أقدم إشارة» إلى
-        «سبب اشتعال» في أي مرحلة.
+      <figcaption className="grid gap-x-6 gap-y-1 pt-3 text-[13px] leading-7 text-muted-foreground sm:grid-cols-[4rem_minmax(0,1fr)]">
+        <span className="text-[11px] font-medium leading-7 text-foreground">
+          شكل <span className="numeric figure-index" />
+        </span>
+        <span>
+          كل انتقال ينتج مادة جديدة قابلة للفحص. لا تتحول «أقدم إشارة» إلى
+          «سبب اشتعال» في أي مرحلة.
+        </span>
       </figcaption>
     </figure>
   );

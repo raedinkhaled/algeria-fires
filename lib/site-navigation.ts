@@ -56,5 +56,11 @@ export const siteSections: readonly SiteSection[] = [
   },
 ] as const;
 
+/** رقم الملف لكل قسم بحسب ترتيب القراءة: «01» للتسلسل الزمني وهكذا. */
+export function sectionIndex(href: string): string {
+  const position = siteSections.findIndex((section) => section.href === href);
+  return position === -1 ? "00" : String(position + 1).padStart(2, "0");
+}
+
 /** رابط الصفحة الرئيسية (الملخص)، منفصل لأن الشعار يقود إليه. */
 export const homeSection = { href: "/", label: "الملخص" } as const;

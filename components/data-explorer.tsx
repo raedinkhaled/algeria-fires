@@ -113,11 +113,11 @@ function DownloadLink({ artifact, bundled = false }: { artifact: DownloadArtifac
     <a
       href={artifact.path}
       download
-      className="group grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-1 px-4 py-3.5 transition-colors hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-ring"
+      className="group grid grid-cols-[minmax(0,1fr)_auto] gap-x-6 gap-y-1 py-4 transition-colors hover:bg-card focus-visible:outline-2 focus-visible:outline-ring sm:px-3"
     >
       <span className="min-w-0">
-        <span className="block text-sm font-medium">{artifact.description}</span>
-        <span className="ltr-embed mt-1 block truncate text-[11px] text-muted-foreground">
+        <span className="block text-[14.5px] font-medium leading-7">{artifact.description}</span>
+        <span className="ltr-embed mt-1 block truncate text-[11.5px] text-muted-foreground">
           {filename}
         </span>
       </span>
@@ -129,7 +129,7 @@ function DownloadLink({ artifact, bundled = false }: { artifact: DownloadArtifac
         ) : (
           <span className="numeric">{formatBytes(artifact.bytes)}</span>
         )}
-        <DownloadIcon aria-hidden="true" />
+        <DownloadIcon aria-hidden="true" className="size-4 text-foreground transition-transform group-hover:translate-y-0.5" />
       </span>
       {bundled ? (
         <span className="col-span-2 text-[11px] text-muted-foreground">
@@ -227,7 +227,7 @@ export function DataExplorer({
   }
 
   return (
-    <div className="mt-10 flex flex-col gap-14">
+    <div className="flex flex-col gap-24">
       <Reveal>
         <StatStrip
           items={[
@@ -243,7 +243,7 @@ export function DataExplorer({
         <section id="daily" className="scroll-mt-20">
           <SectionLabel index="01">النشاط اليومي</SectionLabel>
           <DataFigure
-            className="mt-4"
+            className="mt-8"
             sensor="VIIRS · MODIS"
             meta="23-29.08.2026"
             caption="التجميع حسب التاريخ المحلي. سلسلة الطقس مأخوذة عند منشأ الشقفة، فلا تمثّل متوسطاً مكانياً للولاية."
@@ -256,13 +256,13 @@ export function DataExplorer({
       <Reveal>
         <section id="origins" className="scroll-mt-20">
           <SectionLabel index="02">مرشحو المنشأ</SectionLabel>
-          <p className="mt-4 max-w-2xl leading-8">
+          <p className="mt-6 max-w-2xl text-[16px] leading-8">
             كل مرشّح موقع اجتاز معاً شرط البُعد عن أقرب حريق سابق وشرط انقطاع
             المسار بأرض غير محترقة. الرسم يوزّعها على أيام الحدث، والجدول يحمل
             قيم اختبارات البلوغ.
           </p>
 
-          <Alert className="mt-6 max-w-2xl">
+          <Alert className="mt-8 max-w-2xl">
             <AlertTitle>أول رصد ليس لحظة الاشتعال</AlertTitle>
             <AlertDescription>
               كل توقيت هنا هو أقدم نقطة حرارية رآها القمر. الاشتعال يسبقه بفترة
@@ -271,7 +271,7 @@ export function DataExplorer({
           </Alert>
 
           <DataFigure
-            className="mt-6"
+            className="mt-10"
             sensor="VIIRS · MODIS"
             meta="12 مرشحاً · 23-27.08.2026"
             caption="المحور الأفقي وقت أول رصد، والرأسي ارتفاع الموقع بالأمتار، وحجم النقطة قوة الإشعاع الحراري. الدائرة المفرغة أول رصد ليلاً."
@@ -279,11 +279,11 @@ export function DataExplorer({
             <OriginScatterChart origins={origins} />
           </DataFigure>
 
-          <div className="mt-6 flex flex-wrap items-end gap-3 border px-3 py-3">
+          <div className="mt-12 flex flex-wrap items-end gap-3 border-t border-rule bg-card px-3 py-3 sm:px-4">
             <label className="flex flex-col gap-1.5 text-[11px] text-muted-foreground">
               الولاية
               <Select value={wilaya} onValueChange={setWilaya}>
-                <SelectTrigger aria-label="تصفية مرشحي المنشأ حسب الولاية">
+                <SelectTrigger className="min-w-40 bg-background" aria-label="تصفية مرشحي المنشأ حسب الولاية">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -298,7 +298,7 @@ export function DataExplorer({
             <label className="flex flex-col gap-1.5 text-[11px] text-muted-foreground">
               القمر
               <Select value={satellite} onValueChange={setSatellite}>
-                <SelectTrigger aria-label="تصفية مرشحي المنشأ حسب القمر">
+                <SelectTrigger className="min-w-40 bg-background" aria-label="تصفية مرشحي المنشأ حسب القمر">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -315,8 +315,8 @@ export function DataExplorer({
             </p>
           </div>
 
-          <Table className="min-w-[820px] border-x border-b">
-            <TableHeader className="bg-muted/50">
+          <Table className="min-w-[820px]">
+            <TableHeader>
               <TableRow>
                 <SortableHead label="المعرف" active={originSort === "origin_id"} descending={originDescending} onClick={() => sortOrigins("origin_id")} />
                 <SortableHead label="أول رصد" active={originSort === "first_local"} descending={originDescending} onClick={() => sortOrigins("first_local")} />
@@ -332,7 +332,7 @@ export function DataExplorer({
                 <TableRow key={origin.origin_id}>
                   <TableCell className="numeric text-xs font-medium">{origin.origin_id}</TableCell>
                   <TableCell className="text-xs">
-                    <span className="numeric">{localDate(origin.first_local)}</span>
+                    <span className={origin.first_local ? "numeric" : undefined}>{localDate(origin.first_local)}</span>
                     {dayNightLabel(origin.daynight) ? (
                       <span className="mt-0.5 block text-[11px] text-muted-foreground">
                         {dayNightLabel(origin.daynight)}
@@ -365,13 +365,13 @@ export function DataExplorer({
       <Reveal>
         <section id="patches" className="scroll-mt-20">
           <SectionLabel index="03">الندبات الكبرى</SectionLabel>
-          <p className="mt-4 max-w-2xl leading-8">
+          <p className="mt-6 max-w-2xl text-[16px] leading-8">
             ندبات الحريق المستخرجة من فرق الانعكاسية dNBR في صور Sentinel-2 بين 18
             و28 أوت، مقصورة على ما تبلغ مساحته 100 هكتار فأكثر.
           </p>
 
           <DataFigure
-            className="mt-6"
+            className="mt-10"
             sensor="Sentinel-2 · MSI L2A"
             meta="dNBR · 18 → 28.08.2026"
             caption="ترتيب الندبات بالمساحة بالكيلومتر المربّع. اللون يفصل ما مركزه داخل حدود ولاية جيجل عمّا يقع خارجها."
@@ -379,11 +379,11 @@ export function DataExplorer({
             <PatchBarsChart patches={patches} />
           </DataFigure>
 
-          <div className="mt-6 flex flex-wrap items-end gap-3 border px-3 py-3">
+          <div className="mt-12 flex flex-wrap items-end gap-3 border-t border-rule bg-card px-3 py-3 sm:px-4">
             <label className="flex flex-col gap-1.5 text-[11px] text-muted-foreground">
               الموقع
               <Select value={patchLocation} onValueChange={setPatchLocation}>
-                <SelectTrigger aria-label="تصفية الندبات حسب الموقع">
+                <SelectTrigger className="min-w-40 bg-background" aria-label="تصفية الندبات حسب الموقع">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -401,8 +401,8 @@ export function DataExplorer({
             </p>
           </div>
 
-          <Table className="min-w-[720px] border-x border-b">
-            <TableHeader className="bg-muted/50">
+          <Table className="min-w-[720px]">
+            <TableHeader>
               <TableRow>
                 <SortableHead label="المعرف" active={patchSort === "patch_id"} descending={patchDescending} onClick={() => sortPatches("patch_id")} />
                 <SortableHead label="المساحة" active={patchSort === "area_km2"} descending={patchDescending} onClick={() => sortPatches("area_km2")} />
@@ -421,7 +421,7 @@ export function DataExplorer({
                   <TableCell className="text-xs text-muted-foreground">
                     {patch.centroid_in_jijel === "True" ? "داخل جيجل" : "خارج جيجل"}
                   </TableCell>
-                  <TableCell className="numeric text-xs">{localDate(patch.first_det_local)}</TableCell>
+                  <TableCell className={patch.first_det_local ? "numeric text-xs" : "text-xs text-muted-foreground"}>{localDate(patch.first_det_local)}</TableCell>
                   <TableCell className="numeric text-xs">{formatNumber(number(patch.max_extent_km), 2)} km</TableCell>
                   <TableCell className="numeric text-xs">{formatNumber(number(patch.n_detections_inside))}</TableCell>
                   <TableCell className="numeric text-xs">{formatNumber(number(patch.mean_dnbr), 3)}</TableCell>
@@ -437,20 +437,20 @@ export function DataExplorer({
       <Reveal>
         <section id="downloads" className="scroll-mt-20">
           <SectionLabel index="07">التنزيلات</SectionLabel>
-          <EdgePanel className="mt-4" label="نطاق النشر">
+          <EdgePanel className="mt-8" label="نطاق النشر">
             <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
               التنزيلات تشمل البيانات المعالجة التي استند إليها العرض، لا الملفات الخام الثقيلة. تحمل كل مادة بصمتها في فهرس التنزيلات للتحقق من السلامة.
             </p>
           </EdgePanel>
           {bundle ? (
-            <div className="mt-4 border">
+            <div className="mt-8 border-y-2 border-rule">
               <DownloadLink artifact={bundle} bundled />
             </div>
           ) : null}
-          <div className="mt-4 divide-y border">
+          <div className="mt-6 divide-y divide-border border-b border-border">
             {individualDownloads.map((artifact) => <DownloadLink key={artifact.path} artifact={artifact} />)}
           </div>
-          <div className="mt-4 flex justify-end">
+          <div className="mt-6 flex justify-end">
             <Button asChild variant="outline" size="sm">
               <a href="/generated/downloads.json" download>
                 <DownloadIcon data-icon="inline-start" />
@@ -480,11 +480,11 @@ function SortableHead({
       <button
         type="button"
         onClick={onClick}
-        className="inline-flex items-center gap-1 text-start focus-visible:outline-2 focus-visible:outline-ring"
+        className="inline-flex items-center gap-1.5 text-start hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
         aria-label={`فرز حسب ${label}${active ? (descending ? " تنازلياً" : " تصاعدياً") : ""}`}
       >
         {label}
-        <ArrowDownUpIcon aria-hidden="true" className={active ? "text-foreground" : "text-muted-foreground"} />
+        <ArrowDownUpIcon aria-hidden="true" className={active ? "size-3.5 text-signal-ink" : "size-3.5 text-muted-foreground"} />
       </button>
     </TableHead>
   );

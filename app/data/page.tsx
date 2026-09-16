@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 
 import { DataExplorer, type OriginRow, type PatchRow } from "@/components/data-explorer";
-import { FileMeta, SectionLabel } from "@/components/editorial";
+import { Dossier, Masthead, NightPanel, SectionLabel } from "@/components/editorial";
 import { FigureGallery } from "@/components/figure-gallery";
 import { Reveal } from "@/components/motion";
-import { StoryBreadcrumb } from "@/components/story-breadcrumb";
 import {
   IgnitionWindowTable,
   QualityLegend,
@@ -16,6 +13,7 @@ import {
 } from "@/components/timing-tables";
 import { dataSections } from "@/lib/data-sections";
 import { figures } from "@/lib/figures";
+import { readCsvRows } from "@/lib/published-csv";
 import activity from "@/public/generated/data/daily_activity.json";
 import downloads from "@/public/generated/downloads.json";
 import ignitionWindows from "@/public/generated/data/msg-ignition-windows.json";
@@ -26,50 +24,6 @@ export const metadata: Metadata = {
   description:
     "رسوم وجداول قابلة للتصفية وتنزيلات للبيانات المعالجة المستخدمة في تحليل حرائق جيجل.",
 };
-
-function parseCsv(text: string): string[][] {
-  const rows: string[][] = [];
-  let row: string[] = [];
-  let value = "";
-  let quoted = false;
-
-  for (let index = 0; index < text.length; index += 1) {
-    const character = text[index];
-    if (character === '"') {
-      if (quoted && text[index + 1] === '"') {
-        value += '"';
-        index += 1;
-      } else {
-        quoted = !quoted;
-      }
-    } else if (character === "," && !quoted) {
-      row.push(value);
-      value = "";
-    } else if ((character === "\n" || character === "\r") && !quoted) {
-      if (character === "\r" && text[index + 1] === "\n") index += 1;
-      row.push(value);
-      if (row.some((cell) => cell !== "")) rows.push(row);
-      row = [];
-      value = "";
-    } else {
-      value += character;
-    }
-  }
-  row.push(value);
-  if (row.some((cell) => cell !== "")) rows.push(row);
-  return rows;
-}
-
-async function readCsvRows<T>(filename: string): Promise<T[]> {
-  const text = await readFile(
-    path.join(process.cwd(), "public", "generated", "data", filename),
-    "utf8",
-  );
-  const [header, ...rows] = parseCsv(text);
-  return rows.map((row) =>
-    Object.fromEntries(header.map((key, index) => [key, row[index] ?? ""])) as T,
-  );
-}
 
 const fileMeta = [
   { term: "القسم", value: "البيانات" },
@@ -82,6 +36,10 @@ const fileMeta = [
   { term: "التنسيقات", value: "CSV · JSON · ZIP", mono: true },
 ];
 
+const bundle = downloads.artifacts.find((artifact) => artifact.media_type === "application/zip");
+const files = downloads.artifacts.filter((artifact) => artifact.media_type !== "application/zip");
+const totalRows = files.reduce((sum, artifact) => sum + ("rows" in artifact && artifact.rows ? artifact.rows : 0), 0);
+
 export default async function DataPage() {
   const [origins, patches] = await Promise.all([
     readCsvRows<OriginRow>("independent_origins.csv"),
@@ -89,111 +47,132 @@ export default async function DataPage() {
   ]);
 
   return (
-    <article className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-      <StoryBreadcrumb current="البيانات" />
-
-      <div className="mt-10 grid gap-8 lg:grid-cols-[220px_1fr] lg:gap-14">
-        <aside className="order-2 border-t pt-6 lg:sticky lg:top-14 lg:order-1 lg:self-start lg:border-t-0 lg:border-e lg:pe-8 lg:pt-0">
-          <FileMeta heading="بيانات الملف" rows={fileMeta} />
-          <nav
-            aria-label="أقسام الصفحة"
-            className="mt-8 hidden border-t pt-5 lg:block"
-          >
-            <p className="mb-3 text-[11px] font-medium text-muted-foreground">
-              الأقسام
-            </p>
-            <ol className="flex flex-col gap-2">
-              {dataSections.map((section) => (
-                <li key={section.id}>
-                  <a
-                    href={`#${section.id}`}
-                    className="flex gap-2.5 text-[11px] text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    <span className="numeric">{section.index}</span>
-                    <span>{section.label}</span>
-                  </a>
+    <article className="publication mx-auto max-w-7xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
+      <Masthead
+        current="البيانات"
+        file="04"
+        kicker="المستكشف"
+        title="افحص البيانات المعالجة بنفسك"
+        lede="هذه الرسوم والجداول تعيد عرض مجموعة التحليل المنشورة للندبات الكبرى وبؤر المنشأ المستقلة. كل نقطة حرارية هي رصد قمري يوثق بدقة موقع البؤر المنفصلة وتعددها."
+        meta={fileMeta}
+        panel={
+          <NightPanel label="مخزن البيانات" meta="CSV · JSON · ZIP">
+            <dl className="grid grid-cols-2 gap-px bg-border">
+              <div className="flex flex-col-reverse justify-end bg-background px-5 py-4">
+                <dt className="mt-2 text-[12px] text-muted-foreground">ملفاً معالجاً</dt>
+                <dd className="figure-num text-[2.5rem] font-light leading-none">{files.length}</dd>
+              </div>
+              <div className="flex flex-col-reverse justify-end bg-background px-5 py-4">
+                <dt className="mt-2 text-[12px] text-muted-foreground">صف في الجداول</dt>
+                <dd className="figure-num text-[2.5rem] font-light leading-none">
+                  {totalRows.toLocaleString("en")}
+                </dd>
+              </div>
+            </dl>
+            <ol className="flex-1 border-t border-border">
+              {files.slice(0, 6).map((artifact) => (
+                <li
+                  key={artifact.path}
+                  className="flex items-baseline justify-between gap-4 border-b border-border px-5 py-2.5 last:border-b-0"
+                >
+                  <span className="ltr-embed truncate text-[12px]">
+                    {artifact.path.split("/").at(-1)}
+                  </span>
+                  <span className="shrink-0 text-[11px] text-muted-foreground">
+                    {artifact.rows ? (
+                      <>
+                        <span className="numeric">{artifact.rows.toLocaleString("en")}</span>{" "}
+                        <span className="font-sans">صف</span>
+                      </>
+                    ) : (
+                      <span className="numeric">{`${(artifact.bytes / 1000).toFixed(1)} KB`}</span>
+                    )}
+                  </span>
                 </li>
               ))}
             </ol>
-          </nav>
-        </aside>
+            {bundle ? (
+              <a
+                href={bundle.path}
+                download
+                className="flex items-center justify-between gap-4 border-t border-border bg-signal px-5 py-3 text-[13px] font-medium text-black transition-colors hover:bg-signal/85"
+              >
+                <span>{bundle.description}</span>
+                <span className="numeric text-[11px]">
+                  ZIP · {(bundle.bytes / 1_000_000).toFixed(1)} MB
+                </span>
+              </a>
+            ) : null}
+          </NightPanel>
+        }
+      />
 
-        <div className="order-1 min-w-0 lg:order-2">
-          <p className="text-[11px] font-medium text-muted-foreground">المستكشف</p>
-          <h1 className="mt-4 max-w-2xl text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
-            افحص البيانات المعالجة بنفسك
-          </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-9">
-            هذه الرسوم والجداول تعيد عرض مجموعة التحليل المنشورة للندبات الكبرى
-            وبؤر المنشأ المستقلة. كل نقطة حرارية هي رصد قمري يوثق بدقة موقع البؤر المنفصلة وتعددها.
-          </p>
+      <Dossier index={dataSections} indexHeading="الأقسام" indexLabel="أقسام الصفحة">
+        <DataExplorer
+          activity={activity.days}
+          origins={origins}
+          patches={patches}
+          downloads={downloads.artifacts}
+        >
+          <Reveal>
+            <section id="ignition-windows">
+              <SectionLabel index="04">نوافذ الاشتعال</SectionLabel>
+              <p className="mt-6 max-w-2xl text-[16px] leading-8">
+                نافذة الاشتعال تمتدّ من آخر لحظة رأى فيها القمر الموقع خالياً من
+                النار إلى أول لحظة رأى فيها ناراً. القمر الثابت{" "}
+                <span className="ltr-embed">Meteosat-10</span> يصوّر كل 15 دقيقة،
+                فقلّص هذه النافذة إلى ربع ساعة فقط في ست حالات، ما كشف عن تقارب
+                زمني شديد لبدايات متباعدة جغرافياً، وضيّق الخناق على فرضيات الانتشار العشوائي.
+              </p>
+              <div className="mt-10">
+                <IgnitionWindowTable rows={ignitionWindows.origins as IgnitionWindow[]} />
+                <QualityLegend />
+              </div>
+              <p className="mt-4 max-w-3xl text-[12px] leading-6 text-muted-foreground">
+                {ignitionWindows.note}
+              </p>
+            </section>
+          </Reveal>
 
-          <DataExplorer
-            activity={activity.days}
-            origins={origins}
-            patches={patches}
-            downloads={downloads.artifacts}
-          >
-            <Reveal>
-              <section id="ignition-windows" className="scroll-mt-20">
-                <SectionLabel index="04">نوافذ الاشتعال</SectionLabel>
-                <p className="mt-4 max-w-2xl leading-8">
-                  نافذة الاشتعال تمتدّ من آخر لحظة رأى فيها القمر الموقع خالياً من
-                  النار إلى أول لحظة رأى فيها ناراً. القمر الثابت{" "}
-                  <span className="ltr-embed">Meteosat-10</span> يصوّر كل 15 دقيقة،
-                  فقلّص هذه النافذة إلى ربع ساعة فقط في ست حالات، ما كشف عن تقارب
-                  زمني شديد لبدايات متباعدة جغرافياً، وضيّق الخناق على فرضيات الانتشار العشوائي.
-                </p>
-                <div className="mt-5">
-                  <IgnitionWindowTable rows={ignitionWindows.origins as IgnitionWindow[]} />
-                  <QualityLegend />
-                </div>
-                <p className="mt-3 text-[11px] leading-5 text-muted-foreground">
-                  {ignitionWindows.note}
-                </p>
-              </section>
-            </Reveal>
+          <Reveal>
+            <section id="pairs">
+              <SectionLabel index="05">الأزواج المتقاربة</SectionLabel>
+              <p className="mt-6 max-w-2xl text-[16px] leading-8">
+                كل زوج من بؤر المنشأ بدأ خلال ثلاث ساعات من الآخر، مصحوباً بالمعطيات
+                التي تحسم فيزيائياً إمكانية انتقال النار بينهما: المسافة، والاتجاه،
+                وهندسة الرياح في تلك اللحظة. النار لا تنتقل عكس الريح أو خارج مدى جمراتها؛
+                لذا فإن الاستحالة الفيزيائية لانتقالها تُثبت وجود مصادر إشعال مستقلة تماماً،
+                مما يجعل التزامن الزمني بينها مؤشراً قوياً يستدعي التدقيق الأمني.
+              </p>
+              <div className="mt-10">
+                <SimultaneousPairsTable
+                  rows={simultaneousPairs.pairs as SimultaneousPair[]}
+                />
+              </div>
+              <p className="mt-4 max-w-3xl text-[12px] leading-6 text-muted-foreground">
+                {simultaneousPairs.note}
+              </p>
+            </section>
+          </Reveal>
 
-            <Reveal>
-              <section id="pairs" className="scroll-mt-20">
-                <SectionLabel index="05">الأزواج المتقاربة</SectionLabel>
-                <p className="mt-4 max-w-2xl leading-8">
-                  كل زوج من بؤر المنشأ بدأ خلال ثلاث ساعات من الآخر، مصحوباً بالمعطيات
-                  التي تحسم فيزيائياً إمكانية انتقال النار بينهما: المسافة، والاتجاه،
-                  وهندسة الرياح في تلك اللحظة. النار لا تنتقل عكس الريح أو خارج مدى جمراتها؛
-                  لذا فإن الاستحالة الفيزيائية لانتقالها تُثبت وجود مصادر إشعال مستقلة تماماً،
-                  مما يجعل التزامن الزمني بينها مؤشراً قوياً يستدعي التدقيق الأمني.
-                </p>
-                <div className="mt-5">
-                  <SimultaneousPairsTable
-                    rows={simultaneousPairs.pairs as SimultaneousPair[]}
-                  />
-                </div>
-                <p className="mt-3 max-w-3xl text-[11px] leading-5 text-muted-foreground">
-                  {simultaneousPairs.note}
-                </p>
-              </section>
-            </Reveal>
-
-            <Reveal>
-              <section id="figures" className="scroll-mt-20">
-                <SectionLabel index="06">الخرائط والأشكال</SectionLabel>
-                <p className="mt-4 max-w-2xl leading-8">
-                  كل خرائط التحقيق وأشكاله البيانية ومنتجات Sentinel-2، بترتيب
-                  ملحقَي التقرير ووصفهما. الأصول مرسومة يدوياً بالعربية في مساحة
-                  التحقيق، وتُنشر هنا بنسخ محسّنة للعرض.
-                </p>
-                <FigureGallery />
-                <p className="mt-6 text-[11px] leading-5 text-muted-foreground">
-                  {figures.length} شكلاً. جميع الخرائط بمرجع WGS84 مع سهم شمال
-                  ومقياس رسم ومفتاح وأختام زمنية، والإظلال التلّي من Copernicus DEM
-                  GLO-30.
-                </p>
-              </section>
-            </Reveal>
-          </DataExplorer>
-        </div>
-      </div>
+          <Reveal>
+            <section id="figures">
+              <SectionLabel index="06">الخرائط والأشكال</SectionLabel>
+              <p className="mt-6 max-w-2xl text-[16px] leading-8">
+                كل خرائط التحقيق وأشكاله البيانية ومنتجات Sentinel-2، بترتيب
+                ملحقَي التقرير ووصفهما. الأصول مرسومة يدوياً بالعربية في مساحة
+                التحقيق، وتُنشر هنا بنسخ محسّنة للعرض.
+              </p>
+              <FigureGallery />
+              <p className="mt-8 text-[12px] leading-6 text-muted-foreground">
+                {figures.length} شكلاً. جميع الخرائط بمرجع WGS84 مع سهم شمال
+                ومقياس رسم ومفتاح وأختام زمنية، والإظلال التلّي من Copernicus DEM
+                GLO-30.
+              </p>
+            </section>
+          </Reveal>
+        </DataExplorer>
+      </Dossier>
     </article>
   );
 }
